@@ -3,18 +3,24 @@
 namespace App\System;
 
 
+use App\Lib\Registry;
+
 class Application {
 
     private const ADMIN_ALIAS = "admin";
     private $isAdminRequested = false;
     private $uri;
     private $url;
+    private $registry;
 
     /**
      * Application constructor.
      */
     public function __construct()
     {
+        $this->registry = new Registry();
+        $this->registry->Application = $this;
+        
         $this->processURL();
 
     }
