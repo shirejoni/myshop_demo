@@ -1,0 +1,7 @@
+{
+    "name": "shirejoni/myshop_demo",
+    "type": "project",
+    "require": {
+        "twig/twig": "^2.6"
+    }
+}
