@@ -4,13 +4,14 @@ namespace App\System;
 
 
 use App\Lib\Registry;
+use App\Lib\Router;
 
 class Application {
 
     private const ADMIN_ALIAS = "admin";
     private $isAdminRequested = false;
-    private $uri;
-    private $url;
+    private $uri = '/';
+    private $url = '/';
     private $registry;
 
     /**
@@ -20,8 +21,18 @@ class Application {
     {
         $this->registry = new Registry();
         $this->registry->Application = $this;
-        
         $this->processURL();
+
+        if($this->isAdminRequested) {
+            require_once ADMIN_PATH . DS . 'config' . DS . 'admin_constants.php';
+        }else {
+            require_once WEB_PATH . DS . 'config' . DS . 'web_constants.php';
+        }
+
+        $router = new Router($this->registry);
+        $this->registry->Router = $router;
+
+        $router->Dispatch();
 
     }
 
@@ -42,7 +53,33 @@ class Application {
         if($this->isAdminRequested) {
             $sURL = substr($sURL, strlen(self::ADMIN_ALIAS) + 1);
         }
-        $this->uri = $sURL;
+
+        $this->uri = !empty($sURL) ? $sURL : $this->uri;
         $this->url = rtrim(URL, '/') . $_SERVER['REQUEST_URI'];
     }
+
+    /**
+     * @return bool
+     */
+    public function isAdminRequested(): bool
+    {
+        return $this->isAdminRequested;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUri()
+    {
+        return $this->uri;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
 }
