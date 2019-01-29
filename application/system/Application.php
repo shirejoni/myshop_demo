@@ -3,7 +3,9 @@
 namespace App\System;
 
 
+use App\Lib\Config;
 use App\Lib\Registry;
+use App\Lib\Response;
 use App\Lib\Router;
 
 class Application {
@@ -21,6 +23,7 @@ class Application {
     {
         $this->registry = new Registry();
         $this->registry->Application = $this;
+        $this->registry->Response = new Response();
         $this->processURL();
 
         if($this->isAdminRequested) {
@@ -28,12 +31,13 @@ class Application {
         }else {
             require_once WEB_PATH . DS . 'config' . DS . 'web_constants.php';
         }
-
+        $this->registry->Config = new Config();
+        $this->registry->Config->load(MAIN_CONFIG_FILENAME);
         $router = new Router($this->registry);
         $this->registry->Router = $router;
 
         $router->Dispatch();
-
+        $this->registry->Response->OutPut();
     }
 
     private function processURL()

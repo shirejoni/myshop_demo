@@ -8,11 +8,12 @@ use App\System\Controller;
 /**
  * @property Response Response
  */
-class ControllerHome extends Controller {
+class ControllerLogin extends Controller {
+
 
     public function index() {
-        $this->Response->setOutPut($this->render('home/index'));
 
+        $this->Response->setOutPut($this->render('login/index'));
     }
 
 
