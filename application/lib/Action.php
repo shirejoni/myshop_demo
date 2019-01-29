@@ -68,7 +68,7 @@ class Action {
             preg_replace_callback('/[a-zA-Z0-9]+/', function ($matches) use(&$className) {
                 $className .= ucfirst($matches[0]);
             }, $this->route);
-            $class = new $className();
+            $class = new $className($registry);
             if(method_exists($class, $this->method)) {
                 return call_user_func_array([$class, $this->method], array());
             }else {
