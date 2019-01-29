@@ -2,7 +2,9 @@
 
 namespace App\Web\Controller;
 
-class ControllerError {
+use App\System\Controller;
+
+class ControllerError extends Controller {
     public function notFound() {
         echo "<br>";
         echo "Not Found Error in <b>ControllerError</b>/notFound: 7";
