@@ -14,5 +14,6 @@ define("DB_PASSWORD", "");
 define("URL", "http://myshopdemo.test/");
 define("LANGUAGE_DEFAULT_CODE", "fa");
 define("MAIN_CONFIG_FILENAME", 'config');
+define("DEBUG_MODE", true);
 
 
