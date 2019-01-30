@@ -11,5 +11,6 @@ require_once ROOT_PATH . DS . 'vendor' . DS . "autoload.php";
 try {
     $application = new \App\System\Application();
 }catch (Exception $e) {
-    echo $e->getMessage();
+    echo "<p style='border:5px solid red;background-color:#fff;padding:12px;font-family: verdana, sans-serif;'><strong>Database Error:</strong><br/>{$e->getMessage()}</p>";
+
 }
