@@ -3,6 +3,8 @@
 namespace App\Lib;
 
 
+use App\System\Controller;
+
 class Action {
     private $controller_path;
     private $controller_namespace;
@@ -79,7 +81,7 @@ class Action {
                         return $this->execute($registry);
                     }
                 }
-                throw new \Exception("No Such Controller Found {$this->route} : {$this->method} ");
+                throw new \Exception("No Such Method In Controller Found {$this->route} : {$this->method} ");
             }
         }else {
             throw new \Exception("No Such Controller Found {$this->route} : {$this->method} ");
