@@ -1,3 +1,6 @@
 <?php
 
-$_['site_title'] = "Admin MyShop";
+$_['pre_actions'] = array(
+    'init/startup/init',
+    'init/login/index'
+);
