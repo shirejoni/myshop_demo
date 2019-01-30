@@ -3,7 +3,9 @@
 namespace App\System;
 
 
+use App\Lib\Action;
 use App\Lib\Config;
+use App\Lib\Database;
 use App\Lib\Registry;
 use App\Lib\Response;
 use App\Lib\Router;
@@ -31,13 +33,19 @@ class Application {
         }else {
             require_once WEB_PATH . DS . 'config' . DS . 'web_constants.php';
         }
-        $this->registry->Config = new Config();
+        $config = new Config();
+        $this->registry->Config = $config;
         $this->registry->Config->load(MAIN_CONFIG_FILENAME);
         $router = new Router($this->registry);
         $this->registry->Router = $router;
+        $database = new Database(DB_SERVER, DB_NAME, DB_USER, DB_PASSWORD);
+        $this->registry->Database = $database;
+        foreach ($config->get("pre_actions") as $preAction) {
+            $router->addPreRoute(new Action($preAction));
+        }
 
         $router->Dispatch();
-        $this->registry->Response->OutPut();
+//        $this->registry->Response->OutPut();
     }
 
     private function processURL()
