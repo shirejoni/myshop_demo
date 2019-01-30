@@ -9,6 +9,7 @@ use App\Lib\Database;
 use App\Lib\Registry;
 use App\Lib\Response;
 use App\Lib\Router;
+use App\Lib\Session;
 
 class Application {
 
@@ -26,8 +27,14 @@ class Application {
         $this->registry = new Registry();
         $this->registry->Application = $this;
         $this->registry->Response = new Response();
+        $database = new Database(DB_SERVER, DB_NAME, DB_USER, DB_PASSWORD);
+        $this->registry->Database = $database;
         $this->processURL();
-
+        session_set_save_handler(new Session($database));
+        session_start(array(
+            'use_strict_mode' => '1',
+            'cookie_httponly' => '1'
+        ));
         if($this->isAdminRequested) {
             require_once ADMIN_PATH . DS . 'config' . DS . 'admin_constants.php';
         }else {
@@ -38,8 +45,6 @@ class Application {
         $this->registry->Config->load(MAIN_CONFIG_FILENAME);
         $router = new Router($this->registry);
         $this->registry->Router = $router;
-        $database = new Database(DB_SERVER, DB_NAME, DB_USER, DB_PASSWORD);
-        $this->registry->Database = $database;
         foreach ($config->get("pre_actions") as $preAction) {
             $router->addPreRoute(new Action($preAction));
         }
