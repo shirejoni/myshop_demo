@@ -22,7 +22,8 @@ class Controller {
 
     public function render($path, $data = array()) {
         $_ = array(
-            'URL'   => URL,
+            'URL'           => URL,
+            "CURRENT_URL"   => $this->Application->getUrl(),
         );
         $data = array_merge($_, $data);
         return $this->twig->render($path . ".twig", $data);
