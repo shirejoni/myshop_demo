@@ -5,6 +5,7 @@ define("ADMIN_PATH", APP_PATH . DS . 'admin');
 define("MODEL_PATH", APP_PATH . DS . 'model');
 define("LANGUAGE_PATH", APP_PATH . DS . 'language');
 define("SYSTEM_PATH", APP_PATH . DS . 'system');
+define("CACHE_PATH", APP_PATH . DS . 'cache');
 
 define("DB_NAME", "demoshop");
 define("DB_USER", "root");
@@ -12,9 +13,15 @@ define("DB_SERVER", "localhost");
 define("DB_PASSWORD", "");
 
 define("URL", "http://myshopdemo.test/");
+
 define("DEFAULT_LANGUAGE_DIR", "fa");
 define("DEFAULT_LANGUAGE_CODE", "fa");
 define("MAIN_CONFIG_FILENAME", 'config');
 define("DEBUG_MODE", true);
+define("MODEL_NAMESPACE", "App\\Model");
 
+define("LONG_TIME_CACHE", 3600 * 5);
+define("MEDIUM_TIME_CACHE", 1800);
+define("SHORT_TIME_CACHE", 60);
 
+define("LANGUAGE_CACHE_TIME", LONG_TIME_CACHE);
