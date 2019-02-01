@@ -4,8 +4,14 @@ namespace App\Model;
 
 use App\Lib\Database;
 use App\Lib\Registry;
+use App\System\Model;
+use Doctrine\Common\Cache\FilesystemCache;
 
-class Language {
+/**
+ * @property Database Database
+ * @property FilesystemCache Cache
+ */
+class Language extends Model {
     private $db;
     private $defaultLanguageDir = DEFAULT_LANGUAGE_DIR ;
     private $defaultLanguageCode = DEFAULT_LANGUAGE_CODE;
@@ -22,14 +28,22 @@ class Language {
      */
     public function __construct(Registry $registry)
     {
-        $this->registry = $registry;
+        parent::__construct($registry);
         /** @var Database $db */
-        $db = $this->registry->Database;
+        $db = $this->Database;
+        /** @var FilesystemCache $cache */
+        $cache = $this->Cache;
         $this->db = $db;
-        $languagesResults = $this->db->getRows("SELECT * FROM langauge");
-        foreach ($languagesResults as $languagesResult) {
-            $this->languages[$languagesResult['code']] = $languagesResult;
+        if(!$cache->contains("languages")) {
+            $languagesResults = $this->db->getRows("SELECT * FROM langauge");
+            foreach ($languagesResults as $languagesResult) {
+                $this->languages[$languagesResult['code']] = $languagesResult;
+            }
+            $cache->save("languages", $this->languages, LANGUAGE_CACHE_TIME);
+        }else {
+            $this->languages = $cache->fetch("languages");
         }
+
         $this->languageID = $this->languages[$this->defaultLanguageCode]['language_id'];
         $this->languageDir = $this->languages[$this->defaultLanguageCode]['code'];
         $this->languageCode = $this->languages[$this->defaultLanguageCode]['code'];

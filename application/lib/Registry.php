@@ -3,6 +3,9 @@
 namespace App\Lib;
 
 
+/**
+ * @property Database Database
+ */
 class Registry {
     private $data = [];
 

@@ -7,7 +7,6 @@ require_once APP_PATH . DS . 'config' . DS . 'constant.php';
 
 require_once ROOT_PATH . DS . 'vendor' . DS . "autoload.php";
 
-
 try {
     $application = new \App\System\Application();
 }catch (Exception $e) {

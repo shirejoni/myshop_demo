@@ -69,9 +69,10 @@
             <p>This is the best app ever!</p>
         </div>
         <div class="content-error">
+
             <div class="hpanel">
                 <div class="panel-body">
-                    <form action="#" id="loginForm">
+                        {% include "login/login_message.twig" %}
                         <div class="form-group">
                             <label class="control-label" for="username">Username</label>
                             <input type="text" placeholder="example@gmail.com" title="Please enter you username" required="" value="" name="username" id="username" class="form-control">
@@ -87,9 +88,8 @@
                                 <input type="checkbox" class="i-checks"> Remember me </label>
                             <p class="help-block small">(if this is a private computer)</p>
                         </div>
-                        <button class="btn btn-success btn-block loginbtn">Login</button>
-                        <a class="btn btn-default btn-block" href="#">Register</a>
-                    </form>
+                        <button class="btn btn-success btn-block loginbtn" id="btn-login">Login</button>
+
                 </div>
             </div>
         </div>
@@ -143,9 +143,86 @@
 <!-- main JS
     ============================================ -->
 <script src="{{ URL }}assets/admin/js/main.js"></script>
-<!-- tawk chat JS
-    ============================================ -->
-<script src="{{ URL }}assets/admin/js/tawk-chat.js"></script>
+<script type="text/javascript">
+    {% autoescape false %}
+        let url = "{{ CURRENT_URL }}";
+        let successMessageBoxElement = $(".success-message-box").first();
+        let errorMessageBoxElement = $(".error-message-box").first();
+        $(document).ready(function () {
+            $('#btn-login').click(function (e) {
+                let data = {};
+                let messages = [];
+                let error = false;
+                let element = $("#username");
+
+                errorMessageBoxElement.text('');
+                successMessageBoxElement.text('');
+                errorMessageBoxElement.parent().css("display", "none");
+                successMessageBoxElement.parent().css("display", "none");
+
+                if(element.val() != "") {
+                    data['username'] = element.val();
+                }else {
+                    error = true;
+                    messages.push("{{ Translate['error_email_invalid'] }}");
+                }
+                element = $("#password");
+                if(element.val() != "") {
+                    data['password'] = element.val();
+                }else {
+                    error = true;
+                    messages.push("{{ Translate['error_password_invalid'] }}");
+                }
+                if(!error) {
+                    $.post(url, data, function (response) {
+                        response = JSON.parse(response);
+                        if(response.status === 1) {
+                            for (let i = 0; i < response['messages'].length; i++) {
+                                $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement);
+                            }
+                            if(response['messages'].length > 0) {
+                                successMessageBoxElement.parent().css({
+                                    "display" : "block",
+                                    "direction": "rtl",
+                                    "text-align": "right"
+                                });
+                            }
+                            if(response['redirect']) {
+                                window.setTimeout(function () {
+                                    window.location.href = response['redirect'];
+                                }, 1000)
+                            }
+                        }else {
+                               for (let i = 0; i < response['messages'].length; i++) {
+                                   $('<p>').text(response['messages'][i]).appendTo(errorMessageBoxElement);
+                               }
+                               if(response['messages'].length > 0) {
+                                   errorMessageBoxElement.parent().css({
+                                       "display" : "block",
+                                       "direction": "rtl",
+                                       "text-align": "right"
+                                   });
+                               }
+                        }
+                    });
+                }else {
+                    for (let i = 0; i < messages.length; i++) {
+                        $('<p>').text(messages[i]).appendTo(errorMessageBoxElement);
+                    }
+                    if(messages.length > 0) {
+                        errorMessageBoxElement.parent().css({
+                            "display" : "block",
+                            "direction": "rtl",
+                            "text-align": "right"
+                        });
+                    }
+                }
+
+            });
+        });
+    {% endautoescape %}
+</script>
+
 </body>
 
 </html>

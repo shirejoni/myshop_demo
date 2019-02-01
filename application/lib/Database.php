@@ -59,7 +59,9 @@ class Database {
 
         try
         {
-            $this->db = new \PDO("mysql:host=" . $this->host . ";dbname=" . $this->name . ";charset=utf8", $this->username, $this->password);
+            $this->db = new \PDO("mysql:host=" . $this->host . ";dbname=" . $this->name . ";charset=utf8", $this->username, $this->password, array(
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+            ));
         }
         catch (Exception $e)
         {
