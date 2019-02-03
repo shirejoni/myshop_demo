@@ -64,4 +64,7 @@ function validate_ip($ip) {
     return true;
 }
 
+function generateToken($length = 12) {
+    return bin2hex(random_bytes($length));
+}
 

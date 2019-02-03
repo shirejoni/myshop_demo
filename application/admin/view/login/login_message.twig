@@ -1,20 +1,39 @@
-<div class="alert alert-danger alert-mg-b alert-success-style4 alert-st-bg3" style="direction: rtl;display: none;">
+{% if Status == "error" %}
+    {% set error_display = "block" %}
+    {% set success_display = "none" %}
+{% elseif status == "success" %}
+    {% set error_display = "none" %}
+    {% set success_display = "block" %}
+{% else %}
+    {% set error_display = "none" %}
+    {% set success_display = "none" %}
+{% endif %}
+
+<div class="alert alert-danger alert-mg-b alert-success-style4 alert-st-bg3" style="direction: rtl;display: {{ error_display }};">
     <button type="button" class="close sucess-op" style="float: left" data-dismiss="alert" aria-label="Close">
         <span class="icon-sc-cl" aria-hidden="true">×</span>
     </button>
     <h3 style="text-align: right;"><strong>خطا!</strong></h3>
     <div class="error-message-box">
-
+        {% if Status == "error" %}
+            {% for Message in Messages %}
+                <p>{{ Message }}</p>
+            {% endfor %}
+        {% endif %}
     </div>
 
 </div>
-<div class="alert alert-success alert-success-style1 alert-st-bg" style="direction: rtl;display: none;">
+<div class="alert alert-success alert-success-style1 alert-st-bg" style="direction: rtl;display: {{ success_display }};">
     <button type="button" class="close sucess-op" style="float: left" data-dismiss="alert" aria-label="Close">
         <span class="icon-sc-cl" aria-hidden="true">×</span>
     </button>
     <h3 style="text-align: right;"><strong>موفقیت!</strong></h3>
     <div class="success-message-box">
-
+        {% if Status == "success" %}
+            {% for Message in Messages %}
+                <p>{{ Message }}</p>
+            {% endfor %}
+        {% endif %}
     </div>
 
 </div>

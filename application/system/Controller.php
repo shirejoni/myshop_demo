@@ -7,10 +7,12 @@ class Controller {
 
     protected $registry;
     private $twig;
+    protected $data = [];
 
-    public function __construct(Registry $registry)
+    public function __construct(Registry $registry, $data = array())
     {
         $this->registry = $registry;
+        $this->data = $data;
         $loader = new \Twig_Loader_Filesystem(VIEW_PATH);
         $this->twig = new \Twig_Environment($loader);
     }
@@ -23,6 +25,8 @@ class Controller {
     public function render($path, $data = array()) {
         $_ = array(
             'URL'           => URL,
+            'ADMIN_URL'     => ADMIN_URL,
+            'Token'         => $_SESSION['token'],
             "CURRENT_URL"   => $this->Application->getUrl(),
             "Translate"     => $this->Language->all(),
         );
@@ -51,6 +55,10 @@ class Controller {
             }
         }
         return $this->registry->{$modelID};
+    }
+
+    public function setData($name, $value) {
+        $this->data[$name] = $value;
     }
 
 

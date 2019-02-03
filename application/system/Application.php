@@ -23,6 +23,7 @@ class Application {
     private $url = '/';
     private $registry;
     private $languageID = false;
+    private $requestUrl;
 
     /**
      * Application constructor.
@@ -100,7 +101,8 @@ class Application {
         }
 
         $this->uri = !empty($sURL) ? $sURL : $this->uri;
-        $this->url = rtrim(URL, '/') . $_SERVER['REQUEST_URI'];
+        $this->url = URL . $_GET['url'];
+        $this->requestUrl = rtrim(URL, '/') . $_SERVER['REQUEST_URI'];
     }
 
     /**
@@ -125,6 +127,14 @@ class Application {
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRequestUrl()
+    {
+        return $this->requestUrl;
     }
 
 }

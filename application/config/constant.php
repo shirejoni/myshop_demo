@@ -13,6 +13,7 @@ define("DB_SERVER", "localhost");
 define("DB_PASSWORD", "");
 
 define("URL", "http://myshopdemo.test/");
+define("ADMIN_URL", "http://myshopdemo.test/admin/");
 
 define("DEFAULT_LANGUAGE_DIR", "fa");
 define("DEFAULT_LANGUAGE_CODE", "fa");
@@ -25,3 +26,6 @@ define("MEDIUM_TIME_CACHE", 1800);
 define("SHORT_TIME_CACHE", 60);
 
 define("LANGUAGE_CACHE_TIME", LONG_TIME_CACHE);
+
+
+define("LOGIN_STATUS_LOGIN_FORM", 1);

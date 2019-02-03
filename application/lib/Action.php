@@ -12,7 +12,7 @@ class Action {
     private $method;
     private $status = false;
     private $file_path;
-
+    private $data = [];
 
     /**
      * Action constructor.
@@ -60,6 +60,10 @@ class Action {
         return $this->status;
     }
 
+    public function setData($name, $value) {
+        $this->data[$name] = $value;
+    }
+
     public function execute($registry, $option = array()) {
         if(substr($this->route, 0 ,2) == "__") {
             throw new \Exception("Calling Magic Method is not Allowed");
@@ -70,7 +74,7 @@ class Action {
             preg_replace_callback('/[a-zA-Z0-9]+/', function ($matches) use(&$className) {
                 $className .= ucfirst($matches[0]);
             }, $this->route);
-            $class = new $className($registry);
+            $class = new $className($registry, $this->data);
             if(method_exists($class, $this->method)) {
                 return call_user_func_array([$class, $this->method], array());
             }else {
