@@ -43,7 +43,11 @@
 	"expanded_folders":
 	[
 		"/C/xampp/htdocs/projects/myshop_demo",
-		"/C/xampp/htdocs/projects/myshop_demo/application"
+		"/C/xampp/htdocs/projects/myshop_demo/application",
+		"/C/xampp/htdocs/projects/myshop_demo/application/admin",
+		"/C/xampp/htdocs/projects/myshop_demo/application/admin/cache",
+		"/C/xampp/htdocs/projects/myshop_demo/application/admin/controller",
+		"/C/xampp/htdocs/projects/myshop_demo/application/admin/view"
 	],
 	"file_history":
 	[

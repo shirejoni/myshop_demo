@@ -1,3 +1,7 @@
 /.idea/*
 /vendor/
 /application/cache/*
+myshop_demo.sublime-project
+myshop.sublime-project
+myshop.sublime-workspace
+myshop_demo.sublime-workspace
