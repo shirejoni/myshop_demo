@@ -26,7 +26,7 @@ class Controller {
         $_ = array(
             'URL'           => URL,
             'ADMIN_URL'     => ADMIN_URL,
-            'Token'         => $_SESSION['token'],
+            'Token'         => isset($_SESSION['token']) ? $_SESSION['token'] : '',
             "CURRENT_URL"   => $this->Application->getUrl(),
             "Translate"     => $this->Language->all(),
         );
