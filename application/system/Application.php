@@ -12,7 +12,6 @@ use App\Lib\Response;
 use App\Lib\Router;
 use App\Lib\Session;
 use App\Model\Language;
-use Doctrine\Common\Cache\ApcuCache;
 use Doctrine\Common\Cache\FilesystemCache;
 
 class Application {
@@ -24,6 +23,7 @@ class Application {
     private $registry;
     private $languageID = false;
     private $requestUrl;
+    private $isCkfinderRequested = false;
 
     /**
      * Application constructor.
@@ -99,10 +99,14 @@ class Application {
         if($this->isAdminRequested) {
             $sURL = substr($sURL, strlen(self::ADMIN_ALIAS) + 1);
         }
-
         $this->uri = !empty($sURL) ? $sURL : $this->uri;
         $this->url = URL . $_GET['url'];
         $this->requestUrl = rtrim(URL, '/') . $_SERVER['REQUEST_URI'];
+        if($_GET['url'] == "assets/ckfinder/core/connector/php/connector.php") {
+            $this->isCkfinderRequested = true;
+            $this->isAdminRequested = true;
+            $this->uri = CKFINDER_ROUT;
+        }
     }
 
     /**

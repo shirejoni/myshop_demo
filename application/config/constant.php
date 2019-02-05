@@ -1,11 +1,12 @@
 <?php
-
+define("PUB_PATH", ROOT_PATH . DS . 'public');
 define("WEB_PATH", APP_PATH . DS . 'web');
 define("ADMIN_PATH", APP_PATH . DS . 'admin');
 define("MODEL_PATH", APP_PATH . DS . 'model');
 define("LANGUAGE_PATH", APP_PATH . DS . 'language');
 define("SYSTEM_PATH", APP_PATH . DS . 'system');
 define("CACHE_PATH", APP_PATH . DS . 'cache');
+define("LIB_PATH", APP_PATH . DS . 'lib');
 
 define("DB_NAME", "demoshop");
 define("DB_USER", "root");
@@ -27,5 +28,5 @@ define("SHORT_TIME_CACHE", 60);
 
 define("LANGUAGE_CACHE_TIME", LONG_TIME_CACHE);
 
-
+define("CKFINDER_ROUT", "ckfinder/ckfinder");
 define("LOGIN_STATUS_LOGIN_FORM", 1);

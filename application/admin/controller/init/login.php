@@ -59,7 +59,7 @@ class ControllerInitLogin extends Controller {
 //            return $action;
 //        }
 
-        if(!isset($this->Request->post['post'])) {
+        if(!isset($this->Request->post['post']) || $route != CKFINDER_ROUT) {
             $token = generateToken();
             $_SESSION['token'] = $token;
             $_SESSION['token_time_expiry'] = time() + $this->Config->get('max_token_time_expiry');
