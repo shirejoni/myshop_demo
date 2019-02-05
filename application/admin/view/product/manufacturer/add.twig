@@ -1,0 +1,274 @@
+{% extends "home/_temp/blank_dashboard_temp.twig" %}
+
+{% block Content %}
+    <div class="single-pro-review-area mt-t-30 mg-b-15">
+        <div class="container-fluid">
+            <div class="row" style="padding-top: 15px;">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    {% if Status == "error" %}
+                        {% set error_display = "block" %}
+                        {% set success_display = "none" %}
+                    {% elseif status == "success" %}
+                        {% set error_display = "none" %}
+                        {% set success_display = "block" %}
+                    {% else %}
+                        {% set error_display = "none" %}
+                        {% set success_display = "none" %}
+                    {% endif %}
+
+                    <div class="alert alert-danger alert-mg-b alert-success-style4 alert-st-bg3" style="direction: rtl;display: {{ error_display }};">
+                        <button type="button" class="close sucess-op" style="float: left" data-dismiss="alert" aria-label="Close">
+                            <span class="icon-sc-cl" aria-hidden="true">×</span>
+                        </button>
+                        <h3 style="text-align: right;"><strong>خطا!</strong></h3>
+                        <div class="error-message-box">
+                            {% if Status == "error" %}
+                                {% for Message in Messages %}
+                                    <p>{{ Message }}</p>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    <div class="alert alert-success alert-success-style1 alert-st-bg" style="direction: rtl;display: {{ success_display }};">
+                        <button type="button" class="close sucess-op" style="float: left" data-dismiss="alert" aria-label="Close">
+                            <span class="icon-sc-cl" aria-hidden="true">×</span>
+                        </button>
+                        <h3 style="text-align: right;"><strong>موفقیت!</strong></h3>
+                        <div class="success-message-box">
+                            {% if Status == "success" %}
+                                {% for Message in Messages %}
+                                    <p>{{ Message }}</p>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="product-payment-inner-st">
+                        <ul id="myTabedu1" class="tab-review-design">
+                            {% for Language in Languages %}
+                                {% if Language['language_id'] == LanguageDefaultID %}
+                                    <li class="active"><a href="#language-{{ Language['language_id'] }}">{{ Language['name'] }}</a></li>
+                                {% else %}
+                                    <li><a href="#language-{{ Language['language_id'] }}">{{ Language['name'] }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                        <div id="myTabContent"  class="tab-content custom-product-edit">
+                            {% for Language in Languages %}
+                                {% if Language['language_id'] == LanguageDefaultID %}
+                                    {% set Active = "active in" %}
+                                {% else %}
+                                    {% set Active = "" %}
+                                {% endif %}
+                                <div class="product-tab-list tab-pane fade {{ Active }}" data-language-id="{{ Language['language_id'] }}" id="language-{{ Language['language_id'] }}">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <div class="review-content-section">
+                                                <div class="row">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="devit-card-custom">
+                                                            <div class="form-group">
+                                                                <input type="text" class="form-control" id="manufacturer-name-{{ Language['language_id'] }}" style="text-align: right;" placeholder="نام">
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding: 0 30px;">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="review-content-section">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <div class="devit-card-custom">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="manufacturer-url" placeholder="Url">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <div class="devit-card-custom">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="manufacturer-sort-order" placeholder="ترتیب">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="file-upload-inner file-upload-inner-right ts-forms">
+                                            <div class="input append-small-btn">
+                                                <div class="file-button">
+                                                    Browse
+                                                    <input type="file" onchange="document.getElementById('append-small-btn').value = this.value;">
+                                                </div>
+                                                <input type="text" id="append-small-btn" placeholder="no file selected">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="button-style-two btn-mg-b-10" style="text-align: center;">
+                                            <a href="{{ ADMIN_URL }}product/manufacturer/index">
+                                                <button type="button" class="btn btn-custon-four btn-danger">
+                                                    <i class="fa fa-times edu-danger-error" aria-hidden="true"></i>
+                                                </button>
+                                            </a>
+                                            <button type="button" id="submit-manufacturer-btn" class="btn btn-custon-four btn-success">
+                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block Js %}
+    <script type="text/javascript" src="{{ URL }}assets/ckfinder/ckfinder.js"></script>
+
+    {% autoescape false %}
+        <script type="text/javascript">
+            let languages = [
+                {% for Language in Languages %}
+                    {{ Language['language_id'] }} ,
+                {% endfor %}
+            ];
+            let default_language_id = "{{ LanguageDefaultID }}";
+            let submitManufacturerBtn = $('#submit-manufacturer-btn');
+            let successMessageBoxElement = $(".success-message-box").first();
+            let errorMessageBoxElement = $(".error-message-box").first();
+            submitManufacturerBtn.click(function () {
+                let data = {};
+                let messages = [];
+                let error = false;
+                let element = $("#manufacturer-url");
+
+                errorMessageBoxElement.text('');
+                successMessageBoxElement.text('');
+                errorMessageBoxElement.parent().css("display", "none");
+                successMessageBoxElement.parent().css("display", "none");
+
+                if(element.val() != "") {
+                    data['url'] = element.val();
+                }else {
+                    error = true;
+                    messages.push("{{ Translate['error_invalid_url'] }}");
+                }
+                element = $("#manufacturer-sort-order");
+                if(element.val() != "") {
+                    data['sort-order'] = element.val();
+                }else {
+                    data['sort-order'] = 0;
+                }
+                if(element.val() != "") {
+                    data['image'] = element.val();
+                }else {
+                    data['image'] = '';
+
+                }
+                languages.forEach(function (value, index, array) {
+                    element = $('#manufacturer-name-' + value);
+                    if(element.val() != "") {
+                        data['manufacturer-name-' + value] = element.val();
+                    }
+                });
+                if(!data['manufacturer-name-' + default_language_id] || data['manufacturer-name-' + default_language_id] == "") {
+                    error = true;
+                    messages.push("{{ Translate['error_manufacturer_name'] }}");
+                }
+
+                if(!error) {
+                    // $.post(url, data, function (response) {
+                    //     response = JSON.parse(response);
+                    //     if(response.status === 1) {
+                    //         for (let i = 0; i < response['messages'].length; i++) {
+                    //             $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement);
+                    //         }
+                    //         if(response['messages'].length > 0) {
+                    //             successMessageBoxElement.parent().css({
+                    //                 "display" : "block",
+                    //                 "direction": "rtl",
+                    //                 "text-align": "right"
+                    //             });
+                    //         }
+                    //         if(response['redirect']) {
+                    //             window.setTimeout(function () {
+                    //                 window.location.href = response['redirect'];
+                    //             }, 1000)
+                    //         }
+                    //     }else {
+                    //         for (let i = 0; i < response['messages'].length; i++) {
+                    //             $('<p>').text(response['messages'][i]).appendTo(errorMessageBoxElement);
+                    //         }
+                    //         if(response['messages'].length > 0) {
+                    //             errorMessageBoxElement.parent().css({
+                    //                 "display" : "block",
+                    //                 "direction": "rtl",
+                    //                 "text-align": "right"
+                    //             });
+                    //         }
+                    //     }
+                    // });
+                }else {
+                    for (let i = 0; i < messages.length; i++) {
+                        $('<p>').text(messages[i]).appendTo(errorMessageBoxElement);
+                    }
+                    if(messages.length > 0) {
+                        errorMessageBoxElement.parent().css({
+                            "display" : "block",
+                            "direction": "rtl",
+                            "text-align": "right"
+                        });
+                    }
+                }
+
+            });
+
+            /*
+            * Ckfinder
+            * */
+            var button1 = document.getElementById( 'manufacturer-add-image-dz' );
+
+            button1.onclick = function() {
+                selectFileWithCKFinder( 'manufacturer-image' );
+            };
+            function selectFileWithCKFinder( elementId ) {
+                CKFinder.modal( {
+                    chooseFiles: true,
+                    width: 800,
+                    height: 600,
+                    onInit: function( finder ) {
+                        finder.on( 'files:choose', function( evt ) {
+                            let file = evt.data.files.first();
+                            let output = document.getElementById( elementId );
+                            output.value = file.getUrl();
+                            console.log(file.getUrl());
+                        } );
+                    }
+                } );
+            }
+        </script>
+    {% endautoescape %}
+{% endblock %}
