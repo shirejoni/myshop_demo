@@ -44,10 +44,12 @@ class Router {
                 $action = new Action('error/notFound',"web");
             }
         }
-        $action->execute($this->registry, array(
-            'error_route'   => 'error/notFound',
-            'error_pre_route' => 'web'
-        ));
+        do {
+            $action = $action->execute($this->registry, array(
+                'error_route'   => 'error/notFound',
+                'error_pre_route' => 'web'
+            ));
+        }while($action instanceof \App\Lib\Action);
     }
 
 

@@ -78,7 +78,7 @@
                             $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement.find('.messages'));
                         }
                         if(response['messages'].length > 0) {
-                            successMessageBoxElement.parent().css("display", "block");
+                            successMessageBoxElement.css("display", "block");
                         }
 
                         if(response['redirect']) {

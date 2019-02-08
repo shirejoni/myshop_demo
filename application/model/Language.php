@@ -21,6 +21,15 @@ class Language extends Model {
     private $languageCode;
     private $data = [];
     private $registry;
+    private $defaultLanguageID;
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultLanguageID()
+    {
+        return $this->defaultLanguageID;
+    }
 
     /**
      * Language constructor.
@@ -45,6 +54,7 @@ class Language extends Model {
         }
 
         $this->languageID = $this->languages[$this->defaultLanguageCode]['language_id'];
+        $this->defaultLanguageID = $this->languages[$this->defaultLanguageCode]['language_id'];
         $this->languageDir = $this->languages[$this->defaultLanguageCode]['code'];
         $this->languageCode = $this->languages[$this->defaultLanguageCode]['code'];
     }

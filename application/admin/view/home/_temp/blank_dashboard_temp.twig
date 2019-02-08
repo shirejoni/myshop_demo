@@ -15,220 +15,13 @@
 <body>
 
 <div id="main">
-    <header>
-        <div class="row no-gutters">
-            <div class="col-auto logo-collapse">
-                <a href="#" class="logo d-none d-sm-inline-block">
-                    پنل من
-                </a>
-                <a href="#" class="sidebar-collapse">
-                    <span class="fa fa-bars"></span>
-                </a>
-            </div>
-
-            <div class="col">
-                <nav class="navbar float-left top-nav navbar-expand">
-                    <div class="navbar-nav">
-                        <a href="#" class="nav-link ml-3 top-nav-link py-0 align-self-center">
-                            <span class="fa fa-cog"></span>
-                        </a>
-                        <a href="#" id="message-icon" class="nav-link ml-3 top-nav-link py-0 align-self-center" data-toggle="dropdown" data-target="#messag-box" aria-expanded="false" type="button">
-                            <span class="fa fa-envelope"></span></a>
-                        <div class="dropdown-menu p-0 container" id="message-box">
-                            <div class="container-fluid p-0">
-                                <ul class="list-group ">
-                                    <li class="list-group-item">
-                                        <div class="row d-flex flex-row flex-nowrap align-items-center">
-                                            <div class="col-auto">
-                                                <span class="circle"></span>
-                                            </div>
-                                            <div class="col" style="text-align: right">
-                                                سلام خوبی چه خبر
-                                            </div>
-                                            <div class="col-2">12:58</div>
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="row d-flex flex-row flex-nowrap align-items-center">
-                                            <div class="col-auto">
-                                                <span class="circle"></span>
-                                            </div>
-                                            <div class="col" style="text-align: right">
-                                                سلام خوبی چه خبر
-                                            </div>
-                                            <div class="col-2">12:58</div>
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="row d-flex flex-row flex-nowrap align-items-center">
-                                            <div class="col-auto">
-                                                <span class="circle"></span>
-                                            </div>
-                                            <div class="col" style="text-align: right">
-                                                سلام خوبی چه خبر
-                                            </div>
-                                            <div class="col-2">12:58</div>
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="row d-flex flex-row flex-nowrap align-items-center">
-                                            <div class="col-auto">
-                                                <span class="circle"></span>
-                                            </div>
-                                            <div class="col" style="text-align: right">
-                                                سلام خوبی چه خبر
-                                            </div>
-                                            <div class="col-2">12:58</div>
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="row d-flex flex-row flex-nowrap align-items-center">
-                                            <div class="col-auto">
-                                                <span class="circle"></span>
-                                            </div>
-                                            <div class="col" style="text-align: right">
-                                                سلام خوبی چه خبر
-                                            </div>
-                                            <div class="col-2">12:58</div>
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="row d-flex flex-row flex-nowrap align-items-center">
-                                            <div class="col-auto">
-                                                <span class="circle"></span>
-                                            </div>
-                                            <div class="col" style="text-align: right">
-                                                سلام خوبی چه خبر
-                                            </div>
-                                            <div class="col-2">12:58</div>
-                                        </div>
-                                    </li>
-
-                                </ul>
-                            </div>
-                        </div>
-                        <a href="#" class="nav-link ml-0 ml-sm-5 py-0">
-                            <div id="nav-profile-image" class="rounded-circle">
-                                <img src="{{ URL }}assets/admin/img/profile-image.png" alt="Profile">
-                            </div>
-                        </a>
-                    </div>
-                </nav>
-            </div>
-        </div>
-    </header>
+    {% include "home/_inc/_header_dashboard_inc.twig" %}
     <div class="wrapper">
-        <nav id="sidebar" >
-            <div class="navbar">
-                <div class="navbar-nav flex-column sidebar-navigation-box align-items-start">
-                    <a href="#" class="nav-item nav-link active d-block">
-                        <span class="fa fa-tachometer-alt" style="margin-left: 5px"></span>
-                        میزکار
-                    </a>
-                    <a href="#" class="nav-item nav-link d-block">
-                        <span class="fa fa-file-alt" style="margin-left: 5px"></span>
-                        بلاگ
-                    </a>
-                    <a href="#" class="nav-item nav-link d-block">
-                        <span class="fa fa-chart-pie" style="margin-left: 5px"></span>
-                        گزارشات
-                    </a>
-                    <a href="#" class="nav-item nav-link d-block">
-                        <span class="fa fa-credit-card" style="margin-left: 5px"></span>
-                        کیف پول
-                    </a>
-                    <a href="#" class="nav-item nav-link d-block dropdown-toggle" data-toggle="collapse" data-target="#userCollapse" role="button" aria-expanded="false" >
-                        <span class="fa fa-users" style="margin-left: 5px"></span>
-                        کاربران
-                    </a>
-                    <div class="collapse" id="userCollapse">
-                        <nav class="nav flex-column align-items-start pr-4">
-                            <a href="#" class="nav-link">مشاهده</a>
-                            <a href="#" class="nav-link">ویرایش</a>
-                            <a href="#" class="nav-link">حذف</a>
-                        </nav>
-                    </div>
-                    <a href="#" class="nav-item nav-link d-block">
-                        <span class="fa fa-shopping-cart" style="margin-left: 5px"></span>
-                        محصولات
-                    </a>
-                </div>
-            </div>
-        </nav>
+        {% include "home/_inc/_sidebar_dashboard_inc.twig" %}
         <section id="content">
-            <div class="container-fluid d-flex flex-column justify-content-end align-items-start" id="content-header-image">
-                <h2 class="mb-0">میزکار</h2>
-                <p>لورم ایپسوم متن ساختگی با تولید</p>
-            </div>
-            <div class="container">
+            {% block Content %}
 
-                <div class="row boxes-info ">
-                    <div class="col my-5 mx-3 d-flex flex-row justify-content-around align-items-center">
-                        <div class="box-info d-block">
-                            <span class="number-box-info">1234</span>
-                            <span class="name-box-info d-block">فروش</span>
-                        </div>
-                        <span class="fa fa-shopping-cart d-block icon-box-info" style="color: #26dad2;"></span>
-
-                    </div>
-
-                    <div class="col my-5 mx-3 d-flex flex-row justify-content-around align-items-center">
-                        <div class="box-info d-block">
-                            <span class="number-box-info">1234</span>
-                            <span class="name-box-info d-block">فروش</span>
-                        </div>
-                        <span class="fa fa-shopping-cart d-block icon-box-info" style="color: #26dad2;"></span>
-
-                    </div>
-
-                    <div class="col my-5 mx-3 d-flex flex-row justify-content-around align-items-center">
-                        <div class="box-info d-block">
-                            <span class="number-box-info">1234</span>
-                            <span class="name-box-info d-block">فروش</span>
-                        </div>
-                        <span class="fa fa-shopping-cart d-block icon-box-info" style="color: #26dad2;"></span>
-
-                    </div>
-
-                    <div class="col my-5 mx-3 d-flex flex-row justify-content-around align-items-center">
-                        <div class="box-info d-block">
-                            <span class="number-box-info">1234</span>
-                            <span class="name-box-info d-block">فروش</span>
-                        </div>
-                        <span class="fa fa-shopping-cart d-block icon-box-info" style="color: #26dad2;"></span>
-
-                    </div>
-
-
-                </div>
-
-                <section class="row pb-5">
-                    <div class="col-12 bg-white weather-chart">
-                        <div class="row">
-                            <div class="col-12 col-sm-6 d-flex flex-column align-items-center justify-content-center">
-                                <div class="weather-icon">
-                                    <img src="{{ URL }}assets/admin/img/weather.png" alt="Weather Icon">
-                                </div>
-                                <div class="weather-temp" style="direction: ltr">
-                                    <div class="d-inline-block m-3">
-                                        20<sup>&ordm;</sup>
-                                        <span class="fa fa-angle-up" style="color: #ee1111;"></span>
-
-                                    </div>
-                                    <div class="d-inline-block m-3">
-                                        4<sup>&ordm;</sup>
-                                        <span class="fa fa-angle-down" style="color: #11adee;"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <canvas id="myChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-            </div>
+            {% endblock %}
         </section>
 
     </div>
@@ -240,7 +33,12 @@
 <script src="{{ URL }}assets/admin/js/jquery.nicescroll.min.js"></script>
 <script src="{{ URL }}assets/admin/js/bootstrap.min.js"></script>
 <script src="{{ URL }}assets/admin/js/Chart.js"></script>
-<script src="{{ URL }}assets/admin/js/main.js"></script>
+{% block JsBeforeMain %}
 
+{% endblock %}
+<script src="{{ URL }}assets/admin/js/main.js"></script>
+{% block Js %}
+
+{% endblock %}
 </body>
 </html>

@@ -6,6 +6,9 @@ namespace App\Lib;
 class Database {
 
     public static $queries;
+    /**
+     * @var \PDO $db
+     * */
     public $db;
     public $host;
     public $name;
@@ -24,8 +27,6 @@ class Database {
         $this->username   = $dbUsername;
         $this->password   = $dbPassword;
         $this->dieOnError = DEBUG_MODE;
-
-        $this->db      = false;
         $this->connect();
 
     }

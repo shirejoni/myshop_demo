@@ -35,6 +35,10 @@ a {
 }
 body {
     background-color: #fafafa;
+    font: 16px Vazir;
+}
+label {
+    line-height: 40px;
 }
 .wrapper {
     display: flex;
@@ -109,6 +113,7 @@ header {
     min-height: calc(100vh - 60px);
     z-index: 1;
     transition: all 0.3s;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 #sidebar.collapse-status {
     margin-right: -250px;
@@ -257,4 +262,42 @@ header {
     #sidebar.collapse-status {
         margin-right: 0;
     }
+}
+#manufacturer-image-preview-box .card-img {
+    max-width: 200px;
+}
+#manufacturer-image-preview-box .card-img img {
+    width: 100%;
+    height: 100%;
+}
+.error-box {
+    background: #ef5e57;
+}
+.success-box {
+    background: #1c7430;
+}
+.message-box {
+    width: 100%;
+    border-radius: 5px;
+    text-align: right;
+    box-sizing: border-box;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+.message-box h4 {
+    font: 20px Vazir;
+    color: white;
+    font-weight: bold;
+    line-height: 45px;
+}
+.message-box hr {
+    border: 0;
+    border-top: 1px solid white;
+    margin-bottom: 10px;
+}
+.message-box .messages p{
+    margin-right: 5px;
+    font: 14px Vazir;
+    line-height: 35px;
+    color: #ffffff;
 }

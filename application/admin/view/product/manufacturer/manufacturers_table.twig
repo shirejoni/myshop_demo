@@ -1,0 +1,16 @@
+{% for Manufacturer in Manufacturers %}
+    <tr>
+        <th scope="row"><input type="checkbox" class="select-row-checkbox" data-manufacturer-id="{{ Manufacturer['manufacturer_id'] }}"></th>
+        <th>{{ Manufacturer['manufacturer_id'] }}</th>
+        <td>{{ Manufacturer['name'] }}</td>
+        <td>{{ Manufacturer['sort_order'] }}</td>
+        <td>
+            <a href="{{ ADMIN_URL }}product/manufacturer/edit/{{ Manufacturer['manufacturer_id'] }}?token={{ Token }}" ><i class="btn btn-warning fa fa-pencil-alt"></i></a>
+            {% if Manufacturer['status'] == '1' %}
+                <button class="manufacturer-status-btn btn btn-success fa fa-toggle-on" data-manufacturer-id="{{ Manufacturer['manufacturer_id'] }}" data-manufacturer-status="{{ Manufacturer['status'] }}" ></button>
+            {% else %}
+                <button class="manufacturer-status-btn btn btn-danger fa fa-toggle-off" data-manufacturer-id="{{ Manufacturer['manufacturer_id'] }}" data-manufacturer-status="{{ Manufacturer['status'] }}" ></button>
+            {% endif %}
+        </td>
+    </tr>
+{% endfor %}

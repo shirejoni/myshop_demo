@@ -62,38 +62,40 @@ class User extends Model {
     public function edit($user_id, $data) {
         $sql = "UPDATE users SET ";
         $params = [];
+        $query = [];
         if(isset($data['email'])) {
-            $sql .= "email = :uEmail ";
+            $query[] = "email = :uEmail ";
             $params['uEmail'] = $data['email'];
         }
         if(isset($data['first_name'])) {
-            $sql .= "first_name = :uFirstName ";
+            $query[] = "first_name = :uFirstName ";
             $params['uFirstName'] = $data['first_name'];
         }
         if(isset($data['last_name'])) {
-            $sql .= "last_name = :uLastName ";
+            $query[] = "last_name = :uLastName ";
             $params['uLastName'] = $data['last_name'];
         }
         if(isset($data['code'])) {
-            $sql .= "code = :uCode ";
+            $query[] = "code = :uCode ";
             $params['uCode'] = $data['code'];
         }
         if(isset($data['image'])) {
-            $sql .= "image = :uImage ";
+            $query[] = "image = :uImage ";
             $params['uImage'] = $data['image'];
         }
         if(isset($data['status'])) {
-            $sql .= "status = :uStatus ";
+            $query[] = "status = :uStatus ";
             $params['uStatus'] = $data['status'];
         }
         if(isset($data['user_group_id'])) {
-            $sql .= "user_group_id = :uUserGroupID ";
+            $query[] = "user_group_id = :uUserGroupID ";
             $params['uUserGroupID'] = $data['user_group_id'];
         }
         if(isset($data['ip'])) {
-            $sql .= "ip = :uIP ";
+            $query[] = "ip = :uIP ";
             $params['uIP'] = $data['ip'];
         }
+        $sql .= implode(" , ", $query);
         $sql .= " WHERE user_id = :uUserID ";
         $params['uUserID'] = $user_id;
         $this->Database->query($sql, $params);

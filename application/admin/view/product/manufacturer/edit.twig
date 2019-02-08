@@ -23,31 +23,31 @@
                     <div class="col-12 p-2">
                         <dib class="form-group">
                             <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                {% for Language in Languages %}
-                                    {% if Language['language_id'] == LanguageDefaultID %}
+                                {% for ManufacturerLanguage in ManufacturerLanguages %}
+                                    {% if ManufacturerLanguage['language_id'] == LanguageDefaultID %}
 
                                         <li class="nav-item">
-                                            <a class="nav-link active" data-toggle="tab" href="#language-{{ Language['language_id'] }}" role="tab" aria-controls="language-{{ Language['language_id'] }}" aria-selected="true">{{ Language['name'] }}</a>
+                                            <a class="nav-link active" data-toggle="tab" href="#language-{{ ManufacturerLanguage['language_id'] }}" role="tab" aria-controls="language-{{ ManufacturerLanguage['language_id'] }}" aria-selected="true">{{ ManufacturerLanguage['language_name'] }}</a>
                                         </li>
                                     {% else %}
                                         <li class="nav-item">
-                                            <a class="nav-link" data-toggle="tab" href="#language-{{ Language['language_id'] }}" role="tab" aria-controls="language-{{ Language['language_id'] }}" aria-selected="false">{{ Language['name'] }}</a>
+                                            <a class="nav-link" data-toggle="tab" href="#language-{{ ManufacturerLanguage['language_id'] }}" role="tab" aria-controls="language-{{ ManufacturerLanguage['language_id'] }}" aria-selected="false">{{ ManufacturerLanguage['language_name'] }}</a>
                                         </li>
                                     {% endif %}
                                 {% endfor %}
                             </ul>
                             <div class="tab-content text-right" id="myTabContent">
-                                {% for Language in Languages %}
-                                    {% if Language['language_id'] == LanguageDefaultID %}
+                                {% for ManufacturerLanguage in ManufacturerLanguages %}
+                                    {% if ManufacturerLanguage['language_id'] == LanguageDefaultID %}
                                         {% set ClassName = "show active" %}
                                     {% else %}
                                         {% set ClassName = "" %}
                                     {% endif %}
-                                    <div class="tab-pane fade {{ ClassName }} " id="language-{{ Language['language_id'] }}" role="tabpanel" aria-labelledby="language-{{ Language['language_id'] }}-tab">
+                                    <div class="tab-pane fade {{ ClassName }} " id="language-{{ ManufacturerLanguage['language_id'] }}" role="tabpanel" aria-labelledby="language-{{ ManufacturerLanguage['language_id'] }}-tab">
                                         <div class="form-group d-flex align-middle mt-3">
                                             <label class="col-sm-2 control-label text-center">نام</label>
                                             <div class="col-sm-10">
-                                                <input type="text" placeholder="{{ Language['name'] }}" class="form-control" id="manufacturer-name-{{ Language['language_id'] }}">
+                                                <input type="text" value="{{ ManufacturerLanguage['manufacturer_name'] }}" placeholder="{{ ManufacturerLanguage['language_name'] }}" class="form-control" id="manufacturer-name-{{ ManufacturerLanguage['language_id'] }}">
                                             </div>
                                         </div>
                                     </div>
@@ -59,13 +59,13 @@
                         <div class="form-group d-flex align-middle mt-3">
                             <label class="col-sm-2 control-label text-center">آدرس تولیدکننده</label>
                             <div class="col-sm-10">
-                                <input type="text" id="manufacturer-url" class="form-control">
+                                <input type="text" id="manufacturer-url" value="{{ Manufacturer['url'] }}" class="form-control">
                             </div>
                         </div>
                         <div class="form-group d-flex align-middle mt-3">
                             <label class="col-sm-2 control-label text-center">ترتیب</label>
                             <div class="col-sm-10">
-                                <input type="text" id="manufacturer-sort-order" class="form-control">
+                                <input type="text" id="manufacturer-sort-order" value="{{ Manufacturer['sort_order'] }}" class="form-control">
                             </div>
                         </div>
                         <div class="card bg-light">
@@ -73,7 +73,14 @@
                                 <a href="#" class="float-right fa fa-image btn btn-success btn-lg" id="manufacturer-add-image-btn"></a>
                             </div>
                             <div class="card-body row" id="manufacturer-image-preview-box" style="max-height: 250px;">
-                               <p class="text-center"> Nothing to show</p>
+                                <div class="card bg-secondary col-sm-2 p-0 mx-1">
+                                    <div class="card-img p-1">
+                                        <img id="manufacturer-image" src="{{ Manufacturer['image'] }}">
+                                    </div>
+                                    <div class="card-footer py-1 text-center">
+                                        <a href="#" class="fa fa-minus btn btn-danger"></a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group text-right pt-3 px-3">
@@ -104,6 +111,10 @@
                 let addImageManufacturerBtnElement = $("#manufacturer-add-image-btn");
                 addImageManufacturerBtnElement.click(function (e) {
                     selectFileWithCKFinder( 'manufacturer-image-preview-box' );
+                    e.preventDefault();
+                });
+                $('#manufacturer-image-preview-box a').click(function (e) {
+                    $('#manufacturer-image-preview-box').html('');
                     e.preventDefault();
                 });
                 function selectFileWithCKFinder( elementId ) {

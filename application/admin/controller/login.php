@@ -17,6 +17,7 @@ use App\System\Controller;
  * @property Language Language
  * @property Application Application
  * @property Config Config
+ * @property Validate Validate
  */
 class ControllerLogin extends Controller {
 
