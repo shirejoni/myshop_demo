@@ -1,0 +1,11 @@
+{% for AttributeGroup in AttributeGroups %}
+    <tr>
+        <th scope="row"><input type="checkbox" class="select-row-checkbox" data-attributegroup-id="{{ AttributeGroup['attribute_group_id'] }}"></th>
+        <th>{{ AttributeGroup['attribute_group_id'] }}</th>
+        <td>{{ AttributeGroup['name'] }}</td>
+        <td>{{ AttributeGroup['sort_order'] }}</td>
+        <td>
+            <a href="{{ ADMIN_URL }}product/attributegroup/edit/{{ AttributeGroup['attribute_group_id'] }}?token={{ Token }}" ><i class="btn btn-warning fa fa-pencil-alt"></i></a>
+        </td>
+    </tr>
+{% endfor %}
