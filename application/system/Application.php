@@ -34,6 +34,7 @@ class Application {
         $this->registry = new Registry();
         $this->registry->Application = $this;
         $this->registry->Response = new Response();
+        $this->registry->Response->startResponse();
         $database = new Database(DB_SERVER, DB_NAME, DB_USER, DB_PASSWORD);
         $this->registry->Database = $database;
         $cache = new FilesystemCache(CACHE_PATH);
@@ -108,6 +109,7 @@ class Application {
             $this->uri = CKFINDER_ROUT;
         }
     }
+
 
     /**
      * @return bool

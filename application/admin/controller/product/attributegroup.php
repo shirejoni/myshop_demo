@@ -67,6 +67,8 @@ class ControllerProductAttributegroup extends Controller {
                 }
                 $AttributeGroup->insertAttributeGroup($data);
                 $json['status'] = 1;
+                $this->Response->endResponse();
+                $json['process_time'] = $this->Response->getProcessTime();
                 $json['messages'] = [$this->Language->get('message_success_done')];
                 $json['redirect'] = ADMIN_URL . "product/attributegroup/index?token=" . $_SESSION['token'];
             }else {

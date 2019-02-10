@@ -75,6 +75,7 @@ class Manufacturer extends Model {
             if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
                 $sql .= " ORDER BY " . $data['sort'];
             }else {
+                $data['sort'] = '';
                 $sql .= " ORDER BY m.manufacturer_id";
             }
 

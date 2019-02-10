@@ -21,26 +21,28 @@
                 <div class="row"  style="box-shadow: 0 0 5px rgba(0,0,0,0.1)">
                     <div class="col-12 p-2">
                         <div class="form-goup">
-                            {% if AttributeGroups %}
+                            {% if Attributes %}
                                 <table class="table table-bordered text-center">
                                     <thead>
                                     <tr>
                                         <th scope="col"><input type="checkbox" id="select-all-checkbox"></th>
                                         <th scope="col">#</th>
+                                        <th scope="col">نام خصوصیت</th>
                                         <th scope="col">نام گروه خصوصیت</th>
                                         <th scope="col">ترتیب</th>
                                         <th scope="col">عملیات</th>
                                     </tr>
                                     </thead>
                                     <tbody id="table-show-data">
-                                    {% for AttributeGroup in AttributeGroups %}
+                                    {% for Attribute in Attributes %}
                                         <tr>
-                                            <th scope="row"><input type="checkbox" class="select-row-checkbox" data-attributegroup-id="{{ AttributeGroup['attribute_group_id'] }}"></th>
-                                            <th>{{ AttributeGroup['attribute_group_id'] }}</th>
-                                            <td>{{ AttributeGroup['name'] }}</td>
-                                            <td>{{ AttributeGroup['sort_order'] }}</td>
+                                            <th scope="row"><input type="checkbox" class="select-row-checkbox" data-attribute-id="{{ Attribute['attribute_id'] }}"></th>
+                                            <th>{{ Attribute['attribute_id'] }}</th>
+                                            <td>{{ Attribute['name'] }}</td>
+                                            <td>{{ Attribute['attributegroup_name'] }}</td>
+                                            <td>{{ Attribute['sort_order'] }}</td>
                                             <td>
-                                                <a href="{{ ADMIN_URL }}product/attributegroup/edit/{{ AttributeGroup['attribute_group_id'] }}?token={{ Token }}" ><i class="btn btn-warning fa fa-pencil-alt"></i></a>
+                                                <a href="{{ ADMIN_URL }}product/attribute/edit/{{ Attribute['attribute_id'] }}?token={{ Token }}" ><i class="btn btn-warning fa fa-pencil-alt"></i></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -51,7 +53,7 @@
                         <div class="form-group text-right pt-3 px-3">
                             <a href="{{ ADMIN_URL }}home/index?token={{ Token }}" class="fa fa-arrow-right btn btn-warning"></a>
                             <button id="delete-rows-btn" class="btn btn-danger fa fa-trash" ></button>
-                            <a href="{{ ADMIN_URL }}product/attributegroup/add?token={{ Token }}" id="attributegroup-submit-btn" class="fa fa-plus btn btn-success"></a>
+                            <a href="{{ ADMIN_URL }}product/attribute/add?token={{ Token }}" id="attribute-submit-btn" class="fa fa-plus btn btn-success"></a>
                         </div>
                     </div>
                 </div>
@@ -65,7 +67,7 @@
     {% autoescape %}
         <script type="text/javascript">
             let url = "{{ CURRENT_URL }}?token={{ Token }}";
-            let urlDelete = "{{ ADMIN_URL }}product/attributegroup/delete?token={{ Token }}";
+            let urlDelete = "{{ ADMIN_URL }}product/attribute/delete?token={{ Token }}";
             let Languages = [
                 {% for Language in Languages %}
                 "{{ Language['language_id'] }}",
@@ -93,12 +95,12 @@
                     successMessageBoxElement.css('display', 'none');
                     errorMessageBoxElement.css('display', 'none');
                     let data = {};
-                    data['attributegroups_id'] = [];
+                    data['attributes_id'] = [];
                     if(confirm("{{ Translate['are_you_sure_?'] }}")) {
                         $('.select-row-checkbox:checked').each(function (index, element) {
-                            data['attributegroups_id'].push($(element).attr("data-attributegroup-id"));
+                            data['attributes_id'].push($(element).attr("data-attribute-id"));
                         });
-                        if(data['attributegroups_id'].length > 0) {
+                        if(data['attributes_id'].length > 0) {
                             data['post'] = true;
                             $.post(urlDelete, data, function (response) {
                                 response = JSON.parse(response);
@@ -137,6 +139,7 @@
                         }
                     }
                 });
+
             }
             $(document).ready(function () {
                 init();

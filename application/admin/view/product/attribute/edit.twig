@@ -1,0 +1,183 @@
+{% extends "home/_temp/blank_dashboard_temp.twig" %}
+{% block Content %}
+    <div class="container">
+        <section class="row">
+            <div class="col-12 px-5 pt-4">
+                <div class="message-box success-box" id="success-message-box" style="display: none;">
+                    <h4>موفقیت!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="message-box error-box" id="error-message-box" style="display: none;">
+                    <h4>خطا!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="row"  style="box-shadow: 0 0 5px rgba(0,0,0,0.1)">
+                    <div class="col-12 p-2">
+                        <dib class="form-group">
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                {% for AttributeLanguage in AttributeLanguages %}
+                                    {% if AttributeLanguage['language_id'] == LanguageDefaultID %}
+
+                                        <li class="nav-item">
+                                            <a class="nav-link active" data-toggle="tab" href="#language-{{ AttributeLanguage['language_id'] }}" role="tab" aria-controls="language-{{ AttributeLanguage['language_id'] }}" aria-selected="true">{{ AttributeLanguage['language_name'] }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#language-{{ AttributeLanguage['language_id'] }}" role="tab" aria-controls="language-{{ AttributeLanguage['language_id'] }}" aria-selected="false">{{ AttributeLanguage['language_name'] }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                            <div class="tab-content text-right" id="myTabContent">
+                                {% for AttributeLanguage in AttributeLanguages %}
+                                    {% if AttributeLanguage['language_id'] == LanguageDefaultID %}
+                                        {% set ClassName = "show active" %}
+                                    {% else %}
+                                        {% set ClassName = "" %}
+                                    {% endif %}
+                                    <div class="tab-pane fade {{ ClassName }} " id="language-{{ AttributeLanguage['language_id'] }}" role="tabpanel" aria-labelledby="language-{{ AttributeLanguage['language_id'] }}-tab">
+                                        <div class="form-group d-flex align-middle mt-3">
+                                            <label class="col-sm-2 control-label text-center">نام</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" placeholder="{{ AttributeLanguage['language_name'] }}" value="{{ AttributeLanguage['attribute_name'] }}" class="form-control" id="attribute-name-{{ AttributeLanguage['language_id'] }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+                        </dib>
+
+                        <div class="form-group d-flex align-middle mt-3">
+                            <label class="col-sm-2 control-label text-center">گروه خصوصیت</label>
+                            <div class="col-sm-10">
+                                <select id="attribute-group-select" class="form-control">
+                                    {% for AttributeGroup in AttributeGroups %}
+                                        {% if AttributeGroup['attribute_group_id'] == Attribute['attribute_group_id'] %}
+                                            <option value="{{ AttributeGroup['attribute_group_id'] }}" selected>{{ AttributeGroup['name'] }}</option>
+                                        {% else %}
+                                            <option value="{{ AttributeGroup['attribute_group_id'] }}">{{ AttributeGroup['name'] }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group d-flex align-middle mt-3">
+                            <label class="col-sm-2 control-label text-center">ترتیب</label>
+                            <div class="col-sm-10">
+                                <input type="text" value="{{ Attribute['sort_order'] }}" id="attribute-sort-order" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-group text-right pt-3 px-3">
+                            <a href="{{ ADMIN_URL }}product/attribute/index?token={{ Token }}" class="fa fa-arrow-right btn btn-warning"></a>
+                            <a href="#" id="attribute-submit-btn" class="fa fa-plus btn btn-success"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+{% endblock %}
+
+{% block Js %}
+    {% autoescape %}
+        <script type="text/javascript">
+            let url = "{{ CURRENT_URL }}?token={{ Token }}";
+            let Languages = [
+                {% for Language in Languages %}
+                "{{ Language['language_id'] }}",
+                {% endfor %}
+            ];
+            let LanguageDefaultID = {{ LanguageDefaultID }};
+            $(document).ready(function () {
+                /*
+                * Post Data
+                * */
+                let attributeSubmitBtn = $("#attribute-submit-btn");
+                let successMessageBoxElement = $("#success-message-box");
+                let errorMessageBoxElement = $("#error-message-box");
+                attributeSubmitBtn.click(function (e) {
+                    let data = {};
+                    let error = false;
+                    let element;
+                    let messages = [];
+
+                    successMessageBoxElement.find(".messages").html('');
+                    successMessageBoxElement.css("display", "none");
+                    errorMessageBoxElement.find(".messages").html('');
+                    errorMessageBoxElement.css("display", "none");
+
+                    Languages.forEach(function (value) {
+                        element = $('#attribute-name-' + value);
+                        if(element.val() != "") {
+                            data["attribute-name-" + value] = element.val();
+                        }
+                    });
+                    element = $('#attribute-name-' + LanguageDefaultID);
+                    if(element.val() == '') {
+                        error = true;
+                        messages.push("{{ Translate['error_attribute_name'] }}");
+                    }
+                    element = $('#attribute-sort-order');
+                    if(element.val() != '') {
+                        data['attribute-sort-order'] = element.val();
+                    }else {
+                        data['attribute-sort-order'] = 0;
+                    }
+                    element = $('#attribute-group-select');
+                    if(element.val() != '') {
+                        data['attributegroup-id'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_attributegroup_select'] }}");
+                    }
+                    data['post'] = true;
+                    data['attribute-post'] = true;
+
+                    if(!error) {
+                        $.post(url, data, function (response) {
+                            response = JSON.parse(response);
+                            if(response.status === 1) {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    successMessageBoxElement.css("display", "block");
+                                }
+
+                                if(response['redirect']) {
+                                    window.setTimeout(function () {
+                                        window.location.href = response['redirect'];
+                                    }, 1000)
+                                }
+                            }else {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(errorMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    errorMessageBoxElement.css("display", "block");
+                                }
+                            }
+                        });
+                    }else {
+                        for (let i = 0; i < messages.length; i++) {
+                            $('<p>').text(messages[i]).appendTo(errorMessageBoxElement.find('.messages'));
+                        }
+                        if(messages.length > 0) {
+                            errorMessageBoxElement.css("display", "block");
+                        }
+                    }
+                    e.preventDefault();
+                });
+            });
+        </script>
+    {% endautoescape %}
+{% endblock %}

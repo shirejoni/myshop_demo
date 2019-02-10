@@ -35,6 +35,7 @@ class ControllerProductManufacturer extends Controller {
         $data['LanguageDefaultID'] = $Language->getDefaultLanguageID();
         $this->Response->setOutPut($this->render("product/manufacturer/index", $data));
     }
+
     public function add() {
         $data = array();
         $error = false;
@@ -88,6 +89,8 @@ class ControllerProductManufacturer extends Controller {
                 }
                 $Manufacturer->insertManufacturer($data);
                 $json['status'] = 1;
+                $this->Response->endResponse();
+                $json['process_time'] = $this->Response->getProcessTime();
                 $json['messages'] = [$this->Language->get('message_success_manufacturer_added')];
                 $json['redirect'] = ADMIN_URL . "product/manufacturer/index?token=" . $_SESSION['token'];
             }else {
