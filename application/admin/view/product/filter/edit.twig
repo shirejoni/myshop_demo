@@ -1,0 +1,231 @@
+{% extends "home/_temp/blank_dashboard_temp.twig" %}
+
+{% block Content %}
+    <div class="container">
+        <section class="row">
+            <div class="col-12 px-5 pt-4">
+                <div class="message-box success-box" id="success-message-box" style="display: none;">
+                    <h4>موفقیت!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="message-box error-box" id="error-message-box" style="display: none;">
+                    <h4>خطا!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="row"  style="box-shadow: 0 0 5px rgba(0,0,0,0.1)">
+                    <div class="col-12 p-2">
+                        <dib class="form-group">
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                {% for FilterGroupLanguage in FilterGroupLanguages %}
+                                    {% if FilterGroupLanguage['language_id'] == LanguageDefaultID %}
+
+                                        <li class="nav-item">
+                                            <a class="nav-link active" data-toggle="tab" href="#language-{{ FilterGroupLanguage['language_id'] }}" role="tab" aria-controls="language-{{ FilterGroupLanguage['language_id'] }}" aria-selected="true">{{ FilterGroupLanguage['language_name'] }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#language-{{ FilterGroupLanguage['language_id'] }}" role="tab" aria-controls="language-{{ FilterGroupLanguage['language_id'] }}" aria-selected="false">{{ FilterGroupLanguage['language_name'] }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                            <div class="tab-content text-right" id="myTabContent">
+                                {% for FilterGroupLanguage in FilterGroupLanguages %}
+                                    {% if FilterGroupLanguage['language_id'] == LanguageDefaultID %}
+                                        {% set ClassName = "show active" %}
+                                    {% else %}
+                                        {% set ClassName = "" %}
+                                    {% endif %}
+                                    <div class="tab-pane fade {{ ClassName }} " id="language-{{ FilterGroupLanguage['language_id'] }}" role="tabpanel" aria-labelledby="language-{{ FilterGroupLanguage['language_id'] }}-tab">
+                                        <div class="form-group d-flex align-middle mt-3">
+                                            <label class="col-sm-2 control-label text-center">نام گروه فیلتر</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" value="{{ FilterGroupLanguage['filter_group_name'] }}" placeholder="{{ FilterGroupLanguage['language_name'] }}" class="form-control" id="filter-group-name-{{ FilterGroupLanguage['language_id'] }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group d-flex align-middle mt-3">
+                                            <table class="table table-bordered text-center">
+                                                <thead>
+                                                <tr>
+                                                    <th class="col-sm-7">نام فیتر</th>
+                                                    <th class="col-sm-3">ترتیب</th>
+                                                    <th class="col-sm-2">
+                                                        <a href="#" class="add-table-show-data btn btn-primary fa fa-plus"></a>
+                                                    </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody id="table-show-data-language-{{ FilterGroupLanguage['language_id'] }}">
+                                                    {% for Filter in FilterGroupLanguage['filters'] %}
+                                                        <tr>
+                                                            <td>
+                                                                <input class="form-control" value="{{ Filter['name'] }}" type="text" placeholder="نام فیلتر">
+                                                            </td>
+                                                            <td>
+                                                                <input class="form-control" value="{{ Filter['sort_order'] }}" type="text" placeholder="ترتیب">
+                                                            </td>
+                                                            <td>
+                                                                <a href="#" class="delete-table-row btn btn-danger fa fa-minus"></a>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+                        </dib>
+
+                        <div class="form-group d-flex align-middle mt-3">
+                            <label class="col-sm-2 control-label text-center">ترتیب</label>
+                            <div class="col-sm-10">
+                                <input type="text" id="filter-sort-order" value="{{ FilterGroup['sort_order'] }}" class="form-control">
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="form-group text-right pt-3 px-3">
+                            <a href="{{ ADMIN_URL }}product/filter/index?token={{ Token }}" class="fa fa-arrow-right btn btn-warning"></a>
+                            <a href="#" id="filter-submit-btn" class="fa fa-plus btn btn-success"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+{% endblock %}
+
+{% block Js %}
+    {% autoescape %}
+        <script type="text/javascript">
+            let url = "{{ CURRENT_URL }}?token={{ Token }}";
+            let Languages = [
+                {% for Langauge in Languages %}
+                "{{ Langauge['language_id'] }}",
+                {% endfor %}
+            ];
+            let LanguageDefaultID = {{ LanguageDefaultID }};
+
+            $(document).ready(function () {
+                $('a.delete-table-row').click(function (e) {
+                    $(this).closest('tr').remove();
+                });
+                let addTableRowElements = $(".add-table-show-data");
+                addTableRowElements.click(function (e) {
+                    let tableShowDataElement = $(this).closest('table').find('tbody');
+                    let newRow = $('<tr>');
+                    $("<td><input class=\"form-control\" type=\"text\" placeholder=\"نام فیلتر\"></td>").appendTo(newRow);
+                    $("<td><input class=\"form-control\" type=\"text\" placeholder=\"ترتیب\"></td>").appendTo(newRow);
+                    let deletebtn = $('<a>').attr("href", "#").addClass('btn btn-danger fa fa-minus').click(function (e) {
+                        $(this).closest('tr').remove();
+                    });
+                    let deleteRow = $('<td>');
+                    deletebtn.appendTo(deleteRow);
+                    deleteRow.appendTo(newRow);
+                    newRow.appendTo(tableShowDataElement);
+                    e.preventDefault();
+                });
+
+                /*
+                * Post Data
+                * */
+                let filterSubmitBtn = $("#filter-submit-btn");
+                let successMessageBoxElement = $("#success-message-box");
+                let errorMessageBoxElement = $("#error-message-box");
+                filterSubmitBtn.click(function (e) {
+                    let data = {};
+                    let error = false;
+                    let element;
+                    let messages = [];
+
+                    successMessageBoxElement.find(".messages").html('');
+                    successMessageBoxElement.css("display", "none");
+                    errorMessageBoxElement.find(".messages").html('');
+                    errorMessageBoxElement.css("display", "none");
+
+                    Languages.forEach(function (value) {
+                        element = $('#filter-group-name-' + value);
+                        if(element.val() != "") {
+                            data["filter-group-name-" + value] = element.val();
+                        }
+                        element = $('#table-show-data-language-' + value);
+                        data["filter-name"] = [];
+                        data["filter-name-"+value] = [];
+                        element.find('tr').each(function (index, v) {
+                            let filter_name = $(v).find('td:first-child').find('input').val();
+                            let sort_order = $(v).find('td:nth-child(2)').find('input').val();
+                            data["filter-name-"+value][sort_order] = filter_name;
+
+                        });
+                    });
+                    element = $('#filter-group-name-' + LanguageDefaultID);
+                    if(element.val() == '') {
+                        error = true;
+                        messages.push("{{ Translate['error_filter_group'] }}");
+                    }
+                    if(data["filter-name-" + LanguageDefaultID].length == 0) {
+                        error = true;
+                        messages.push("{{ Translate['error_filter_add'] }}");
+                    }
+                    element = $('#filter-sort-order');
+                    if(element.val() != '') {
+                        data['filter-sort-order'] = element.val();
+                    }else {
+                        data['filter-sort-order'] = 0;
+                    }
+
+                    data['post'] = true;
+                    data['filter-post'] = true;
+                    if(!error) {
+
+                        $.post(url, data, function (response) {
+                            response = JSON.parse(response);
+                            if(response.status === 1) {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    successMessageBoxElement.css("display", "block");
+                                }
+
+                                if(response['redirect']) {
+                                    window.setTimeout(function () {
+                                        window.location.href = response['redirect'];
+                                    }, 1000)
+                                }
+                            }else {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(errorMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    errorMessageBoxElement.css("display", "block");
+                                }
+                            }
+                        });
+                    }else {
+                        for (let i = 0; i < messages.length; i++) {
+                            $('<p>').text(messages[i]).appendTo(errorMessageBoxElement.find('.messages'));
+                        }
+                        if(messages.length > 0) {
+                            errorMessageBoxElement.css("display", "block");
+                        }
+                    }
+                    e.preventDefault();
+                });
+
+            });
+
+        </script>
+    {% endautoescape %}
+{% endblock %}
