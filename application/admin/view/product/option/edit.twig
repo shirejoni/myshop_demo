@@ -1,0 +1,330 @@
+{% extends "home/_temp/blank_dashboard_temp.twig" %}
+{% block JsBeforeMain %}
+    <script type="text/javascript" src="{{ URL }}assets/ckfinder/ckfinder.js"></script>
+{% endblock %}
+{% block Content %}
+    <div class="container">
+        <section class="row">
+            <div class="col-12 px-5 pt-4">
+                <div class="message-box success-box" id="success-message-box" style="display: none;">
+                    <h4>موفقیت!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="message-box error-box" id="error-message-box" style="display: none;">
+                    <h4>خطا!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="row"  style="box-shadow: 0 0 5px rgba(0,0,0,0.1)">
+                    <div class="col-12 p-2">
+                        <dib class="form-group">
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                {% for OptionLanguage in OptionLanguages %}
+                                    {% if OptionLanguage['language_id'] == LanguageDefaultID %}
+
+                                        <li class="nav-item">
+                                            <a class="nav-link active" data-toggle="tab" href="#language-{{ OptionLanguage['language_id'] }}" role="tab" aria-controls="language-{{ OptionLanguage['language_id'] }}" aria-selected="true">{{ OptionLanguage['language_name'] }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#language-{{ OptionLanguage['language_id'] }}" role="tab" aria-controls="language-{{ OptionLanguage['language_id'] }}" aria-selected="false">{{ OptionLanguage['language_name'] }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                            <div class="tab-content text-right" id="myTabContent">
+                                {% for OptionLanguage in OptionLanguages %}
+                                    {% if OptionLanguage['language_id'] == LanguageDefaultID %}
+                                        {% set ClassName = "show active" %}
+                                    {% else %}
+                                        {% set ClassName = "" %}
+                                    {% endif %}
+                                    <div class="tab-pane fade {{ ClassName }} " id="language-{{ OptionLanguage['language_id'] }}" role="tabpanel" aria-labelledby="language-{{ OptionLanguage['language_id'] }}-tab">
+                                        <div class="form-group d-flex align-middle mt-3">
+                                            <label class="col-sm-2 control-label text-center">نام گروه گزینه</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" placeholder="{{ OptionLanguage['language_name'] }}" value="{{ OptionLanguage['option_name'] }}" class="form-control" id="option-group-name-{{ OptionLanguage['language_id'] }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group d-flex align-middle mt-3">
+                                            <table class="table table-bordered text-center">
+                                                <thead>
+                                                <tr>
+                                                    {% if OptionLanguage['language_id'] == LanguageDefaultID %}
+                                                        <th class="col-sm-5">نام گزینه</th>
+                                                        <th class="col-sm-3">ترتیب</th>
+                                                        <th class="col-sm-2">عکس</th>
+                                                        <th class="col-sm-2">
+                                                            <a href="#" class="add-table-show-data btn btn-primary fa fa-plus"></a>
+                                                        </th>
+                                                    {% else %}
+                                                        <th class="col-sm-7">نام گزینه</th>
+                                                        <th class="col-sm-3">ترتیب</th>
+                                                        <th class="col-sm-2">
+                                                            <a href="#" class="add-table-show-data btn btn-primary fa fa-plus"></a>
+                                                        </th>
+                                                    {% endif %}
+
+                                                </tr>
+                                                </thead>
+                                                <tbody class="table-show-data" id="table-show-data-language-{{ OptionLanguage['language_id'] }}">
+                                                    {% if OptionLanguage['language_id'] == LanguageDefaultID %}
+                                                        {% for OptionValue in OptionLanguage['options'] %}
+                                                            <tr>
+                                                            <td>
+                                                                <input class="form-control" type="text" placeholder="نام گزینه" value="{{ OptionValue['name'] }}">
+                                                            </td>
+                                                            <td>
+                                                                <input class="form-control" type="text" placeholder="ترتیب" value="{{ OptionValue['sort_order'] }}">
+                                                            </td>
+                                                            <td>
+                                                                <a href="#" class="add-image-btn btn btn-warning fa fa-image"></a>
+                                                                <input type="hidden" class="option-image-input" value="{{ OptionValue['image'] }}">
+                                                                {% if OptionValue['image'] %}
+                                                                    <img src="{{ OptionValue['image'] }}" style="width: 40px; height: 40px; margin-right: 10px;">
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>
+                                                                <a href="#" class="remove-row-btn btn btn-danger fa fa-minus"></a>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        {% for OptionValue in OptionLanguage['options'] %}
+                                                            <tr>
+                                                                <td>
+                                                                    <input class="form-control" type="text" placeholder="نام گزینه" value="{{ OptionValue['name'] }}">
+                                                                </td>
+                                                                <td>
+                                                                    <input class="form-control" type="text" placeholder="ترتیب" value="{{ OptionValue['sort_order'] }}">
+                                                                </td>
+                                                                <td>
+                                                                    <a href="#" class="remove-row-btn btn btn-danger fa fa-minus"></a>
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+
+                                                    {% endif %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+                        </dib>
+
+                        <div class="form-group d-flex align-middle mt-3">
+                            <label class="col-sm-2 control-label text-center">ترتیب</label>
+                            <div class="col-sm-10">
+                                <input type="text" id="option-sort-order" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group d-flex align-middle mt-3">
+                            <label class="col-sm-2 control-label text-center">نوع</label>
+                            <div class="col-sm-10">
+                                <select id="option-type" class="form-control">
+                                    {% for OptionType in OptionTypes %}
+                                        <option value="{{ OptionType }}">{{ OptionType }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="form-group text-right pt-3 px-3">
+                            <a href="{{ ADMIN_URL }}product/option/index?token={{ Token }}" class="fa fa-arrow-right btn btn-warning"></a>
+                            <a href="#" id="option-submit-btn" class="fa fa-plus btn btn-success"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+{% endblock %}
+
+{% block Js %}
+    {% autoescape %}
+        <script type="text/javascript">
+            let url = "{{ CURRENT_URL }}?token={{ Token }}";
+            let Languages = [
+                {% for language in Languages %}
+                "{{ language['language_id'] }}",
+                {% endfor %}
+            ];
+            let LanguageDefaultID = {{ LanguageDefaultID }};
+            function selectFileWithCKFinder( element ) {
+                CKFinder.modal({
+                    chooseFiles: true,
+                    width: 800,
+                    height: 600,
+                    onInit: function (finder) {
+                        finder.on('files:choose', function (evt) {
+                            let file = evt.data.files.first();
+                            element.find('input').val(file.getUrl());
+                            element.find('img').remove();
+                            let imagePreview = $('<img>').attr('src', file.getUrl()).css({
+                                'width' : '40px',
+                                'height' : '40px',
+                                'margin-right' : '10px'
+                            });
+                            imagePreview.appendTo(element);
+
+                        });
+                    }
+                });
+            }
+
+            $('.table-show-data a.add-image-btn ').click(function (e) {
+                selectFileWithCKFinder( $(this).closest('td'));
+                e.preventDefault();
+            });
+            $('.table-show-data a.remove-row-btn ').click(function (e) {
+                $(this).closest('tr').remove();
+                e.preventDefault();
+            });
+
+            $(document).ready(function () {
+
+                let addTableRowElements = $(".add-table-show-data");
+                addTableRowElements.click(function (e) {
+                    let tableShowDataElement = $(this).closest('table').find('tbody');
+
+                    let newRow = $('<tr>');
+                    $("<td><input class=\"form-control\" type=\"text\" placeholder=\"نام گزینه\"></td>").appendTo(newRow);
+                    $("<td><input class=\"form-control\" type=\"text\" placeholder=\"ترتیب\"></td>").appendTo(newRow);
+                    let deletebtn = $('<a>').attr("href", "#").addClass('remove-row-btn btn btn-danger fa fa-minus').click(function (e) {
+                        $(this).closest('tr').remove();
+                    });
+                    if(tableShowDataElement.attr('id') == "table-show-data-language-" + LanguageDefaultID) {
+                        let addImageCell = $('<td>');
+                        let addImageBtn = $('<a>').attr("href", "#").addClass('add-image-btn btn btn-warning fa fa-image').click(function (e) {
+                            selectFileWithCKFinder( addImageCell);
+                            e.preventDefault();
+                        });
+                        let addImageInput = $('<input type="hidden">').addClass('option-image-input');
+                        addImageBtn.appendTo(addImageCell);
+                        addImageInput.appendTo(addImageCell);
+                        addImageCell.appendTo(newRow);
+                    }
+                    let deleteRow = $('<td>');
+                    deletebtn.appendTo(deleteRow);
+                    deleteRow.appendTo(newRow);
+                    newRow.appendTo(tableShowDataElement);
+                    e.preventDefault();
+                });
+
+                /*
+                * Post Data
+                * */
+                let optionSubmitBtn = $("#option-submit-btn");
+                let successMessageBoxElement = $("#success-message-box");
+                let errorMessageBoxElement = $("#error-message-box");
+                optionSubmitBtn.click(function (e) {
+                    let data = {};
+                    let error = false;
+                    let element;
+                    let messages = [];
+
+                    successMessageBoxElement.find(".messages").html('');
+                    successMessageBoxElement.css("display", "none");
+                    errorMessageBoxElement.find(".messages").html('');
+                    errorMessageBoxElement.css("display", "none");
+
+                    Languages.forEach(function (value) {
+                        element = $('#option-group-name-' + value);
+                        if(element.val() != "") {
+                            data["option-group-name-" + value] = element.val();
+                        }
+                        element = $('#table-show-data-language-' + value);
+                        data["option-name-"+value] = [];
+                        if(value == LanguageDefaultID) {
+                            data['option-image'] = [];
+                        }
+                        element.find('tr').each(function (index, v) {
+                            let filter_name = $(v).find('td:first-child').find('input').val();
+                            let sort_order = $(v).find('td:nth-child(2)').find('input').val();
+                            if(value == LanguageDefaultID) {
+                                let image_url = $(v).find('td:nth-child(3)').find('input').val();
+                                data['option-image'][+sort_order] = image_url;
+                            }
+                            data["option-name-"+value][+sort_order] = filter_name;
+
+                        });
+                    });
+                    element = $('#option-group-name-' + LanguageDefaultID);
+                    if(element.val() == '') {
+                        error = true;
+                        messages.push("{{ Translate['error_option_name'] }}");
+                    }
+                    if(data["option-name-" + LanguageDefaultID].length == 0) {
+                        error = true;
+                        messages.push("{{ Translate['error_option_add'] }}");
+                    }
+                    element = $('#option-sort-order');
+                    if(element.val() != '') {
+                        data['option-sort-order'] = element.val();
+                    }else {
+                        data['option-sort-order'] = 0;
+                    }
+                    element = $('#option-type');
+                    if(element.val() != '') {
+                        data['option-type'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_option_type_select'] }}");
+                    }
+
+                    data['post'] = true;
+                    data['option-post'] = true;
+                    console.log(data);
+                    if(!error) {
+                        $.post(url, data, function (response) {
+                            response = JSON.parse(response);
+                            if(response.status === 1) {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    successMessageBoxElement.css("display", "block");
+                                }
+
+                                if(response['redirect']) {
+                                    window.setTimeout(function () {
+                                        window.location.href = response['redirect'];
+                                    }, 1000)
+                                }
+                            }else {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(errorMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    errorMessageBoxElement.css("display", "block");
+                                }
+                            }
+                        });
+                    }else {
+                        for (let i = 0; i < messages.length; i++) {
+                            $('<p>').text(messages[i]).appendTo(errorMessageBoxElement.find('.messages'));
+                        }
+                        if(messages.length > 0) {
+                            errorMessageBoxElement.css("display", "block");
+                        }
+                    }
+                    e.preventDefault();
+                });
+
+            });
+
+        </script>
+    {% endautoescape %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% for Option in Options %}
+    <tr>
+        <th scope="row"><input type="checkbox" class="select-row-checkbox" data-option-id="{{ Option['option_id'] }}"></th>
+        <th>{{ Option['option_id'] }}</th>
+        <td>{{ Option['name'] }}</td>
+        <td>{{ Option['sort_order'] }}</td>
+        <td>
+            <a href="{{ ADMIN_URL }}product/option/edit/{{ Option['option_id'] }}?token={{ Token }}" ><i class="btn btn-warning fa fa-pencil-alt"></i></a>
+        </td>
+    </tr>
+{% endfor %}
