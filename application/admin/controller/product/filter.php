@@ -144,13 +144,28 @@ class ControllerProductFilter extends Controller {
                         }
                     }
                     unset($filters[0]);
-                    foreach ($filters as $filter) {
+                    $data['filters'] = [];
+                    unset($this->Request->post['filters_id'][0]);
+                    foreach ($this->Request->post['filters_id'] as $filter_id) {
+                        if(!$Filter->getFilterByID($filter_id)) {
+                            $error = true;
+                            $messages = $this->Language->get('error_done');
+                        }
+                    }
+                    foreach ($filters as $sort_order => $filter) {
                         if(!isset($filter[$languageDefaultID])) {
                             $error = true;
                             $messages[] = $this->Language->get('error_filter_not_enough');
                         }
+                        $array = array(
+                            'filter_language' => $filter,
+                            'sort_order' => $sort_order,
+                        );
+                        if(isset($this->Request->post['filters_id'][$sort_order])) {
+                            $array['filter_id'] = $this->Request->post['filters_id'][$sort_order];
+                        }
+                        $data['filters'][] = $array;
                     }
-                    $data['filters'] = $filters;
                     if(empty($data['filter_group_names'][$languageDefaultID])) {
                         $error = true;
                         $messages[] = $this->Language->get('error_filter_group');
@@ -207,6 +222,7 @@ class ControllerProductFilter extends Controller {
                         }
 
                         $json['status'] = 1;
+                        $json['data'] = $data;
                         $json['messages'] = [$this->Language->get('message_success_done')];
                         $json['redirect'] = ADMIN_URL . "product/filter/index?token=" . $_SESSION['token'];
                     }else {
@@ -279,6 +295,25 @@ class ControllerProductFilter extends Controller {
             return;
         }
         return new Action("error/notFound", 'web');
+    }
+
+    public function getfilters() {
+        $data = [];
+        $language_id = $this->Language->getLanguageID();
+        /** @var Filter $Filter */
+        $Filter = $this->load("Filter", $this->registry);
+        $option = array(
+            'language_id'   => $language_id
+        );
+        if(!empty($this->Request->post['s'])) {
+            $option['filter_name']   = trim($this->Request->post['s']);
+        }
+        $data['Filters'] = $Filter->getFiltersSearch($option);
+        $json = array(
+            'status'    => 1,
+            'filters'   => $data['Filters']
+        );
+        $this->Response->setOutPut(json_encode($json));
     }
 
 }

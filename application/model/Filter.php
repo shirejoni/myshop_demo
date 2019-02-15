@@ -19,6 +19,9 @@ class Filter extends Model
     private $filter_group_name;
     private $rows = [];
     private $filters = [];
+    private $filter_id;
+    private $filter_sort_order;
+    private $filter_name;
 
     public function insertFilterGroup($data, $filter_group_id = null) {
         if(!$filter_group_id) {
@@ -146,6 +149,38 @@ class Filter extends Model
         }
     }
 
+    public function getFilterByID($filter_id, $lID = null) {
+        $language_id = $this->Language->getLanguageID();
+        if($lID != null && $lID != "all") {
+            $language_id = $lID;
+        }
+        if($lID != "all") {
+            $this->Database->query("SELECT * FROM filter f JOIN filter_language fl on f.filter_id = fl.filter_id
+            WHERE fl.language_id = :lID AND f.filter_id = :fID", array(
+                'lID'   => $language_id,
+                'fID'   => $filter_id
+            ));
+            $row = $this->Database->getRow();
+            $this->filter_id = $row['filter_id'];
+            $this->filter_sort_order = $row['sort_order'];
+            $this->language_id = $row['language_id'];
+            $this->filter_name = $row['name'];
+            $this->rows = [];
+            $this->rows[0] = $row;
+            return $row;
+        }else {
+            $this->Database->query("SELECT * FROM filter f JOIN filter_langauge fl on f.filter_id = fl.filter_id
+            WHERE f.filter_id = :fID", array(
+                'fID'   => $filter_id
+            ));
+            $rows = $this->Database->getRows();
+            $this->filter_id = $rows[0]['filter_id'];
+            $this->filter_sort_order = $rows[0]['sort_order'];
+            $this->rows = $rows;
+            return $rows;
+        }
+    }
+
     public function deleteFilterGroup($filter_group_id, $data = []) {
         if(isset($data['filter_group_names']) && count($data['filter_group_names']) > 0) {
             foreach ($data['filter_group_names'] as $language_id => $manufacturer_name) {
@@ -192,14 +227,22 @@ class Filter extends Model
             $this->Database->query("DELETE FROM filter WHERE filter_group_id = :fGID", array(
                 'fGID'  => $filter_group_id
             ));
-            foreach ($data['filters'] as $sort_order => $item) {
+            foreach ($data['filters'] as $filter) {
+                if(isset($filter['filter_id'])) {
+                    $this->Database->query("INSERT INTO filter (filter_id, filter_group_id, sort_order) VALUES (:fID, :fGID, :fGSortOrder)", array(
+                        'fID'  => $filter['filter_id'],
+                        'fGID'  => $filter_group_id,
+                        'fGSortOrder'   => $filter['sort_order']
+                    ));
+                }else {
+                    $this->Database->query("INSERT INTO filter (filter_group_id, sort_order) VALUES (:fGID, :fGSortOrder)", array(
+                        'fGID'  => $filter_group_id,
+                        'fGSortOrder'   => $filter['sort_order']
+                    ));
+                }
 
-                $this->Database->query("INSERT INTO filter (filter_group_id, sort_order) VALUES (:fGID, :fGSortOrder)", array(
-                    'fGID'  => $filter_group_id,
-                    'fGSortOrder'   => $sort_order
-                ));
                 $filter_id = $this->Database->insertId();
-                foreach ($item as $language_id => $filter_name) {
+                foreach ($filter['filter_language'] as $language_id => $filter_name) {
                     $this->Database->query("INSERT INTO filter_language (filter_id, language_id, name) VALUES (:fID, :lID, :fName)", array(
                         'fID'   => $filter_id,
                         'lID'   => $language_id,
@@ -212,6 +255,55 @@ class Filter extends Model
             return $this->Database->numRows() > 0 ? true : false;
         }
         return false;
+    }
+
+    public function getFiltersSearch($data = []) {
+        $data['sort'] = isset($data['sort']) ? $data['sort'] : '';
+        $data['order'] = isset($data['order']) ? strtoupper($data['order']) : 'ASC';
+        $data['language_id'] = isset($data['language_id']) ? $data['language_id'] : $this->Language->getLanguageID();
+
+        $sql = "SELECT f.filter_id, f.filter_group_id, fl.name, fgl.name as `group`, fl.language_id, sort_order
+        FROM filter f JOIN filter_language fl on f.filter_id = fl.filter_id JOIN filter_group_langauge fgl ON f.filter_group_id = fgl.filter_group_id
+        WHERE fl.language_id = :lID AND fgl.language_id = :lID ";
+        $sort_data = array(
+            'name',
+            'sort_order'
+        );
+        if(!empty($data['filter_name'])) {
+
+            $sql .= " AND (fl.name LIKE :fName OR fgl.name LIKE :fName ) ";
+        }
+
+        if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+            $sql .= " ORDER BY " . $data['sort'];
+        }else {
+            $data['sort'] = '';
+            $sql .= " ORDER BY f.filter_id";
+        }
+
+        if (isset($data['order']) && ($data['order'] == 'DESC')) {
+            $sql .= " DESC";
+        } else {
+            $sql .= " ASC";
+        }
+
+        if (isset($data['start']) || isset($data['limit'])) {
+            if ($data['start'] < 0) {
+                $data['start'] = 0;
+            }
+
+            if ($data['limit'] < 1) {
+                $data['limit'] = 20;
+            }
+
+            $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+        }
+        $this->Database->query($sql, array(
+            'lID'   => $data['language_id'],
+            'fName' => $data['filter_name'] . '%'
+        ));
+        $rows = $this->Database->getRows();
+        return $rows;
     }
 
     /**

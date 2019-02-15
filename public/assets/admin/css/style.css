@@ -301,3 +301,45 @@ header {
     line-height: 35px;
     color: #ffffff;
 }
+.show-connect-data {
+    width: 100%;
+    min-height: 150px;
+    background-color: #cccccc;
+    margin-top: 5px;
+    border-radius: 5px;
+    text-align: right;
+    font: 14px Vazir;
+    padding: 5px;
+    box-sizing: border-box;
+    line-height: 14px;
+    overflow-y: auto;
+}
+.auto-recommend-box {
+    width: 300px;
+    position: absolute;
+    right: 10px;
+    margin-top: 5px;
+    text-align: right;
+    background-color: white;
+    box-shadow: 0 0 5px rgba(0,0,0, 0.3);
+    box-sizing: border-box;
+    font: 14px Vazir;
+    font-weight: bold;
+}
+.auto-recommend-box div {
+    box-sizing: border-box;
+    border-bottom: 1px solid #ccc;
+    box-sizing: border-box;
+    padding: 5px;
+}
+.auto-recommend-box div:hover {
+    background-color: #cccccc;
+    cursor: pointer;
+}
+.auto-recommend-box div:last-child {
+    border: 0;
+}
+.show-connect-data i {
+    font-size: 10px;
+    cursor: pointer;
+}

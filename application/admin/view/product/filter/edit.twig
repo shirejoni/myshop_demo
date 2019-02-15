@@ -64,7 +64,7 @@
                                                     {% for Filter in FilterGroupLanguage['filters'] %}
                                                         <tr>
                                                             <td>
-                                                                <input class="form-control" value="{{ Filter['name'] }}" type="text" placeholder="نام فیلتر">
+                                                                <input data-filter-id="{{ Filter['filter_id'] }}" class="form-control" value="{{ Filter['name'] }}" type="text" placeholder="نام فیلتر">
                                                             </td>
                                                             <td>
                                                                 <input class="form-control" value="{{ Filter['sort_order'] }}" type="text" placeholder="ترتیب">
@@ -153,7 +153,7 @@
                     successMessageBoxElement.css("display", "none");
                     errorMessageBoxElement.find(".messages").html('');
                     errorMessageBoxElement.css("display", "none");
-
+                    data['filters_id'] = [];
                     Languages.forEach(function (value) {
                         element = $('#filter-group-name-' + value);
                         if(element.val() != "") {
@@ -165,8 +165,12 @@
                         element.find('tr').each(function (index, v) {
                             let filter_name = $(v).find('td:first-child').find('input').val();
                             let sort_order = $(v).find('td:nth-child(2)').find('input').val();
+                            let filter_id = $(v).find('td:first-child').find('input').attr('data-filter-id');
                             data["filter-name-"+value][sort_order] = filter_name;
-
+                            console.log(filter_id)
+                            if(filter_id) {
+                                data['filters_id'][sort_order] = filter_id;
+                            }
                         });
                     });
                     element = $('#filter-group-name-' + LanguageDefaultID);
@@ -213,6 +217,7 @@
                                 }
                             }
                         });
+                        console.log(data);
                     }else {
                         for (let i = 0; i < messages.length; i++) {
                             $('<p>').text(messages[i]).appendTo(errorMessageBoxElement.find('.messages'));

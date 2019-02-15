@@ -1,0 +1,289 @@
+{% extends "home/_temp/blank_dashboard_temp.twig" %}
+{% block Content %}
+    <div class="container">
+        <section class="row">
+            <div class="col-12 px-5 pt-4">
+                <div class="message-box success-box" id="success-message-box" style="display: none;">
+                    <h4>موفقیت!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="message-box error-box" id="error-message-box" style="display: none;">
+                    <h4>خطا!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="row"  style="box-shadow: 0 0 5px rgba(0,0,0,0.1)">
+                    <div class="col-12 p-2">
+                        <dib class="form-group">
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                {% for Language in Languages %}
+                                    {% if Language['language_id'] == LanguageDefaultID %}
+
+                                        <li class="nav-item">
+                                            <a class="nav-link active" data-toggle="tab" href="#language-{{ Language['language_id'] }}" role="tab" aria-controls="language-{{ Language['language_id'] }}" aria-selected="true">{{ Language['name'] }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#language-{{ Language['language_id'] }}" role="tab" aria-controls="language-{{ Language['language_id'] }}" aria-selected="false">{{ Language['name'] }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                            <div class="tab-content text-right" id="myTabContent">
+                                {% for Language in Languages %}
+                                    {% if Language['language_id'] == LanguageDefaultID %}
+                                        {% set ClassName = "show active" %}
+                                    {% else %}
+                                        {% set ClassName = "" %}
+                                    {% endif %}
+                                    <div class="tab-pane fade {{ ClassName }} " id="language-{{ Language['language_id'] }}" role="tabpanel" aria-labelledby="language-{{ Language['language_id'] }}-tab">
+                                        <div class="form-group d-flex align-middle mt-3">
+                                            <label class="col-sm-2 control-label text-center">نام</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" placeholder="{{ Language['name'] }}" class="form-control" id="category-name-{{ Language['language_id'] }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+                        </dib>
+
+                        <div class="form-group d-flex align-middle mt-3">
+                            <label class="col-sm-2 control-label text-center">ترتیب</label>
+                            <div class="col-sm-10">
+                                <input type="text" id="category-sort-order" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group d-flex align-middle mt-3">
+                            <label class="col-sm-2 control-label text-center">دسته بندی مادر:</label>
+                            <div class="col-sm-10">
+                                <input type="text" id="category-parent" data-category-parent-id="0" class="form-control">
+                                <div class="auto-recommend-box" id="category-parent-auto-recommend-box" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group d-flex align-middle mt-3">
+                            <label class="col-sm-2 control-label text-center">فیلتر</label>
+                            <div class="col-sm-10">
+                                <input type="text" id="category-filter-search" class="form-control">
+                                <div class="auto-recommend-box" id="category-auto-recommend-box" style="display: none;">
+                                </div>
+                                <div class="show-connect-data" id="category-show-connect-data">
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group text-right pt-3 px-3">
+                            <a href="{{ ADMIN_URL }}product/category/index?token={{ Token }}" class="fa fa-arrow-right btn btn-warning"></a>
+                            <a href="#" id="category-submit-btn" class="fa fa-plus btn btn-success"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+{% endblock %}
+{% block Js %}
+    {% autoescape %}
+        <script type="text/javascript">
+            let url = "{{ CURRENT_URL }}?token={{ Token }}";
+            let searchFilterUrl = "{{ ADMIN_URL }}product/filter/getfilters?token={{ Token }}";
+            let searchCategoryUrl = "{{ ADMIN_URL }}product/category/getcategories?token={{ Token }}";
+            let Languages = [
+                {% for Langauge in Languages %}
+                "{{ Langauge['language_id'] }}",
+                {% endfor %}
+            ];
+            let LanguageDefaultID = {{ LanguageDefaultID }};
+            $(document).ready(function () {
+
+
+                let categoyFilterSearchInputElemet = $("#category-filter-search");
+                let categoyFilterAutoRecommendBox = $("#category-auto-recommend-box");
+                let categoryShowConnectData = $("#category-show-connect-data");
+                let Filters_id = [];
+                let timeOut;
+                categoyFilterSearchInputElemet.on("keyup", function (e) {
+
+                    clearTimeout(timeOut);
+                    timeOut = setTimeout(function () {
+                        if(categoyFilterSearchInputElemet.val().length >= 2) {
+                            let data = {};
+                            data['s'] = categoyFilterSearchInputElemet.val();
+                            data['post'] = true;
+                            $.post(searchFilterUrl, data, function (response) {
+                                response = JSON.parse(response);
+                                categoyFilterAutoRecommendBox.css('display', 'none');
+                                categoyFilterAutoRecommendBox.html('');
+                                if(response.status === 1) {
+                                    for(let i = 0;  i < response['filters'].length; i++) {
+                                        $('<div>').attr('data-filter-id', response['filters'][i]['filter_id']).text(response['filters'][i]['group'] + " > " + response['filters'][i]['name'])
+                                            .click(function (e) {
+                                                addFilterTOCategoryFilters(categoryShowConnectData, $(this).text(), +$(this).attr('data-filter-id'));
+                                                categoyFilterAutoRecommendBox.css('display', 'none');
+                                                categoyFilterAutoRecommendBox.html('');
+                                                categoyFilterSearchInputElemet.val('');
+                                                categoyFilterSearchInputElemet.focus();
+                                            }).appendTo(categoyFilterAutoRecommendBox);
+                                    }
+                                    if(response['filters'].length > 0) {
+                                        categoyFilterAutoRecommendBox.css('display', 'block');
+                                    }
+                                }
+
+                            });
+                        }else {
+                            categoyFilterAutoRecommendBox.css('display', 'none');
+                            categoyFilterAutoRecommendBox.html('');
+                        }
+                    }, 800);
+                });
+                function addFilterTOCategoryFilters(boxElement, filterName, filterId) {
+                    // <p><i class="fa fa-minus-circle"></i> رم > 12GB</p>
+                    if(Filters_id.indexOf(filterId) < 0) {
+                        let row = $('<p>');
+                        let deleteBtn = $('<i>').addClass('fa fa-minus-circle').click(function (e) {
+                            let filter_id = +$(this).closest('p').attr('data-filter-id');
+                            let index = Filters_id.indexOf(filter_id);
+                            if(index > -1) {
+                                Filters_id.splice(index, 1);
+                            }
+                            $(this).closest('p').remove();
+                        });
+                        deleteBtn.appendTo(row);
+                        Filters_id.push(filterId);
+                        row.append(filterName).attr('data-filter-id', filterId);
+                        row.appendTo(boxElement);
+                    }
+                }
+
+                let categoryParentSearchInputElement = $("#category-parent");
+                let cateogryParentAutoRecommendBox = $("#category-parent-auto-recommend-box");
+                categoryParentSearchInputElement.on("keyup", function (e) {
+
+                    clearTimeout(timeOut);
+                    timeOut = setTimeout(function () {
+                        if(categoryParentSearchInputElement.val().length >= 2) {
+                            let data = {};
+                            data['s'] = categoryParentSearchInputElement.val();
+                            data['post'] = true;
+                            $.post(searchCategoryUrl, data, function (response) {
+                                response = JSON.parse(response);
+                                cateogryParentAutoRecommendBox.css('display', 'none');
+                                cateogryParentAutoRecommendBox.html('');
+                                if(response.status === 1) {
+                                    for(let i = 0;  i < response['categories'].length; i++) {
+                                        $('<div>').attr('data-category-id', response['categories'][i]['category_id']).text(response['categories'][i]['name'])
+                                            .click(function (e) {
+                                                cateogryParentAutoRecommendBox.css('display', 'none');
+                                                cateogryParentAutoRecommendBox.html('');
+                                                categoryParentSearchInputElement.val($(this).text());
+                                                categoryParentSearchInputElement.attr('data-category-parent-id', $(this).attr('data-category-id'));
+                                            }).appendTo(cateogryParentAutoRecommendBox);
+                                    }
+                                    if(response['categories'].length > 0) {
+                                        cateogryParentAutoRecommendBox.css('display', 'block');
+                                    }
+                                }
+
+                            });
+                        }else {
+                            cateogryParentAutoRecommendBox.css('display', 'none');
+                            cateogryParentAutoRecommendBox.html('');
+                        }
+                    }, 800);
+                });
+
+
+                /*
+                * Post Data
+                * */
+                let categorySubmitBtn = $("#category-submit-btn");
+                let successMessageBoxElement = $("#success-message-box");
+                let errorMessageBoxElement = $("#error-message-box");
+                categorySubmitBtn.click(function (e) {
+                    let data = {};
+                    let error = false;
+                    let element;
+                    let messages = [];
+
+                    successMessageBoxElement.find(".messages").html('');
+                    successMessageBoxElement.css("display", "none");
+                    errorMessageBoxElement.find(".messages").html('');
+                    errorMessageBoxElement.css("display", "none");
+
+                    Languages.forEach(function (value) {
+                        element = $('#category-name-' + value);
+                        if(element.val() != "") {
+                            data["category-name-" + value] = element.val();
+                        }
+                    });
+                    element = $('#category-name-' + LanguageDefaultID);
+                    if(element.val() == '') {
+                        error = true;
+                        messages.push("{{ Translate['error_category_name'] }}");
+                    }
+                    element = $('#category-sort-order');
+                    if(element.val() != '') {
+                        data['category-sort-order'] = element.val();
+                    }else {
+                        data['category-sort-order'] = 0;
+                    }
+                    if(categoryParentSearchInputElement.val() != '' && +categoryParentSearchInputElement.attr('data-category-parent-id')) {
+                        data['category-parent'] = +categoryParentSearchInputElement.attr('data-category-parent-id');
+                    }else {
+                        data['category-parent'] = 0;
+                    }
+                    data['category-filters'] = Filters_id;
+                    data['post'] = true;
+                    data['category-post'] = true;
+
+                    if(!error) {
+                        $.post(url, data, function (response) {
+                            response = JSON.parse(response);
+                            if(response.status === 1) {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    successMessageBoxElement.css("display", "block");
+                                }
+
+                                if(response['redirect']) {
+                                    window.setTimeout(function () {
+                                        window.location.href = response['redirect'];
+                                    }, 1000)
+                                }
+                            }else {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(errorMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    errorMessageBoxElement.css("display", "block");
+                                }
+                            }
+                        });
+                    }else {
+                        for (let i = 0; i < messages.length; i++) {
+                            $('<p>').text(messages[i]).appendTo(errorMessageBoxElement.find('.messages'));
+                        }
+                        if(messages.length > 0) {
+                            errorMessageBoxElement.css("display", "block");
+                        }
+                    }
+                    e.preventDefault();
+                });
+            });
+
+        </script>
+    {% endautoescape %}
+{% endblock %}

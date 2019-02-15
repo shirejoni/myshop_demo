@@ -1,0 +1,16 @@
+{% for CategoryComp in CategoriesComp %}
+    <tr>
+        <th scope="row"><input type="checkbox" class="select-row-checkbox" data-category-id="{{ CategoryComp['category_id'] }}"></th>
+        <th>{{ CategoryComp['category_id'] }}</th>
+        <td>{{ CategoryComp['full_name'] }}</td>
+        <td>{{ CategoryComp['sort_order'] }}</td>
+        <td>
+            <a href="{{ ADMIN_URL }}product/category/edit/{{ CategoryComp['category_id'] }}?token={{ Token }}" ><i class="btn btn-warning fa fa-pencil-alt"></i></a>
+            {% if CategoryComp['status'] == '1' %}
+                <button class="category-status-btn btn btn-success fa fa-toggle-on" data-category-id="{{ CategoryComp['category_id'] }}" data-category-status="{{ CategoryComp['status'] }}" ></button>
+            {% else %}
+                <button class="category-status-btn btn btn-danger fa fa-toggle-off" data-category-id="{{ CategoryComp['category_id'] }}" data-category-status="{{ CategoryComp['status'] }}" ></button>
+            {% endif %}
+        </td>
+    </tr>
+{% endfor %}
