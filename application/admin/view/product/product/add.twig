@@ -1,0 +1,133 @@
+{% extends "home/_temp/blank_dashboard_temp.twig" %}
+
+
+{% block Content %}
+    <div class="container">
+        <section class="row">
+            <div class="col-12 px-5 pt-4">
+                <div class="message-box success-box" id="success-message-box" style="display: none;">
+                    <h4>موفقیت!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="message-box error-box" id="error-message-box" style="display: none;">
+                    <h4>خطا!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="row"  style="box-shadow: 0 0 5px rgba(0,0,0,0.1)">
+                    <div class="col-12 p-2">
+                        <dib class="form-group">
+                            <ul class="nav nav-tabs" id="mainTab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">عمومی</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="true">اطلاعات</a>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content text-right" id="mainTabContent">
+                                    {#
+                                        General Tab
+                                    #}
+                                    <div class="tab-pane fade active show p-5" id="general" role="tabpanel" aria-labelledby="general-tab">
+                                        <dib class="form-group">
+                                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                                {% for Language in Languages %}
+                                                    {% if Language['language_id'] == LanguageDefaultID %}
+
+                                                        <li class="nav-item">
+                                                            <a class="nav-link active" data-toggle="tab" href="#language-{{ Language['language_id'] }}" role="tab" aria-controls="language-{{ Language['language_id'] }}" aria-selected="true">{{ Language['name'] }}</a>
+                                                        </li>
+                                                    {% else %}
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" data-toggle="tab" href="#language-{{ Language['language_id'] }}" role="tab" aria-controls="language-{{ Language['language_id'] }}" aria-selected="false">{{ Language['name'] }}</a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                            <div class="tab-content text-right" id="myTabContent">
+                                                {% for Language in Languages %}
+                                                    {% if Language['language_id'] == LanguageDefaultID %}
+                                                        {% set ClassName = "show active" %}
+                                                    {% else %}
+                                                        {% set ClassName = "" %}
+                                                    {% endif %}
+                                                    <div class="tab-pane fade {{ ClassName }} " id="language-{{ Language['language_id'] }}" role="tabpanel" aria-labelledby="language-{{ Language['language_id'] }}-tab">
+                                                        <div class="form-group d-flex align-middle mt-3">
+                                                            <label class="col-sm-2 control-label text-center">نام</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" placeholder="{{ Language['name'] }}" class="form-control" id="manufacturer-name-{{ Language['language_id'] }}">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group d-flex align-middle mt-3">
+                                                            <label class="col-sm-2 control-label text-center">توضیحات</label>
+                                                            <div class="col-sm-10">
+                                                                <textarea id="ckeditor-{{ Language['language_id'] }}"></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+
+                                            </div>
+                                        </dib>
+
+                                    </div>
+                                    {#
+                                        Info Tab
+                                    #}
+                                    <div class="tab-pane fade " id="info" role="tabpanel" aria-labelledby="info-tab">
+
+                                    </div>
+
+
+                            </div>
+                        </dib>
+
+                        <div class="form-group text-right pt-3 px-3">
+                            <a href="{{ ADMIN_URL }}product/manufacturer/index?token={{ Token }}" class="fa fa-arrow-right btn btn-warning"></a>
+                            <a href="#" id="manufacturer-submit-btn" class="fa fa-plus btn btn-success"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+{% endblock %}
+{% block JsBeforeMain %}
+    <script type="text/javascript" src="{{ URL }}assets/ckfinder/ckfinder.js"></script>
+    <script type="text/javascript" src="{{ URL }}assets/ckeditor/ckeditor.js"></script>
+{% endblock %}
+{% block Js %}
+    {% autoescape %}
+        <script type="text/javascript">
+            let url = "{{ CURRENT_URL }}?token={{ Token }}";
+            let Languages = [
+                {% for Langauge in Languages %}
+                "{{ Langauge['language_id'] }}",
+                {% endfor %}
+            ];
+            let LanguageDefaultID = {{ LanguageDefaultID }};
+            CKFinder.setupCKEditor();
+            $(document).ready(function () {
+                let editor = {};
+                Languages.forEach(function (value, index, array) {
+                    editor[value] = CKEDITOR.replace("ckeditor-" + value, {
+                        filebrowserBrowseUrl: 'http://myshopdemo.test/admin/ckfinder/choose?token={{ Token }}',
+
+                    });
+
+                });
+
+
+            });
+        </script>
+    {% endautoescape %}
+{% endblock %}

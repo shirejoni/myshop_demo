@@ -14,6 +14,9 @@ class ControllerCkfinder extends Controller {
         require_once LIB_PATH . DS . 'Ckfinder' . DS . "connector.php";
 
     }
+    public function choose() {
+        $this->Response->setOutPut($this->render("ckfinder/ckfinder"));
+    }
     public function index() {
         $this->Response->setOutPut($this->render("ckfinder/index"));
     }
