@@ -72,6 +72,10 @@ class Manufacturer extends Model {
                 'sort_order'
             );
 
+            if(!empty($data['filter_name'])) {
+                $sql .= " AND ml.name LIKE :fName ";
+            }
+
             if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
                 $sql .= " ORDER BY " . $data['sort'];
             }else {
@@ -96,9 +100,13 @@ class Manufacturer extends Model {
 
                 $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
             }
-            $this->Database->query($sql, array(
+            $params =  array(
                 'lID'   => $data['language_id'],
-            ));
+            );
+            if(isset($data['filter_name'])) {
+                $params['fName'] = $data['filter_name'] . '%';
+            }
+            $this->Database->query($sql,$params);
             $rows = $this->Database->getRows();
             if(!isset($data['start']) && !isset($data['limit'])) {
                 $this->Cache->save(self::ManufacturersCacheName . "-" . $data['language_id'] . "-" . $data['sort'] . '-' . $data['order'], $rows, self::ManufacturersCacheTime);

@@ -29,6 +29,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link" data-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="true">اطلاعات</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#link" role="tab" aria-controls="link" aria-selected="true">ارتباط</a>
+                                </li>
                             </ul>
 
                             <div class="tab-content text-right" id="mainTabContent">
@@ -175,6 +178,21 @@
                                         </div>
 
                                     </div>
+                                    {#
+                                        Link Tab
+                                    #}
+                                    <div class="tab-pane fade " id="link" role="tabpanel" aria-labelledby="link-tab">
+                                        <div class="form-group d-flex align-middle mt-3">
+                                            <label class="col-sm-2 control-label text-center">تولیدکننده</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="product-manufacturer" data-manufacturer-id="0" class="form-control">
+                                                <div class="auto-recommend-box" id="product-manufacturer-auto-recommend-box" style="display: none;">
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
 
 
                             </div>
@@ -204,6 +222,7 @@
     {% autoescape %}
         <script type="text/javascript">
             let url = "{{ CURRENT_URL }}?token={{ Token }}";
+            let searchManufacturerUrl = "{{ ADMIN_URL }}product/manufacturer/getmanufacturers?token={{ Token }}";
             let Languages = [
                 {% for Langauge in Languages %}
                 "{{ Langauge['language_id'] }}",
@@ -224,7 +243,49 @@
                     format: 'YYYY/MM/DD',
                 });
 
+                let productManufacturerSearchInputElement = $("#product-manufacturer");
+                let manufacturerAutoRecommendBox = $("#product-manufacturer-auto-recommend-box");
+                let timeOut;
+                productManufacturerSearchInputElement.on("keyup", function (e) {
+
+                    clearTimeout(timeOut);
+                    timeOut = setTimeout(function () {
+                        if(productManufacturerSearchInputElement.val().length >= 2) {
+                            let data = {};
+                            data['s'] = productManufacturerSearchInputElement.val();
+                            data['post'] = true;
+                            $.post(searchManufacturerUrl, data, function (response) {
+                                response = JSON.parse(response);
+                                manufacturerAutoRecommendBox.css('display', 'none');
+                                manufacturerAutoRecommendBox.html('');
+                                if(response.status === 1) {
+                                    for(let i = 0;  i < response['manufacturers'].length; i++) {
+                                        $('<div>').attr('data-manufacturer-id', response['manufacturers'][i]['manufacturer_id']).text(response['manufacturers'][i]['name'])
+                                            .click(function (e) {
+                                                manufacturerAutoRecommendBox.css('display', 'none');
+                                                manufacturerAutoRecommendBox.html('');
+                                                productManufacturerSearchInputElement.val($(this).text());
+                                                productManufacturerSearchInputElement.attr('data-manufacturer-id', $(this).attr('data-manufacturer-id'));
+                                            }).appendTo(manufacturerAutoRecommendBox);
+                                    }
+                                    if(response['manufacturers'].length > 0) {
+                                        manufacturerAutoRecommendBox.css('display', 'block');
+                                    }
+                                }
+
+                            });
+                        }else {
+                            manufacturerAutoRecommendBox.css('display', 'none');
+                            manufacturerAutoRecommendBox.html('');
+                        }
+                    }, 800);
+                });
+
+
+
+
             });
         </script>
     {% endautoescape %}
 {% endblock %}
+
