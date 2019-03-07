@@ -182,11 +182,49 @@
                                         Link Tab
                                     #}
                                     <div class="tab-pane fade " id="link" role="tabpanel" aria-labelledby="link-tab">
+
                                         <div class="form-group d-flex align-middle mt-3">
                                             <label class="col-sm-2 control-label text-center">تولیدکننده</label>
                                             <div class="col-sm-10">
                                                 <input type="text" id="product-manufacturer" data-manufacturer-id="0" class="form-control">
                                                 <div class="auto-recommend-box" id="product-manufacturer-auto-recommend-box" style="display: none;">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group d-flex align-middle mt-3">
+                                            <label class="col-sm-2 control-label text-center">دسته بندی</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="product-category" class="form-control">
+                                                <div class="auto-recommend-box" id="product-category-auto-recommend-box" style="display: none;">
+
+                                                </div>
+                                                <div class="show-connect-data" id="product-category-show-connect-data">
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group d-flex align-middle mt-3">
+                                            <label class="col-sm-2 control-label text-center">فیلتر</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="product-filter" class="form-control">
+                                                <div class="auto-recommend-box" id="product-filter-auto-recommend-box" style="display: none;">
+                                                </div>
+                                                <div class="show-connect-data" id="product-filter-show-connect-data">
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group d-flex align-middle mt-3">
+                                            <label class="col-sm-2 control-label text-center">محصولات مرتبط</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="product-related" class="form-control">
+                                                <div class="auto-recommend-box" id="product-related-auto-recommend-box" style="display: none;">
+                                                </div>
+                                                <div class="show-connect-data" id="product-related-show-connect-data">
+
                                                 </div>
                                             </div>
                                         </div>
@@ -223,6 +261,8 @@
         <script type="text/javascript">
             let url = "{{ CURRENT_URL }}?token={{ Token }}";
             let searchManufacturerUrl = "{{ ADMIN_URL }}product/manufacturer/getmanufacturers?token={{ Token }}";
+            let searchCategoryUrl = "{{ ADMIN_URL }}product/category/getcategories?token={{ Token }}";
+            let searchFilterUrl = "{{ ADMIN_URL }}product/filter/getfilters?token={{ Token }}";
             let Languages = [
                 {% for Langauge in Languages %}
                 "{{ Langauge['language_id'] }}",
@@ -243,6 +283,10 @@
                     format: 'YYYY/MM/DD',
                 });
 
+
+                /*
+                * Product Manufacturer
+                * */
                 let productManufacturerSearchInputElement = $("#product-manufacturer");
                 let manufacturerAutoRecommendBox = $("#product-manufacturer-auto-recommend-box");
                 let timeOut;
@@ -281,7 +325,129 @@
                     }, 800);
                 });
 
+                /*
+                * Product Category
+                * */
+                let productCategorySearchInputElemet = $("#product-category");
+                let productCategoryAutoRecommendBox = $("#product-category-auto-recommend-box");
+                let productCategoryShowConnectData = $("#product-category-show-connect-data");
+                let Cateogries_id = [];
+                let timeOutCateogry;
+                productCategorySearchInputElemet.on("keyup", function (e) {
 
+                    clearTimeout(timeOutCateogry);
+                    timeOutCateogry = setTimeout(function () {
+                        if(productCategorySearchInputElemet.val().length >= 2) {
+                            let data = {};
+                            data['s'] = productCategorySearchInputElemet.val();
+                            data['post'] = true;
+                            $.post(searchCategoryUrl, data, function (response) {
+                                response = JSON.parse(response);
+                                productCategoryAutoRecommendBox.css('display', 'none');
+                                productCategoryAutoRecommendBox.html('');
+                                if(response.status === 1) {
+                                    for(let i = 0;  i < response['categories'].length; i++) {
+                                        $('<div>').attr('data-category-id', response['categories'][i]['category_id']).text(response['categories'][i]['name'])
+                                            .click(function (e) {
+                                                addCategoryToCateogries(productCategoryShowConnectData, $(this).text(), +$(this).attr('data-category-id'));
+                                                productCategoryAutoRecommendBox.css('display', 'none');
+                                                productCategoryAutoRecommendBox.html('');
+                                                productCategorySearchInputElemet.val('');
+                                                productCategorySearchInputElemet.focus();
+                                            }).appendTo(productCategoryAutoRecommendBox);
+                                    }
+                                    if(response['categories'].length > 0) {
+                                        productCategoryAutoRecommendBox.css('display', 'block');
+                                    }
+                                }
+
+                            });
+                        }else {
+                            productCategoryAutoRecommendBox.css('display', 'none');
+                            productCategoryAutoRecommendBox.html('');
+                        }
+                    }, 800);
+                });
+                function addCategoryToCateogries(boxElement, categoryName, categoryID) {
+                    // <p><i class="fa fa-minus-circle"></i> رم > 12GB</p>
+                    if(Cateogries_id.indexOf(categoryID) < 0) {
+                        let row = $('<p>');
+                        let deleteBtn = $('<i>').addClass('fa fa-minus-circle').click(function (e) {
+                            let category_id = +$(this).closest('p').attr('data-category-id');
+                            let index = Cateogries_id.indexOf(category_id);
+                            if(index > -1) {
+                                Cateogries_id.splice(index, 1);
+                            }
+                            $(this).closest('p').remove();
+                        });
+                        deleteBtn.appendTo(row);
+                        Cateogries_id.push(categoryID);
+                        row.append(categoryName).attr('data-category-id', categoryID);
+                        row.appendTo(boxElement);
+                    }
+                }
+
+                /*
+                * Product Filter
+                * */
+                let productFilterSearchInputElemet = $("#product-filter");
+                let productFilterAutoRecommendBox = $("#product-filter-auto-recommend-box");
+                let productFilterShowConnectData = $("#product-filter-show-connect-data");
+                let Filters_id = [];
+                let timeOutFilter;
+                productFilterSearchInputElemet.on("keyup", function (e) {
+
+                    clearTimeout(timeOutFilter);
+                    timeOutFilter = setTimeout(function () {
+                        if(productFilterSearchInputElemet.val().length >= 2) {
+                            let data = {};
+                            data['s'] = productFilterSearchInputElemet.val();
+                            data['post'] = true;
+                            $.post(searchFilterUrl, data, function (response) {
+                                response = JSON.parse(response);
+                                productFilterAutoRecommendBox.css('display', 'none');
+                                productFilterAutoRecommendBox.html('');
+                                if(response.status === 1) {
+                                    for(let i = 0;  i < response['filters'].length; i++) {
+                                        $('<div>').attr('data-filter-id', response['filters'][i]['filter_id']).text(response['filters'][i]['group'] + " > " + response['filters'][i]['name'])
+                                            .click(function (e) {
+                                                addFilterTOCategoryFilters(productFilterShowConnectData, $(this).text(), +$(this).attr('data-filter-id'));
+                                                productFilterAutoRecommendBox.css('display', 'none');
+                                                productFilterAutoRecommendBox.html('');
+                                                productFilterSearchInputElemet.val('');
+                                                productFilterSearchInputElemet.focus();
+                                            }).appendTo(productFilterAutoRecommendBox);
+                                    }
+                                    if(response['filters'].length > 0) {
+                                        productFilterAutoRecommendBox.css('display', 'block');
+                                    }
+                                }
+
+                            });
+                        }else {
+                            productFilterAutoRecommendBox.css('display', 'none');
+                            productFilterAutoRecommendBox.html('');
+                        }
+                    }, 800);
+                });
+                function addFilterTOCategoryFilters(boxElement, filterName, filterId) {
+                    // <p><i class="fa fa-minus-circle"></i> رم > 12GB</p>
+                    if(Filters_id.indexOf(filterId) < 0) {
+                        let row = $('<p>');
+                        let deleteBtn = $('<i>').addClass('fa fa-minus-circle').click(function (e) {
+                            let filter_id = +$(this).closest('p').attr('data-filter-id');
+                            let index = Filters_id.indexOf(filter_id);
+                            if(index > -1) {
+                                Filters_id.splice(index, 1);
+                            }
+                            $(this).closest('p').remove();
+                        });
+                        deleteBtn.appendTo(row);
+                        Filters_id.push(filterId);
+                        row.append(filterName).attr('data-filter-id', filterId);
+                        row.appendTo(boxElement);
+                    }
+                }
 
 
             });
