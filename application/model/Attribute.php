@@ -64,7 +64,6 @@ class Attribute extends Model
         $data['sort'] = isset($data['sort']) ? $data['sort'] : '';
         $data['order'] = isset($data['order']) ? strtoupper($data['order']) : 'ASC';
         $data['language_id'] = isset($data['language_id']) ? $data['language_id'] : $this->Language->getLanguageID();
-        if(!$this->Cache->contains(self::AttributeCacheName . "-" . $data['language_id'] . "-" . $data['sort'] . '-' . $data['order']) && !isset($data['start']) && !isset($data['limit'])) {
 
             $sql = "SELECT *, (SELECT agl.name FROM attribute_group_language agl WHERE agl.attribute_group_id = a.attribute_group_id AND agl.language_id = al.language_id) AS attributegroup_name 
             FROM attribute a JOIN  attribute_language al on a.attribute_id = al.attribute_id WHERE 
@@ -74,6 +73,10 @@ class Attribute extends Model
                 'al.name',
                 'a.sort_order'
             );
+
+            if(!empty($data['filter_name'])) {
+                $sql .= " AND al.name LIKE :fName ";
+            }
 
             if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
                 $sql .= " ORDER BY " . $data['sort'];
@@ -99,16 +102,16 @@ class Attribute extends Model
 
                 $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
             }
-            $this->Database->query($sql, array(
+            $params =  array(
                 'lID'   => $data['language_id'],
-            ));
-            $rows = $this->Database->getRows();
-            if(!isset($data['start']) && !isset($data['limit'])) {
-                $this->Cache->save(self::AttributeCacheName . "-" . $data['language_id'] . "-" . $data['sort'] . '-' . $data['order'], $rows, self::AttributeCacheTime);
+            );
+            if(!empty($data['filter_name'])) {
+                $params['fName'] = $data['filter_name'] . '%';
             }
-        }else {
-            $rows = $this->Cache->fetch(self::AttributeCacheName . "-" . $data['language_id'] . '-' . $data['sort'] . '-' . $data['order']);
-        }
+
+            $this->Database->query($sql, $params);
+            $rows = $this->Database->getRows();
+
         return $rows;
     }
 

@@ -42,7 +42,6 @@ class ControllerProductProduct extends Controller {
         $data['StocksStatus'] = $Stock->getStocks();
         $data['Weights'] = $Weight->getWeights();
         $data['Lengths'] = $Length->getLengths();
-
         $data['LanguageDefaultID'] = $Language->getDefaultLanguageID();
         $this->Response->setOutPut($this->render('product/product/add', $data));
     }

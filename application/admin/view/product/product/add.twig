@@ -32,6 +32,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link" data-toggle="tab" href="#link" role="tab" aria-controls="link" aria-selected="true">ارتباط</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#attribute" role="tab" aria-controls="attribute" aria-selected="true">خصوصیت محصول</a>
+                                </li>
                             </ul>
 
                             <div class="tab-content text-right" id="mainTabContent">
@@ -232,6 +235,29 @@
 
                                     </div>
 
+                                    {#
+                                        attribute Tab
+                                    #}
+                                    <div class="tab-pane fade py-3" id="attribute" role="tabpanel" aria-labelledby="link-tab">
+
+                                        <table class="table table-bordered text-center">
+                                            <thead>
+                                            <tr>
+                                                <th class="col-sm-5">نام خصوصیت</th>
+                                                <th class="col-sm-5">مقدار</th>
+                                                <th class="col-sm-2">
+                                                    <a href="#" id="add-row-attribute-table" class="add-table-show-data btn btn-primary fa fa-plus"></a>
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="table-attribute-show-data">
+
+                                            </tbody>
+                                        </table>
+
+
+                                    </div>
+
 
                             </div>
                         </dib>
@@ -263,11 +289,17 @@
             let searchManufacturerUrl = "{{ ADMIN_URL }}product/manufacturer/getmanufacturers?token={{ Token }}";
             let searchCategoryUrl = "{{ ADMIN_URL }}product/category/getcategories?token={{ Token }}";
             let searchFilterUrl = "{{ ADMIN_URL }}product/filter/getfilters?token={{ Token }}";
+            let searchAttributeUrl = "{{ ADMIN_URL }}product/attribute/getattributes?token={{ Token }}";
             let Languages = [
                 {% for Langauge in Languages %}
                 "{{ Langauge['language_id'] }}",
                 {% endfor %}
             ];
+            let LanguageNames = {
+                {% for Langauge in Languages %}
+                "{{ Langauge['language_id'] }}": "{{ Langauge['name'] }}",
+                {% endfor %}
+            };
             let LanguageDefaultID = {{ LanguageDefaultID }};
             CKFinder.setupCKEditor();
             $(document).ready(function () {
@@ -449,7 +481,63 @@
                     }
                 }
 
+                /*
+                * Product Attribute Table
+                * */
+                let productAttributeAddRowTable = $("#add-row-attribute-table");
+                let productAttributeTableBody = $("#table-attribute-show-data");
+                let timeOutAttribute;
+                productAttributeAddRowTable.click(function (e) {
+                    let newRow = $('<tr>');
+                    let AttributeTableCell = $("<td><input class=\"form-control\" type=\"text\" placeholder=\"نام خصوصیت\">" +
+                    "<div class=\"auto-recommend-box\" style=\"display: none;\"></div></td>");
+                    AttributeTableCell.find('input').on("keyup", function (e) {
 
+                        clearTimeout(timeOutAttribute);
+                        let attributeNameInput = $(this);
+                        timeOutAttribute = setTimeout(function () {
+                            let data = {};
+                            data['s'] = attributeNameInput.val();
+                            data['post'] = true;
+                            $.post(searchAttributeUrl, data, function(response) {
+
+                                response = JSON.parse(response);
+                                let autoRecommendListBox = attributeNameInput.next();
+                                autoRecommendListBox.css("display", "none");
+                                autoRecommendListBox.html('');
+                                if(response.status === 1) {
+                                    for(let i = 0;  i < response['attributes'].length; i++) {
+                                        $('<div>').attr('data-attribute-id', response['attributes'][i]['attribute_id']).text(response['attributes'][i]['attributegroup_name'] + " > " + response['attributes'][i]['name'])
+                                            .click(function (e) {
+                                                autoRecommendListBox.css('display', 'none');
+                                                autoRecommendListBox.html('');
+                                                attributeNameInput.val($(this).text());
+                                                attributeNameInput.attr('data-attribute-id', $(this).attr('data-attribute-id'));
+                                            }).appendTo(autoRecommendListBox);
+                                    }
+                                    if(response['attributes'].length > 0) {
+                                        autoRecommendListBox.css('display', 'block');
+                                    }
+                                }
+
+                            });
+                        }, 800);
+                    });
+                    AttributeTableCell.appendTo(newRow);
+                    let valueTableCell = $('<td>');
+                    Languages.forEach(function (value, index, array) {
+                        $("<textarea  data-language-id=\""+ value +"\" class=\"form-control mt-1\" type=\"text\" placeholder=\"" + LanguageNames[value] + "\"></textarea>").appendTo(valueTableCell);
+                    });
+                    valueTableCell.appendTo(newRow);
+                    let deletebtn = $('<a>').attr("href", "#").addClass('btn btn-danger fa fa-minus').click(function (e) {
+                        $(this).closest('tr').remove();
+                    });
+                    let deleteRow = $('<td>');
+                    deletebtn.appendTo(deleteRow);
+                    deleteRow.appendTo(newRow);
+                    newRow.appendTo(productAttributeTableBody);
+                    e.preventDefault();
+                });
             });
         </script>
     {% endautoescape %}

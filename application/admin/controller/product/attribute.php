@@ -280,5 +280,26 @@ class ControllerProductAttribute extends Controller {
 
     }
 
+    public function getattributes() {
+        $data = [];
+        $language_id = $this->Language->getLanguageID();
+        /** @var Attribute $Attribute */
+        $Attribute = $this->load("Attribute", $this->registry);
+        $option = array(
+            'language_id'   => $language_id
+        );
+        if(!empty(trim($this->Request->post['s']))) {
+            $option['filter_name']   = trim($this->Request->post['s']);
+        }
+
+        $data['Attributes'] = $Attribute->getAttributes($option);
+        $json = array(
+            'status'    => 1,
+            'attributes'   => $data['Attributes']
+        );
+
+        $this->Response->setOutPut(json_encode($json));
+    }
+
 
 }
