@@ -32,6 +32,10 @@ class Option extends Model
             'sort_order'
         );
 
+        if(!empty($data['filter_name'])) {
+            $sql .= " AND ol.name LIKE :fName ";
+        }
+
         if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
             $sql .= " ORDER BY " . $data['sort'];
         }else {
@@ -56,9 +60,14 @@ class Option extends Model
 
             $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
         }
-        $this->Database->query($sql, array(
+        $params =  array(
             'lID'   => $data['language_id'],
-        ));
+        );
+        if(!empty($data['filter_name'])) {
+            $params['fName'] = $data['filter_name'] . '%';
+        }
+
+        $this->Database->query($sql, $params);
         $rows = $this->Database->getRows();
 
 

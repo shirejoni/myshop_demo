@@ -312,4 +312,40 @@ class ControllerProductOption extends Controller {
         return new Action('error/notFound', 'web');
     }
 
+    public function getoptions()
+    {
+        $data = [];
+        $language_id = $this->Language->getLanguageID();
+        /** @var Option $Option */
+        $Option = $this->load("Option", $this->registry);
+        $option = array(
+            'language_id'   => $language_id
+        );
+        if(!empty(trim($this->Request->post['s']))) {
+            $option['filter_name']   = trim($this->Request->post['s']);
+        }
+
+        $data['Options'] = $Option->getOptionGroups($option);
+        $json = array(
+            'status'    => 1,
+            'options'   => $data['Options']
+        );
+
+        $this->Response->setOutPut(json_encode($json));
+    }
+
+    public function get() {
+        if(isset($this->Request->post['option_id'])) {
+            $option_id = (int) $this->Request->post['option_id'];
+            /** @var Option $Option */
+            $Option = $this->load("Option", $this->registry);
+            $data['Option'] = $Option->getOptionByID($option_id);
+            $json = array(
+                'status'    => 1,
+                'option'   => $data['Option']
+            );
+            $this->Response->setOutPut(json_encode($json));
+        }
+    }
+
 }
