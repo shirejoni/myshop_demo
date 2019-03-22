@@ -38,6 +38,12 @@
                                 <li class="nav-item">
                                     <a class="nav-link" data-toggle="tab" href="#option" role="tab" aria-controls="option" aria-selected="true">گزینه محصول</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#special" role="tab" aria-controls="special" aria-selected="true">تخفیف</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#image" role="tab" aria-controls="image" aria-selected="true">عکس</a>
+                                </li>
                             </ul>
 
                             <div class="tab-content text-right" id="mainTabContent">
@@ -289,6 +295,54 @@
 
                                 </div>
 
+                                {#
+                                    special Tab
+                                #}
+                                <div class="tab-pane fade py-3" id="special" role="tabpanel" aria-labelledby="link-tab">
+
+                                    <table class="table table-bordered text-center">
+                                        <thead>
+                                        <tr>
+                                            <th class="col-sm-2">اولویت</th>
+                                            <th class="col-sm-2">تعداد</th>
+                                            <th class="col-sm-2">قیمت</th>
+                                            <th class="col-sm-3">زمان شروع</th>
+                                            <th class="col-sm-3">زمان پایان</th>
+                                            <th class="col-sm-2">
+                                                <a href="#" id="add-row-special-table" class="add-table-show-data btn btn-primary fa fa-plus"></a>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="table-special-show-data">
+
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+
+                                {#
+                                    image Tab
+                                #}
+                                <div class="tab-pane fade py-3" id="image" role="tabpanel" aria-labelledby="link-tab">
+
+                                    <table class="table table-bordered text-center">
+                                        <thead>
+                                        <tr>
+                                            <th class="col-sm-4">پیش نمایش</th>
+                                            <th class="col-sm-4">ترتیب</th>
+                                            <th class="col-sm-4">
+                                                <a href="#" id="add-row-image-table" class="add-table-show-data btn btn-primary fa fa-plus"></a>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="table-image-show-data">
+
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
 
 
                             </div>
@@ -407,6 +461,31 @@
                 html += '</div>';
 
                 tabsBox.append(html);
+            }
+
+            function selectFileWithCKFinder( element ) {
+                CKFinder.modal({
+                    chooseFiles: true,
+                    width: 800,
+                    height: 600,
+                    onInit: function (finder) {
+                        finder.on('files:choose', function (evt) {
+                            let file = evt.data.files.first();
+                            let imagePreview = element.parent();
+                            imagePreview.html('');
+                            let image = $('<img>');
+                            image.css({
+                                'width' : '100%',
+                            });
+                            image.attr('src', file.getUrl());
+                            image.appendTo(imagePreview);
+                            let newInput = $('<input type="hidden">');
+                            newInput.val(file.getUrl());
+                            imagePreview.append(newInput);
+
+                        });
+                    }
+                });
             }
 
             let url = "{{ CURRENT_URL }}?token={{ Token }}";
@@ -742,6 +821,81 @@
                     productOptionSearchInput.attr('data-option-id', 0);
                     e.preventDefault();
                 });
+
+                /*
+                * Special Product
+                * */
+                let specialAddRowBtn = $("#add-row-special-table");
+                let specialShowRowsTable = $("#table-special-show-data");
+                specialAddRowBtn.click(function (e) {
+                    let newRow = $("<tr>");
+                        $('<td><input type="number" class="form-control"></td>').appendTo(newRow);
+                        $('<td><input type="number" class="form-control"></td>').appendTo(newRow);
+                        $('<td><input type="number" class="form-control"></td>').appendTo(newRow);
+                    let newCell = $('<td>');
+                    let newInput = $('<input type="text" class="form-control">');
+                    newInput.persianDatepicker({
+                        format: 'YYYY/MM/DD',
+                        onSelect: function(unix){
+                            $(this).attr('date-timestamp', unix)
+                        }
+                    });
+                    newInput.appendTo(newCell);
+                    newCell.appendTo(newRow);
+                    newCell = $('<td>');
+                    newInput = $('<input type="text" class="form-control">');
+                    newInput.persianDatepicker({
+                        format: 'YYYY/MM/DD',
+                    });
+                    newInput.appendTo(newCell);
+                    newCell.appendTo(newRow);
+                    newCell = $('<td>');
+                    let deleteBtn = $('<a href="#" class="btn btn-danger fa fa-minus"></a>').click(function (e) {
+                        $(this).closest('tr').remove();
+                        e.preventDefault();
+                    });
+                    deleteBtn.appendTo(newCell);
+                    newCell.appendTo(newRow);
+                    newRow.appendTo(specialShowRowsTable);
+                    e.preventDefault();
+                });
+
+                /*
+                * Image Product
+                * */
+                let imageAddRowBtn = $("#add-row-image-table");
+                let imageShowRowTable = $("#table-image-show-data");
+
+                imageAddRowBtn.click(function (e) {
+                    let newRow = $("<tr>");
+                    let newCell = $('<td>');
+                    let imagePreviewBox = $('<div class="image-preview">').css({
+                        'width' : '150px',
+                        'border': '2px dashed #000',
+                        'margin': '0 auto',
+                    });
+                    let imagePreviewbtn = $('<a href="#" class="fa fa-image btn btn-warning" style="margin:55px 0;">');
+                    imagePreviewbtn.click(function (e) {
+                        selectFileWithCKFinder($(this));
+                        e.preventDefault();
+                    });
+                    imagePreviewbtn.appendTo(imagePreviewBox);
+                    imagePreviewBox.appendTo(newCell);
+                    newCell.appendTo(newRow);
+
+                    $('<td><input type="number" class="form-control"></td>').appendTo(newRow);
+
+                    newCell = $('<td>');
+                    let deleteBtn = $('<a href="#" class="btn btn-danger fa fa-minus"></a>').click(function (e) {
+                        $(this).closest('tr').remove();
+                        e.preventDefault();
+                    });
+                    deleteBtn.appendTo(newCell);
+                    newCell.appendTo(newRow);
+                    newRow.appendTo(imageShowRowTable);
+                    e.preventDefault();
+                });
+
 
 
             });
