@@ -349,8 +349,8 @@
                         </dib>
 
                         <div class="form-group text-right pt-3 px-3">
-                            <a href="{{ ADMIN_URL }}product/manufacturer/index?token={{ Token }}" class="fa fa-arrow-right btn btn-warning"></a>
-                            <a href="#" id="manufacturer-submit-btn" class="fa fa-plus btn btn-success"></a>
+                            <a href="{{ ADMIN_URL }}product/product/index?token={{ Token }}" class="fa fa-arrow-right btn btn-warning"></a>
+                            <a href="#" id="product-submit-btn" class="fa fa-plus btn btn-success"></a>
                         </div>
                     </div>
                 </div>
@@ -432,7 +432,7 @@
                 let tabsBox = $("#option-body-tab");
                 let html = '<div class="tab-pane fade" id="option-body-tab-'+ id +'" role="tabpanel" aria-labelledby="option-body-tab-'+ id +'">';
                 html += '<div class="form-group d-flex align-middle mt-3">';
-                html += '<label class="col-sm-2 control-label text-center">توضیحات</label>';
+                html += '<label class="col-sm-2 control-label text-center">الزامی</label>';
                 html += '<div class="col-sm-10">';
                 html += '<select class="form-control">';
                 html += '<option value="1">بله</option>';
@@ -865,7 +865,6 @@
                 * */
                 let imageAddRowBtn = $("#add-row-image-table");
                 let imageShowRowTable = $("#table-image-show-data");
-
                 imageAddRowBtn.click(function (e) {
                     let newRow = $("<tr>");
                     let newCell = $('<td>');
@@ -896,8 +895,314 @@
                     e.preventDefault();
                 });
 
+                /*
+                * Post Data
+                * */
+                let successMessageBoxElement = $("#success-message-box");
+                let errorMessageBoxElement = $("#error-message-box");
+
+                $("#product-submit-btn").click(function (e) {
+                    let data = {};
+                    let messages = [];
+                    let error = false;
+                    successMessageBoxElement.find(".messages").html('');
+                    successMessageBoxElement.css("display", "none");
+                    errorMessageBoxElement.find(".messages").html('');
+                    errorMessageBoxElement.css("display", "none");
+
+                    Languages.forEach(function (value) {
+                        let element = $("#product-name-" + value);
+                        if(element.val() != "") {
+                            data['product-name-' + value] = element.val();
+                        }
+                        if(editor[value] && editor[value].getData()) {
+                            data['product-description-' + value] = editor[value].getData();
+                        }
+                    });
+                    /*
+                    * Product Price
+                    * */
+                    let element = $("#product-price");
+                    if(element.val() != "") {
+                        data['product-price'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_price_empty'] }}")
+                    }
+                    /*
+                    * Product Date
+                    * */
+                    element = $("#product-date");
+                    if(element.val() != "") {
+                        data['product-date'] = element.val();
+                    }else {
+                        data['product-date'] = '';
+                    }
+                    /*
+                    * Product Quantity
+                    * */
+                    element = $("#product-quantity");
+                    if(element.val() != "") {
+                        data['product-quantity'] = element.val();
+                    }else {
+                        data['product-quantity'] = 0;
+                    }
+                    /*
+                    * Product Min Quantity Min Per Order
+                    * */
+                    element = $("#product-min-quantity-per-amount");
+                    if(element.val() != "") {
+                        data['product-min-quantity-per-order'] = element.val();
+                    }else {
+                        data['product-min-quantity-per-order'] = 0;
+                    }
+
+                    /*
+                    * Product Stock Status
+                    * */
+                    element = $("#product-stock-status");
+                    if(element.val() != "") {
+                        data['product-stock-status'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_stock_status_not_selected'] }}");
+                    }
+
+                    /*
+                    * Product Weight
+                    * */
+                    element = $("#product-weight-value");
+                    if(element.val() != "") {
+                        data['product-weight'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_weight_value_empty'] }}");
+                    }
+
+                    /*
+                    * Product Wight Unit
+                    * */
+                    element = $("#product-weight-unit");
+                    if(element.val() != "") {
+                        data['product-weight-unit'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_weight_unit_not_selected'] }}");
+                    }
+
+                    /*
+                    * Product Length
+                    * */
+                    element = $("#product-length");
+                    if(element.val() != "") {
+                        data['product-length'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_length'] }}");
+                    }
 
 
+                    /*
+                    * Product Width
+                    * */
+                    element = $("#product-width");
+                    if(element.val() != "") {
+                        data['product-width'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_width'] }}");
+                    }
+
+
+                    /*
+                    * Product height
+                    * */
+                    element = $("#product-height");
+                    if(element.val() != "") {
+                        data['product-height'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_height'] }}");
+                    }
+
+
+                    /*
+                    * Product Length Unit
+                    * */
+                    element = $("#product-length-unit");
+                    if(element.val() != "") {
+                        data['product-length-unit'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_length_not_selected'] }}");
+                    }
+
+                    /*
+                    * Product Sort Order
+                    * */
+                    element = $("#product-sort-order");
+                    if(element.val() != "") {
+                        data['product-sort-order'] = element.val();
+                    }else {
+                        data['product-sort-order'] = 0;
+                    }
+
+                    /*
+                     * Product Manufacturer
+                     * */
+                    element = $("#product-manufacturer");
+                    if(element.val() != "" && element.attr('data-manufacturer-id')) {
+                        data['product-manufacturer'] = element.attr('data-manufacturer-id');
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_manufacturer_empty'] }}");
+                    }
+
+                    /*
+                     * Product Category
+                     * */
+                    if(Cateogries_id.length > 0) {
+                        data['product-categories'] = Cateogries_id;
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_category_empty'] }}");
+                    }
+                    /*
+                     * Product Filter
+                     * */
+                    if(Filters_id.length > 0) {
+                        data['product-filters'] = Filters_id;
+                    }else {
+                        data['product-filters'] = [];
+                    }
+
+                    /*
+                    * Product Attribute
+                    * */
+                    let table = $("#table-attribute-show-data");
+                    data['product-attribute'] = [];
+                    table.find('tr').each(function (index, element) {
+                        let productAttributeData = {};
+                        productAttributeData['attribute-id'] = $(element).find('td:first-child').find('input').attr('data-attribute-id');
+                        $(element).find('td:nth-child(2)').find('textarea').each(function (index, element) {
+                            if($(element).val() != "") {
+                                let language_id = $(element).attr('data-language-id');
+                                productAttributeData['attribute-value-' + language_id] = $(element).val();
+                            }
+                        });
+                        data['product-attribute'].push(productAttributeData);
+                    });
+
+                    /*
+                    * Product Option
+                    * */
+                    let optionHeadTabBox = $("#option-head-tab");
+                    data['product-option'] = [];
+                    optionHeadTabBox.find('a').each(function (index, element) {
+                        let strSplit = $(element).attr('id').split('-');
+                        let optionID = +strSplit[strSplit.length - 1];
+                        let productOptionData = {};
+                        productOptionData['option-id'] = optionID;
+                        productOptionData['option-is-required'] = +$("#option-body-tab-" + optionID).find('div:first-child').find('select').val();
+                        productOptionData['option-items'] = [];
+                        let optionTableShowData = $("#table-option-" + optionID + "-show-data");
+                        optionTableShowData.find('tr').each(function (index, element) {
+                            let optionItemData = {};
+                            optionItemData['option-item-id'] = +$(element).find('td:first-child').find('select').val();
+                            if($(element).find('td:nth-child(2)').find('input').val() != "") {
+                                optionItemData['quantity'] = +$(element).find('td:nth-child(2)').find('input').val();
+                            }else {
+                                optionItemData['quantity'] = 0;
+                            }
+                            optionItemData['effect-on-stock'] = +$(element).find('td:nth-child(3)').find('select').val();
+                            let sign = $(element).find('td:nth-child(4)').find('select').val();
+                            if(sign == "-") {
+                                optionItemData['price-sign'] = "-";
+                            }else {
+                                optionItemData['price-sign'] = "+";
+                            }
+                            if($(element).find('td:nth-child(4)').find('input').val() != "") {
+                                optionItemData['price'] = +$(element).find('td:nth-child(4)').find('input').val();
+                            }else {
+                                optionItemData['price'] = 0;
+                            }
+                            sign = $(element).find('td:nth-child(5)').find('select').val();
+                            if(sign == "-") {
+                                optionItemData['price-sign'] = "-";
+                            }else {
+                                optionItemData['price-sign'] = "+";
+                            }
+                            if($(element).find('td:nth-child(5)').find('input').val() != "") {
+                                optionItemData['weight'] = +$(element).find('td:nth-child(5)').find('input').val();
+                            }else {
+                                optionItemData['weight'] = 0;
+                            }
+                            productOptionData['option-items'].push(optionItemData);
+                        });
+                        data['product-option'].push(productOptionData);
+                    });
+
+                    /*
+                    * Off Price
+                    * */
+                    let specialTableShowElement = $("#table-special-show-data");
+                    data['product-special'] = [];
+                    specialTableShowElement.find('tr').each(function (index, element) {
+                        let specialData = {};
+                        specialData['priority'] = +specialTableShowElement.find('tr').find('td:first-child').find('input').val();
+                        specialData['quantity'] = +specialTableShowElement.find('tr').find('td:nth-child(2)').find('input').val();
+                        specialData['price'] = +specialTableShowElement.find('tr').find('td:nth-child(3)').find('input').val();
+                        specialData['start_date'] = specialTableShowElement.find('tr').find('td:nth-child(4)').find('input').val();
+                        specialData['end_date'] = specialTableShowElement.find('tr').find('td:nth-child(5)').find('input').val();
+                        data['product-special'].push(specialData);
+                    });
+
+                    let imageTableShowElement = $("#table-image-show-data");
+                    data['product-image'] = [];
+                    imageTableShowElement.find('tr').each(function (index, element) {
+                        let imageData = {};
+                        imageData['src'] = imageTableShowElement.find('tr').find('td:first-child').find('input').val();
+                        imageData['sort_order'] = imageTableShowElement.find('tr').find('td:nth-child(2)').find('input').val();
+                        data['product-image'].push(imageData);
+                    });
+                    data['post'] = true;
+                    if(!error) {
+                        $.post(url, data, function (response) {
+                            response = JSON.parse(response);
+                            if(response.status === 1) {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    successMessageBoxElement.css("display", "block");
+                                }
+
+                                if(response['redirect']) {
+                                    window.setTimeout(function () {
+                                        window.location.href = response['redirect'];
+                                    }, 1000)
+                                }
+                            }else {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(errorMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    errorMessageBoxElement.css("display", "block");
+                                }
+                            }
+                        });
+                    }else {
+                        for (let i = 0; i < messages.length; i++) {
+                            $('<p>').text(messages[i]).appendTo(errorMessageBoxElement.find('.messages'));
+                        }
+                        if(messages.length > 0) {
+                            errorMessageBoxElement.css("display", "block");
+                        }
+                    }
+
+
+                    e.preventDefault();
+                });
             });
         </script>
     {% endautoescape %}

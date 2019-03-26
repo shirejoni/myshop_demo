@@ -12,8 +12,7 @@ use Doctrine\Common\Cache\FilesystemCache;
  * @property Language Language
  */
 class Manufacturer extends Model {
-    private const ManufacturersCacheName = "manufacturers";
-    private const ManufacturersCacheTime = 3600;
+
     private $manufacturer_id;
     private $language_id;
     private $manufacturer_name;
@@ -58,12 +57,10 @@ class Manufacturer extends Model {
         return $manufacturer_id;
     }
 
-
     public function getManufacturers($data = array()) {
         $data['sort'] = isset($data['sort']) ? $data['sort'] : '';
         $data['order'] = isset($data['order']) ? strtoupper($data['order']) : 'ASC';
         $data['language_id'] = isset($data['language_id']) ? $data['language_id'] : $this->Language->getLanguageID();
-        if(!$this->Cache->contains(self::ManufacturersCacheName . "-" . $data['language_id'] . "-" . $data['sort'] . '-' . $data['order']) && isset($data['filter_name']) && !isset($data['start']) && !isset($data['limit'])) {
 
             $sql = "SELECT * FROM `manufacturer` m LEFT JOIN manufacturer_language ml ON m.manufacturer_id = ml.manufacturer_id WHERE
             ml.language_id = :lID ";
@@ -108,12 +105,7 @@ class Manufacturer extends Model {
             }
             $this->Database->query($sql,$params);
             $rows = $this->Database->getRows();
-            if(!isset($data['start']) && !isset($data['limit'])) {
-                $this->Cache->save(self::ManufacturersCacheName . "-" . $data['language_id'] . "-" . $data['sort'] . '-' . $data['order'], $rows, self::ManufacturersCacheTime);
-            }
-        }else {
-            $rows = $this->Cache->fetch(self::ManufacturersCacheName . "-" . $data['language_id'] . '-' . $data['sort'] . '-' . $data['order']);
-        }
+
         return $rows;
     }
 

@@ -23,6 +23,18 @@ $_['error_attribute_name'] = "نام خصوصیت نباید خالی باشد!"
 $_['error_invalid_token'] = "توکن معتبر نمی باشد لطفا دوباره وارد شوید!";
 $_['error_done'] = "متاسفانه خطایی رخ داده است!";
 $_['error_exist_url'] = "این آدرس قبلا ثبت شده است!";
+$_['error_product_price_empty'] = "قیمت محصول نباید خالی باشد";
+$_['error_product_date_empty'] = "تاریخ محصول نباید خالی باشد";
+$_['error_product_stock_status_not_selected'] = "وضعیت محصول تعیین نشده است";
+$_['error_product_weight_unit_not_selected'] = "واحد وزن محصول انتخاب نشده است";
+$_['error_product_length_unit_not_selected'] = "واحد طول محصول انتخاب نشده است";
+$_['error_product_weight_value_empty'] = "وزن محصول مشخص نشده است";
+$_['error_product_length'] = "طول محصول مشخص نیست";
+$_['error_product_width'] = "عرض محصول مشخص نیست";
+$_['error_product_height'] = "ارتفاع محصول مشخص نیست";
+$_['error_product_manufacturer_empty'] = "تولیدکننده محصول خالی است";
+$_['error_product_category_empty'] = "دسته بندی محصول خالی است";
+
 
 /*
  * Messages
