@@ -12,6 +12,11 @@ use App\System\Model;
  */
 class Stock extends Model
 {
+    private $stock_status_id;
+    private $language_id;
+    private $name;
+    private $rows = [];
+
     public function getStocks($data = []) {
         $data['language_id'] = isset($data['language_id']) ? $data['language_id'] : $this->Language->getLanguageID();
         $sql = "SELECT * FROM stock_status s WHERE
@@ -49,6 +54,40 @@ class Stock extends Model
         ));
         $rows = $this->Database->getRows();
         return $rows;
+    }
+
+    public function getStock($stock_id, $lID = null) {
+        $language_id = $this->Language->getLanguageID();
+        if($lID != null && $lID != "all") {
+            $language_id = $lID;
+        }
+        if($lID != "all") {
+            $this->Database->query("SELECT * FROM stock_status
+            WHERE language_id = :lID AND stock_status_id = :sID ", array(
+                'lID'   => $language_id,
+                'sID'   => $stock_id
+            ));
+            $row = $this->Database->getRow();
+            if($row) {
+                $this->stock_status_id = $row['stock_status_id'];
+                $this->language_id = $row['language_id'];
+                $this->name = $row['name'];
+                return $row;
+            }else {
+                return false;
+            }
+        }else {
+            $this->Database->query("SELECT * FROM stock_status
+            WHERE  stock_status_id = :sID ", array(
+                'aGID'   => $stock_id
+            ));
+            $rows = $this->Database->getRows();
+            if(count($rows) > 0) {
+                $this->stock_status_id = $rows[0]['stock_status_id'];
+                $this->rows = $rows;
+            }
+            return $rows;
+        }
     }
 
 }

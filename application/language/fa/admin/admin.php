@@ -34,6 +34,21 @@ $_['error_product_width'] = "عرض محصول مشخص نیست";
 $_['error_product_height'] = "ارتفاع محصول مشخص نیست";
 $_['error_product_manufacturer_empty'] = "تولیدکننده محصول خالی است";
 $_['error_product_category_empty'] = "دسته بندی محصول خالی است";
+$_['error_product_category_id_invalid'] = "ایدی دسته بندی معتبر نمی باشد";
+$_['error_product_filter_id_invalid'] = "ایدی فیلتر معتبر نمی باشد";
+$_['error_product_option_id_invalid'] = "ایدی گزینه محصول معتبر نمی باشد";
+$_['error_product_option_items_empty'] = "گزینه محصول بدون ایتم است";
+$_['error_product_option_item_id_invalid'] = "ایدی ایتم گزینه محصول معتبر نمی باشد";
+$_['error_product_attribute_id_invalid'] = "ایدی خصوصیت معتبر نمی باشد";
+$_['error_product_attribute_value_empty'] = "مقدار خصوصیت محصول نباید خالی باشد";
+$_['error_product_name'] = "نام محصول خالی است";
+$_['error_product_description'] = "توضیحات محصول خالی است";
+$_['error_product_special_priority_invalid'] = "اولویت نخفیف محصول معتبر نمی باشد";
+$_['error_product_special_quantity_invalid'] = "تعداد تخفیف محصول معتبر نمی باشد";
+$_['error_product_special_price_invalid'] = "قیمت نخفیف محصول معتبر نمی باشد";
+$_['error_product_special_start_date_invalid'] = "تاریخ شروع نخفیف محصول معتبر نمی باشد";
+$_['error_product_special_end_date_invalid'] = "تاریخ پایان نخفیف محصول معتبر نمی باشد";
+$_['error_product_default_image_not_selected'] = "عکس اصلی محصول انتخاب نشده است";
 
 
 /*

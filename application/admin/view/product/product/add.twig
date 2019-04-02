@@ -329,8 +329,9 @@
                                     <table class="table table-bordered text-center">
                                         <thead>
                                         <tr>
+                                            <th class="col-sm-2">عکس پیش فرض</th>
                                             <th class="col-sm-4">پیش نمایش</th>
-                                            <th class="col-sm-4">ترتیب</th>
+                                            <th class="col-sm-2">ترتیب</th>
                                             <th class="col-sm-4">
                                                 <a href="#" id="add-row-image-table" class="add-table-show-data btn btn-primary fa fa-plus"></a>
                                             </th>
@@ -867,6 +868,8 @@
                 let imageShowRowTable = $("#table-image-show-data");
                 imageAddRowBtn.click(function (e) {
                     let newRow = $("<tr>");
+                    $('<td><input type="radio" name="defaultImage" class="form-control"></td>').appendTo(newRow);
+
                     let newCell = $('<td>');
                     let imagePreviewBox = $('<div class="image-preview">').css({
                         'width' : '150px',
@@ -1052,7 +1055,7 @@
                      * */
                     element = $("#product-manufacturer");
                     if(element.val() != "" && element.attr('data-manufacturer-id')) {
-                        data['product-manufacturer'] = element.attr('data-manufacturer-id');
+                        data['product-manufacturer-id'] = element.attr('data-manufacturer-id');
                     }else {
                         error = true;
                         messages.push("{{ Translate['error_product_manufacturer_empty'] }}");
@@ -1128,15 +1131,16 @@
                             }
                             sign = $(element).find('td:nth-child(5)').find('select').val();
                             if(sign == "-") {
-                                optionItemData['price-sign'] = "-";
+                                optionItemData['weight-sign'] = "-";
                             }else {
-                                optionItemData['price-sign'] = "+";
+                                optionItemData['weight-sign'] = "+";
                             }
                             if($(element).find('td:nth-child(5)').find('input').val() != "") {
                                 optionItemData['weight'] = +$(element).find('td:nth-child(5)').find('input').val();
                             }else {
                                 optionItemData['weight'] = 0;
                             }
+
                             productOptionData['option-items'].push(optionItemData);
                         });
                         data['product-option'].push(productOptionData);
@@ -1161,11 +1165,13 @@
                     data['product-image'] = [];
                     imageTableShowElement.find('tr').each(function (index, element) {
                         let imageData = {};
-                        imageData['src'] = imageTableShowElement.find('tr').find('td:first-child').find('input').val();
-                        imageData['sort_order'] = imageTableShowElement.find('tr').find('td:nth-child(2)').find('input').val();
+                        imageData['default'] = $(element).find('td:first-child').find('input').is(':checked');
+                        imageData['src'] = $(element).find('td:nth-child(2)').find('input').val();
+                        imageData['sort_order'] = $(element).find('td:nth-child(3)').find('input').val();
                         data['product-image'].push(imageData);
                     });
                     data['post'] = true;
+                    data['product-post'] = true;
                     if(!error) {
                         $.post(url, data, function (response) {
                             response = JSON.parse(response);
@@ -1192,6 +1198,7 @@
                             }
                         });
                     }else {
+                        console.log(data);
                         for (let i = 0; i < messages.length; i++) {
                             $('<p>').text(messages[i]).appendTo(errorMessageBoxElement.find('.messages'));
                         }

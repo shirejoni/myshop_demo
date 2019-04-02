@@ -13,6 +13,13 @@ use App\System\Model;
  */
 class Length extends Model
 {
+    private $length_id;
+    private $value;
+    private $unit;
+    private $language_id;
+    private $name;
+    private $rows = [];
+
     public function getLengths($data = []) {
         $data['language_id'] = isset($data['language_id']) ? $data['language_id'] : $this->Language->getLanguageID();
         $sql = "SELECT * FROM length l LEFT JOIN length_language ll ON l.length_id = ll.length_id WHERE
@@ -51,6 +58,44 @@ class Length extends Model
         $rows = $this->Database->getRows();
         return $rows;
 
+    }
+
+    public function getLength($length_id, $lID = null) {
+        $language_id = $this->Language->getLanguageID();
+        if($lID != null && $lID != "all") {
+            $language_id = $lID;
+        }
+        if($lID != "all") {
+            $this->Database->query("SELECT * FROM length w JOIN length_language wl on w.length_id = wl.length_id 
+            WHERE wl.language_id = :lID AND w.length_id = :wID ", array(
+                'lID'   => $language_id,
+                'wID'   => $length_id
+            ));
+            $row = $this->Database->getRow();
+            if($row) {
+                $this->length_id = $row['length_id'];
+                $this->value = $row['value'];
+                $this->unit = $row['unit'];
+                $this->language_id = $row['language_id'];
+                $this->name = $row['name'];
+                return $row;
+            }else {
+                return false;
+            }
+        }else {
+            $this->Database->query("SELECT * FROM length w JOIN length_language wl on w.length_id = wl.length_id 
+            WHERE w.length_id = :wID ", array(
+                'wID'   => $length_id
+            ));
+            $rows = $this->Database->getRows();
+            if(count($rows) > 0) {
+
+                $this->length_id = $rows[0]['length_id'];
+                $this->value = $rows[0]['value'];
+                $this->rows = $rows;
+            }
+            return $rows;
+        }
     }
 
 }
