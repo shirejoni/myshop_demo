@@ -335,7 +335,7 @@ class Category extends Model {
                             'cLevel'=> $row['level']
                         ));
                         $path = [];
-                        $this->Database->query("SELECT * FROM category_path WHERE category_id = :cID ORDER BY level ASc", array(
+                        $this->Database->query("SELECT * FROM category_path WHERE category_id = :cID ORDER BY level ASC", array(
                             'cID'   => $data['category_parent_id']
                         ));
                         $results = $this->Database->getRows();
