@@ -526,4 +526,28 @@ class ControllerProductProduct extends Controller {
         return new Action("error/notFound", 'web');
 
     }
+
+    public function status() {
+        if(isset($this->Request->post['product_id']) && isset($this->Request->post['product_status'])) {
+            $product_id = (int) $this->Request->post['product_id'];
+            $product_status = (int) $this->Request->post['product_status'];
+            /** @var Product $Product */
+            $Product = $this->load('Product', $this->registry);
+            $product = $Product->getProduct($product_id);
+            $json = [];
+            if($product_id && $product) {
+                $Product->editProduct($product_id, array(
+                    'status'    => $product_status
+                ));
+                $json['status'] = 1;
+                $json['messages'] = [$this->Language->get('message_success_done')];
+            }else {
+                $json['status'] = 0;
+                $json['messages'] = [$this->Language->get('error_done')];
+            }
+            $this->Response->setOutPut(json_encode($json));
+            return;
+        }
+        return new Action('error/notFound', 'web');
+    }
 }

@@ -260,5 +260,224 @@ class Product extends Model
         return $this->Database->numRows();
     }
 
+    public function editProduct($product_id, $data) {
+        if(count($data) > 0) {
+            $sql = "UPDATE product SET ";
+            $params = [];
+            $query = [];
+            if(isset($data['sort_order'])) {
+                $query[] = "sort_order = :pSortOrder ";
+                $params['pSortOrder'] = $data['sort_order'];
+            }
+            if(isset($data['quantity'])) {
+                $query[] = "quantity = :pQuantity ";
+                $params['pQuantity'] = $data['quantity'];
+            }
+            if(isset($data['stock_status'])) {
+                $query[] = "stock_status_id = :StockStatusID ";
+                $params['StockStatusID'] = $data['stock_status'];
+            }
+            if(isset($data['image'])) {
+                $query[] = "image = :pImage ";
+                $params['pImage'] = $data['image'];
+            }
+            if(isset($data['manufacturer_id'])) {
+                $query[] = "manufacturer_id = :mID ";
+                $params['mID'] = $data['manufacturer_id'];
+            }
+            if(isset($data['product_price'])) {
+                $query[] = "price = :pPrice ";
+                $params['pPrice'] = $data['product_price'];
+            }
+            if(isset($data['sort_order'])) {
+                $query[] = "sort_order = :pSortOrder ";
+                $params['pSortOrder'] = $data['sort_order'];
+            }
+            if(isset($data['time_updated'])) {
+                $query[] = "date_updated = :pDateUpdated ";
+                $params['pDateUpdated'] = $data['time_updated'];
+            }
+            if(isset($data['product_date'])) {
+                $query[] = "date_available = :pDateAvailable ";
+                $params['pDateAvailable'] = $data['product_date'];
+            }
+            if(isset($data['weight_value'])) {
+                $query[] = "weight = :pWeight ";
+                $params['pWeight'] = $data['weight_value'];
+            }
+            if(isset($data['weight_unit_id'])) {
+                $query[] = "weight_id = :pWeightUnitID ";
+                $params['pWeightUnitID'] = $data['weight_unit_id'];
+            }
+            if(isset($data['height_value'])) {
+                $query[] = "height = :pHeight ";
+                $params['pHeight'] = $data['height_value'];
+            }
+            if(isset($data['length_value'])) {
+                $query[] = "length = :pLength ";
+                $params['pLength'] = $data['length_value'];
+            }
+            if(isset($data['width_value'])) {
+                $query[] = "width = :pWidth ";
+                $params['pWidth'] = $data['width_value'];
+            }
+            if(isset($data['length_unit_id'])) {
+                $query[] = "length_id = :pLengthUnitID ";
+                $params['pLengthUnitID'] = $data['length_unit_id'];
+            }
+            if(isset($data['product_quantity_per_order'])) {
+                $query[] = "minimum = :pMinimum ";
+                $params['pMinimum'] = $data['product_quantity_per_order'];
+            }
+            if(isset($data['status'])) {
+                $query[] = "status = :pStatus ";
+                $params['pStatus'] = $data['status'];
+            }
+            if(isset($data['viewed'])) {
+                $query[] = "viewed = :pViewed ";
+                $params['pViewed'] = $data['viewed'];
+            }
+            $sql .= implode(" , ", $query);
+            $sql .= " WHERE product_id = :pID ";
+            $params['pID'] = $product_id;
+            if(count($query) > 0) {
+                $this->Database->query($sql, $params);
+            }
+            if(isset($data['product_descriptions'])) {
+                foreach ($data['product_descriptions'] as $language_id => $product_description) {
+                    $this->Database->query("UPDATE product_language SET name = :pName , description = :pDescription WHERE 
+                    product_id = :pID AND language_id = :lID ", array(
+                        'pID'   => $product_id,
+                        'lID'   => $language_id,
+                        'pName' => $product_description['name'],
+                        'pDescription'  => $product_description['description'],
+                    ));
+                }
+            }
+
+            if(isset($data['attributes'])) {
+                $this->Database->query("DELETE FROM product_attribute WHERE product_id = :pID", array(
+                    'pID'   => $product_id,
+                ));
+                foreach ($data['attributes'] as $attribute) {
+                    if(isset($attribute['attribute_values'])) {
+                        foreach ($attribute['attribute_values'] as $language_id => $attribute_value) {
+                            $this->Database->query("INSERT INTO product_attribute (product_id, attribute_id, language_id, text) 
+                    VALUES (:pID, :aID, :lID, :pAText)", array(
+                                'pID'   => $product_id,
+                                'aID'   => $attribute['attribute_id'],
+                                'lID'   => $language_id,
+                                'pAText'   => $attribute_value,
+                            ));
+                        }
+                    }
+                }
+            }
+
+            if(isset($data['options'])) {
+                $this->Database->query("DELETE FROM product_option WHERE product_id = :pID", array(
+                    'pID'   => $product_id
+                ));
+                $this->Database->query("DELETE FROM product_option_value WHERE product_id = :pID", array(
+                    'pID'   => $product_id
+                ));
+                foreach ($data['options'] as $option) {
+                    $this->Database->query("INSERT INTO product_option (product_id, option_id, required) VALUES (
+                :pID, :pOptionID, :oRequired)",array(
+                        "pID"   => $product_id,
+                        'pOptionID' => $option['option_id'],
+                        'oRequired' => $option['is_required']
+                    ));
+                    $product_option_id = $this->Database->insertId();
+                    foreach ($option['option_items'] as $option_item) {
+                        $this->Database->query("INSERT INTO product_option_value (product_id, product_option_id, option_id,
+                    option_value_id, quantity, subtract, price_prefix, price, weight_prefix, weight) VALUES 
+                    (:pID, :pOID, :oID, :oVID, :pOQuantity, :pOSubtract, :pOPPrefix, :pOPrice, :pOWP, :pOW)", array(
+                            'pID'   => $product_id,
+                            'pOID'  => $product_option_id,
+                            'oID'   => $option['option_id'],
+                            'oVID'  => $option_item['option_item_id'],
+                            'pOQuantity'    => $option_item['quantity'],
+                            'pOSubtract'    => $option_item['effect-on-stock'],
+                            'pOPPrefix'     => $option_item['price-sign'],
+                            'pOPrice'       => $option_item['price'],
+                            'pOWP'          => $option_item['weight-sign'],
+                            'pOW'           => $option_item['weight']
+                        ));
+                    }
+                }
+            }
+            if(isset($data['special_price'])) {
+                $this->Database->query("DELETE FROM product_special WHERE product_id = :pID", array(
+                    'pID'   => $product_id
+                ));
+                foreach ($data['special_price'] as $special_price) {
+                    $this->Database->query("INSERT INTO product_special (product_id, price, priority, date_start, date_end) VALUES
+                (:pID, :sPrice, :sPriority, :sDateStarted, :sDateEnd)", array(
+                        'pID'   => $product_id,
+                        'sPrice'    => $special_price['price'],
+                        'sPriority' => $special_price['priority'],
+                        'sDateStarted'     => $special_price['start_date'],
+                        'sDateEnd'      => $special_price['end_date']
+                    ));
+                }
+            }
+
+            if(isset($data['images'])) {
+
+                foreach ($data['images'] as $image) {
+                    $this->Database->query("DELETE FROM product_image WHERE product_id = :pID", array(
+                        'pID'   => $product_id
+                    ));
+                    $this->Database->query("INSERT INTO product_image (product_id, image, sort_order) VALUES 
+                (:pID, :Image, :SortOrder)", array(
+                        'pID' => $product_id,
+                        'Image' => $image['src'],
+                        'SortOrder' => $image['sort_order']
+                    ));
+                }
+            }
+            if(isset($data['categories_id'])) {
+                $this->Database->query("DELETE FROM product_category WHERE product_id = :pID", array(
+                    'pID'   => $product_id
+                ));
+                foreach ($data['categories_id'] as $category_id) {
+                    $this->Database->query("INSERT INTO product_category (product_id, category_id) VALUES 
+                (:pID, :cID)", array(
+                        'pID'    => $product_id,
+                        'cID'    => $category_id
+                    ));
+                }
+            }
+            if(isset($data['filters_id'])) {
+                $this->Database->query("DELETE FROM product_filter WHERE product_id = :pID", array(
+                    'pID'   => $product_id
+                ));
+                foreach ($data['filters_id'] as $filter_id) {
+                    $this->Database->query("INSERT INTO product_filter (product_id, filter_id) VALUES 
+                (:pID, :fID)", array(
+                        'pID'   => $product_id,
+                        'fID'   => $filter_id
+                    ));
+                }
+            }
+
+            if(isset($data['related_id'])) {
+                $this->Database->query("DELETE FROM product_related WHERE product_id = :pID", array(
+                    'pID'   => $product_id
+                ));
+                foreach ($data['related_id'] as $related_id) {
+                    $this->Database->query("INSERT INTO product_related (product_id, related_id) VALUES 
+                (:pID, :rID)", array(
+                        'pID'   => $product_id,
+                        'rID'   => $related_id
+                    ));
+                }
+            }
+            return $this->Database->numRows() > 0 ? true : false;
+        }
+        return false;
+    }
+
 
 }
