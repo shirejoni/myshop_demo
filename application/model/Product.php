@@ -9,9 +9,20 @@ use App\System\Model;
 
 /**
  * @property Database Database
+ * @property Language Language
  */
 class Product extends Model
 {
+
+    private $product_id;
+    private $sort_order;
+    private $language_id;
+    private $name;
+    /**
+     * @var array|bool
+     */
+    private $rows = [];
+    private $manufacturer_id;
 
     public function getProducts($data = []) {
         $data['sort'] = isset($data['sort']) ? $data['sort'] : '';
@@ -206,6 +217,47 @@ class Product extends Model
             'pID'   => $product_id
         ));
         return $this->Database->getRows();
+    }
+
+    public function getProduct($product_id, $lID = null) {
+        $language_id = $this->Language->getLanguageID();
+        if($lID != null && $lID != "all") {
+            $language_id = $lID;
+        }
+        if($lID != "all") {
+            $this->Database->query("SELECT * FROM product p LEFT JOIN product_language pl ON p.product_id = pl.product_id WHERE 
+            p.product_id = :pID AND pl.language_id = :lID", array(
+                'lID'   => $language_id,
+                'pID'   => $product_id
+            ));
+            $row = $this->Database->getRow();
+            $this->product_id = $row['product_id'];
+            $this->manufacturer_id = $row['manufacturer_id'];
+            $this->sort_order = $row['sort_order'];
+            $this->language_id = $row['language_id'];
+            $this->name = $row['name'];
+            $this->rows = [];
+            $this->rows[0] = $row;
+            return $row;
+        }else {
+            $this->Database->query("SELECT * FROM product p LEFT JOIN product_language pl ON p.product_id = pl.product_id WHERE 
+            p.product_id = :pID ", array(
+                'pID'   => $product_id
+            ));
+            $rows = $this->Database->getRows();
+            $this->product_id = $rows[0]['$this->product_id'];
+            $this->manufacturer_id = $rows[0]['$this->manufacturer_id'];
+            $this->sort_order = $rows[0]['sort_order'];
+            $this->rows = $rows;
+            return $rows;
+        }
+    }
+
+    public function deleteProduct($product_id, $data = []) {
+        $this->Database->query("DELETE FROM product WHERE product_id = :pID ", array(
+            'pID'   => $product_id
+        ));
+        return $this->Database->numRows();
     }
 
 
