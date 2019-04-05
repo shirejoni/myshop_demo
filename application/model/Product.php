@@ -13,8 +13,59 @@ use App\System\Model;
 class Product extends Model
 {
 
-    public function getProducts() {
-        return [];
+    public function getProducts($data = []) {
+        $data['sort'] = isset($data['sort']) ? $data['sort'] : '';
+        $data['order'] = isset($data['order']) ? strtoupper($data['order']) : 'ASC';
+        $data['language_id'] = isset($data['language_id']) ? $data['language_id'] : $this->Language->getLanguageID();
+
+            $sql = "SELECT * FROM product p LEFT JOIN product_language pl ON p.product_id = pl.product_id WHERE 
+            pl.language_id = :lID ";
+            if(isset($data['filter_name'])) {
+                $sql .= " AND pl.name LIKE :fName ";
+            }
+            $sql .= " GROUP BY p.product_id ";
+
+            $sort_data = array(
+                'pl.name',
+                'p.sort_order',
+                'p.price',
+                'p.quantity',
+                'p.status',
+            );
+
+            if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+                $sql .= " ORDER BY " . $data['sort'];
+            }else {
+                $data['sort'] = '';
+                $sql .= " ORDER BY p.product_id";
+            }
+
+            if (isset($data['order']) && ($data['order'] == 'DESC')) {
+                $sql .= " DESC";
+            } else {
+                $sql .= " ASC";
+            }
+
+            if (isset($data['start']) || isset($data['limit'])) {
+                if ($data['start'] < 0) {
+                    $data['start'] = 0;
+                }
+
+                if ($data['limit'] < 1) {
+                    $data['limit'] = 20;
+                }
+
+                $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+            }
+            $params =  array(
+                'lID'   => $data['language_id'],
+            );
+            if(isset($data['filter_name'])) {
+                $params['fName'] = $data['filter_name'] . "%";
+            }
+            $this->Database->query($sql, $params);
+            $rows = $this->Database->getRows();
+        return $rows;
     }
 
     public function insertProduct($data) {
@@ -149,4 +200,13 @@ class Product extends Model
         }
         return $product_id;
     }
+
+    public function getProductSpecials($product_id) {
+        $this->Database->query("SELECT * FROM product_special WHERE product_id = :pID ORDER BY priority, price", array(
+            'pID'   => $product_id
+        ));
+        return $this->Database->getRows();
+    }
+
+
 }
