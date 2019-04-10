@@ -79,38 +79,41 @@ class Product extends Model
         return $rows;
     }
 
-    public function insertProduct($data) {
-        $this->Database->query("INSERT INTO product (quantity, stock_status_id, image, manufacturer_id, price, 
+    public function insertProduct($data, $product_id = null) {
+        if(!$product_id) {
+            $this->Database->query("INSERT INTO product (quantity, stock_status_id, image, manufacturer_id, price, 
         date_available, date_added, date_updated, weight, weight_id, height, width, length, length_id, minimum, 
         status, viewed, sort_order) VALUES (:pQuantity, :pStockStatusID, :pImage, :mID, :pPrice, :pAvailable, :pAdded, :pUpdated,
         :pWeight, :pWeightID, :pHeight, :pWidth, :pLength, :pLengthID, :pMinimum, :pStatus, :pViewed, :pSortOrder)", array(
-            'pQuantity'         => $data['quantity'],
-            'pStockStatusID'    => $data['stock_status'],
-            'pImage'            => $data['image'],
-            'pPrice'            => $data['product_price'],
-            'mID'               => $data['manufacturer_id'],
-            'pAvailable'        => $data['product_date'],
-            'pAdded'            => $data['time_added'],
-            'pUpdated'          => $data['time_updated'],
-            'pWeight'           => $data['weight_value'],
-            'pWeightID'           => $data['weight_unit_id'],
-            'pHeight'           => $data['height_value'],
-            'pWidth'           => $data['width_value'],
-            'pLength'           => $data['length_value'],
-            'pLengthID'           => $data['length_unit_id'],
-            'pMinimum'          => $data['product_quantity_per_order'],
-            'pStatus'           => 0,
-            'pViewed'           => 0,
-            'pSortOrder'        => $data['sort_order'],
-        ));
-        $product_id = $this->Database->insertId();
+                'pQuantity'         => $data['quantity'],
+                'pStockStatusID'    => $data['stock_status'],
+                'pImage'            => $data['image'],
+                'pPrice'            => $data['product_price'],
+                'mID'               => $data['manufacturer_id'],
+                'pAvailable'        => $data['product_date'],
+                'pAdded'            => $data['time_added'],
+                'pUpdated'          => $data['time_updated'],
+                'pWeight'           => $data['weight_value'],
+                'pWeightID'           => $data['weight_unit_id'],
+                'pHeight'           => $data['height_value'],
+                'pWidth'           => $data['width_value'],
+                'pLength'           => $data['length_value'],
+                'pLengthID'           => $data['length_unit_id'],
+                'pMinimum'          => $data['product_quantity_per_order'],
+                'pStatus'           => 0,
+                'pViewed'           => 0,
+                'pSortOrder'        => $data['sort_order'],
+            ));
+            $product_id = $this->Database->insertId();
+        }
+
         foreach ($data['product_descriptions'] as $language_id => $product_description) {
             $this->Database->query("INSERT INTO product_language (product_id, language_id, name, meta_title, meta_description, meta_keyword, description) VALUES 
             (:pID, :lID, :pName, NULL, NULL, NULL, :pDescription)", array(
                 'pID'   => $product_id,
                 'lID'   => $language_id,
-                'pName' => $product_description['name'],
-                'pDescription'  => $product_description['description'],
+                'pName' => isset($product_description['name']) ? $product_description['name'] : '',
+                'pDescription'  => isset($product_description['description']) ? $product_description['description'] : '',
             ));
         }
 
@@ -185,8 +188,8 @@ class Product extends Model
             foreach ($data['categories_id'] as $category_id) {
                 $this->Database->query("INSERT INTO product_category (product_id, category_id) VALUES 
                 (:pID, :cID)", array(
-                   'pID'    => $product_id,
-                   'cID'    => $category_id
+                    'pID'    => $product_id,
+                    'cID'    => $category_id
                 ));
             }
         }
@@ -210,6 +213,13 @@ class Product extends Model
             }
         }
         return $product_id;
+    }
+
+    public function getImages($product_id) {
+        $this->Database->query("SELECT * FROM product_image WHERE product_id = :pID", array(
+            'pID'   => $product_id
+        ));
+        return $this->Database->getRows();
     }
 
     public function getProductSpecials($product_id) {
@@ -245,8 +255,8 @@ class Product extends Model
                 'pID'   => $product_id
             ));
             $rows = $this->Database->getRows();
-            $this->product_id = $rows[0]['$this->product_id'];
-            $this->manufacturer_id = $rows[0]['$this->manufacturer_id'];
+            $this->product_id = $rows[0]['product_id'];
+            $this->manufacturer_id = $rows[0]['manufacturer_id'];
             $this->sort_order = $rows[0]['sort_order'];
             $this->rows = $rows;
             return $rows;
@@ -254,9 +264,18 @@ class Product extends Model
     }
 
     public function deleteProduct($product_id, $data = []) {
-        $this->Database->query("DELETE FROM product WHERE product_id = :pID ", array(
-            'pID'   => $product_id
-        ));
+        if(isset($data['product_descriptions']) && count($data['product_descriptions']) > 0) {
+            foreach ($data['product_descriptions'] as $language_id => $product_description) {
+                $this->Database->query("DELETE FROM product_language WHERE language_id = :lID AND product_id = :pID ", array(
+                    'lID'   => $language_id,
+                    'pID'   => $product_id
+                ));
+            }
+        }else {
+            $this->Database->query("DELETE FROM product WHERE product_id = :pID ", array(
+                'pID' => $product_id
+            ));
+        }
         return $this->Database->numRows();
     }
 
@@ -424,11 +443,11 @@ class Product extends Model
             }
 
             if(isset($data['images'])) {
-
+                $this->Database->query("DELETE FROM product_image WHERE product_id = :pID", array(
+                    'pID'   => $product_id
+                ));
                 foreach ($data['images'] as $image) {
-                    $this->Database->query("DELETE FROM product_image WHERE product_id = :pID", array(
-                        'pID'   => $product_id
-                    ));
+
                     $this->Database->query("INSERT INTO product_image (product_id, image, sort_order) VALUES 
                 (:pID, :Image, :SortOrder)", array(
                         'pID' => $product_id,
@@ -479,5 +498,91 @@ class Product extends Model
         return false;
     }
 
+    public function getCategories($product_id) {
+        $this->Database->query("SELECT category_id FROM product_category WHERE product_id = :pID", array(
+            'pID'   => $product_id
+        ));
+        $result = [];
+        foreach ($this->Database->getRows() as $row) {
+            $result[] = $row['category_id'];
+        }
+        return $result;
+    }
+
+    public function getFilters($product_id) {
+        $this->Database->query("SELECT filter_id FROM product_filter WHERE product_id = :pID", array(
+            'pID'   => $product_id
+        ));
+        $result = [];
+        foreach ($this->Database->getRows() as $row) {
+            $result[] = $row['filter_id'];
+        }
+        return $result;
+    }
+
+    public function getAttributes($product_id) {
+        $this->Database->query("SELECT * FROM product_attribute WHERE product_id = :aID ", array(
+            'aID'   => $product_id
+        ));
+        $result = [];
+        foreach ($this->Database->getRows() as $row) {
+            $result[] = array(
+                'attribute_id'  => $row['attribute_id'],
+                'value'         => $row['text'],
+                'language_id'   => $row['language_id']
+            );
+        }
+        return $result;
+    }
+
+    public function getOptions($product_id, $lID = null) {
+        $language_id = $this->Language->getLanguageID();
+        if($lID != null) {
+            $language_id = $lID;
+        }
+        $this->Database->query("SELECT * FROM product_option po LEFT JOIN `option` o ON o.option_id = po.option_id LEFT JOIN 
+        option_language ol ON o.option_id = ol.option_id WHERE product_id = :pID AND language_id = :lID", array(
+            'pID'   => $product_id,
+        'lID'       => $language_id
+        ));
+        $product_options = [];
+        foreach ($this->Database->getRows() as $row) {
+            $product_options[] = array(
+                'product_option_id' => $row['product_option_id'],
+                'option_id'         => $row['option_id'],
+                'product_id'         => $row['product_id'],
+                'required'         => $row['required'],
+                'option_type'         => $row['option_type'],
+                'sort_order'         => $row['sort_order'],
+                'language_id'         => $row['language_id'],
+                'name'         => $row['name'],
+            );
+        }
+        foreach ($product_options as $index => $product_option) {
+            $product_option_values_data = [];
+            $this->Database->query("SELECT * FROM product_option_value pov LEFT JOIN 
+            option_value ov on pov.option_value_id = ov.option_value_id WHERE pov.product_option_id = :pOID", array(
+               'pOID'   => $product_option['product_option_id']
+            ));
+            foreach ($this->Database->getRows() as $row) {
+                $product_option_values_data[] = array(
+                    'product_option_value_id'   => $row['product_option_value_id'],
+                    'product_id'                => $row['product_id'],
+                    'product_option_id'         => $row['product_option_id'],
+                    'option_id'                 => $row['option_id'],
+                    'option_value_id'           => $row['option_value_id'],
+                    'quantity'                  => $row['quantity'],
+                    'subtract'                  => $row['subtract'],
+                    'price_prefix'              => $row['price_prefix'],
+                    'price'                     => $row['price'],
+                    'weight_prefix'             => $row['weight_prefix'],
+                    'weight'                    => $row['weight']
+                );
+            }
+            $product_options[$index]['product_option_values'] = $product_option_values_data;
+
+        }
+        return $product_options;
+    }
 
 }

@@ -1,0 +1,1456 @@
+{% extends "home/_temp/blank_dashboard_temp.twig" %}
+
+
+{% block Content %}
+    <div class="container">
+        <section class="row">
+            <div class="col-12 px-5 pt-4">
+                <div class="message-box success-box" id="success-message-box" style="display: none;">
+                    <h4>موفقیت!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="message-box error-box" id="error-message-box" style="display: none;">
+                    <h4>خطا!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="row"  style="box-shadow: 0 0 5px rgba(0,0,0,0.1)">
+                    <div class="col-12 p-2">
+                        <dib class="form-group">
+                            <ul class="nav nav-tabs" id="mainTab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">عمومی</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="true">اطلاعات</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#link" role="tab" aria-controls="link" aria-selected="true">ارتباط</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#attribute" role="tab" aria-controls="attribute" aria-selected="true">خصوصیت محصول</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#option" role="tab" aria-controls="option" aria-selected="true">گزینه محصول</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#special" role="tab" aria-controls="special" aria-selected="true">تخفیف</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#image" role="tab" aria-controls="image" aria-selected="true">عکس</a>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content text-right" id="mainTabContent">
+                                {#
+                                    General Tab
+                                #}
+                                <div class="tab-pane fade active show p-5" id="general" role="tabpanel" aria-labelledby="general-tab">
+                                    <dib class="form-group">
+                                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                            {% for Language in Languages %}
+                                                {% if Language['language_id'] == LanguageDefaultID %}
+
+                                                    <li class="nav-item">
+                                                        <a class="nav-link active" data-toggle="tab" href="#language-{{ Language['language_id'] }}" role="tab" aria-controls="language-{{ Language['language_id'] }}" aria-selected="true">{{ Language['name'] }}</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" data-toggle="tab" href="#language-{{ Language['language_id'] }}" role="tab" aria-controls="language-{{ Language['language_id'] }}" aria-selected="false">{{ Language['name'] }}</a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                        <div class="tab-content text-right" id="myTabContent">
+                                            {% for Language in Languages %}
+                                                {% if Language['language_id'] == LanguageDefaultID %}
+                                                    {% set ClassName = "show active" %}
+                                                {% else %}
+                                                    {% set ClassName = "" %}
+                                                {% endif %}
+                                                <div class="tab-pane fade {{ ClassName }} " id="language-{{ Language['language_id'] }}" role="tabpanel" aria-labelledby="language-{{ Language['language_id'] }}-tab">
+                                                    <div class="form-group d-flex align-middle mt-3">
+                                                        <label class="col-sm-2 control-label text-center">نام</label>
+                                                        <div class="col-sm-10">
+                                                            <input type="text" value="{{ ProductInfo['product_descriptions'][Language['language_id']]['name'] }}" placeholder="{{ Language['name'] }}" class="form-control" id="product-name-{{ Language['language_id'] }}">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group d-flex align-middle mt-3">
+                                                        <label class="col-sm-2 control-label text-center">توضیحات</label>
+                                                        <div class="col-sm-10">
+                                                            <textarea id="ckeditor-{{ Language['language_id'] }}">
+
+                                                                {{ ProductInfo['product_descriptions'][Language['language_id']]['description'] }}
+
+                                                            </textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+
+                                        </div>
+                                    </dib>
+
+                                </div>
+                                {#
+                                    Info Tab
+                                #}
+                                <div class="tab-pane fade " id="info" role="tabpanel" aria-labelledby="info-tab">
+                                    <div class="form-group d-flex align-middle mt-3">
+                                        <label class="col-sm-2 control-label text-center">قیمت</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" value="{{ ProductInfo['price'] }}" id="product-price" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group d-flex align-middle mt-3">
+                                        <label class="col-sm-2 control-label text-center">تاریخ</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" value="{{ ProductInfo['date_available'] }}" id="product-date" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group d-flex align-middle mt-3">
+                                        <label class="col-sm-2 control-label text-center">تعداد</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" value="{{ ProductInfo['quantity'] }}" id="product-quantity" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group d-flex align-middle mt-3">
+                                        <label class="col-sm-2 control-label text-center">حداقل تعداد انتخاب</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" value="{{ ProductInfo['minimum'] }}" id="product-min-quantity-per-amount" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group d-flex align-middle mt-3">
+                                        <label class="col-sm-2 control-label text-center">شرایط محصول</label>
+                                        <div class="col-sm-10">
+                                            <select class="form-control" id="product-stock-status">
+                                                {% for StockStatus in StocksStatus %}
+                                                    {% if ProductInfo['stock_status_id'] == StockStatus['stock_status_id'] %}
+                                                        {% set Checked = "selected" %}
+                                                    {% else %}
+                                                        {% set Checked = "" %}
+                                                    {% endif %}
+                                                    <option value="{{ StockStatus['stock_status_id'] }}" {{ Checked }}>{{ StockStatus['name'] }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group d-flex align-middle mt-3">
+                                        <label class="col-sm-2 control-label text-center">وزن</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" value="{{ ProductInfo['weight'] }}" id="product-weight-value" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group d-flex align-middle mt-3">
+                                        <label class="col-sm-2 control-label text-center">واحد وزن</label>
+                                        <div class="col-sm-10">
+                                            <select id="product-weight-unit" class="form-control">
+                                                {% for Weight in Weights %}
+                                                    {% if ProductInfo['weight_id'] == Weight['weight_id'] %}
+                                                        {% set Checked = "selected" %}
+                                                    {% else %}
+                                                        {% set Checked = "" %}
+                                                    {% endif %}
+                                                    <option value="{{ Weight['weight_id'] }}" {{ Checked }}>{{ Weight['name'] }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group d-flex align-middle mt-3">
+                                        <label class="col-sm-2 control-label text-center">ابعاد</label>
+                                        <div class="col-sm-10">
+                                            <div class="row">
+                                                <div class="col-sm-4">
+                                                    <input value="{{ ProductInfo['length'] }}" type="text" id="product-length" class="form-control" placeholder="طول">
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input value="{{ ProductInfo['width'] }}" type="text" id="product-width" class="form-control" placeholder="عرض">
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input value="{{ ProductInfo['height'] }}" type="text" id="product-height" class="form-control" placeholder="ارتفاع">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group d-flex align-middle mt-3">
+                                        <label class="col-sm-2 control-label text-center">واحد طول</label>
+                                        <div class="col-sm-10">
+                                            <select id="product-length-unit" class="form-control">
+                                                {% for Length in Lengths %}
+                                                    {% if ProductInfo['length_id'] == Length['length_id'] %}
+                                                        {% set Checked = "selected" %}
+                                                    {% else %}
+                                                        {% set Checked = "" %}
+                                                    {% endif %}
+                                                    <option value="{{ Length['length_id'] }}" {{ Checked }}>{{ Length['name'] }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group d-flex align-middle mt-3">
+                                        <label class="col-sm-2 control-label text-center">ترتیب</label>
+                                        <div class="col-sm-10">
+                                            <input value="{{ ProductInfo['sort_order'] }}" type="text" class="form-control" id="product-sort-order">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                {#
+                                    Link Tab
+                                #}
+                                <div class="tab-pane fade " id="link" role="tabpanel" aria-labelledby="link-tab">
+
+                                    <div class="form-group d-flex align-middle mt-3">
+                                        <label class="col-sm-2 control-label text-center">تولیدکننده</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" id="product-manufacturer" value="{{ ProductInfo['manufacturer_name'] }}" data-manufacturer-id="{{ ProductInfo['manufacturer_id'] }}" class="form-control">
+                                            <div class="auto-recommend-box" id="product-manufacturer-auto-recommend-box" style="display: none;">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group d-flex align-middle mt-3">
+                                        <label class="col-sm-2 control-label text-center">دسته بندی</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" id="product-category" class="form-control">
+                                            <div class="auto-recommend-box" id="product-category-auto-recommend-box" style="display: none;">
+
+                                            </div>
+                                            <div class="show-connect-data" id="product-category-show-connect-data">
+                                                {% for ProductCategory in ProductInfo['categories'] %}
+                                                    <p data-category-id="{{ ProductCategory['category_id'] }}"><i class="fa fa-minus-circle"></i>{{ ProductCategory['name'] }}</p>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group d-flex align-middle mt-3">
+                                        <label class="col-sm-2 control-label text-center">فیلتر</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" id="product-filter" class="form-control">
+                                            <div class="auto-recommend-box" id="product-filter-auto-recommend-box" style="display: none;">
+                                            </div>
+                                            <div class="show-connect-data" id="product-filter-show-connect-data">
+                                                {% for ProductFilter in ProductInfo['product_filters'] %}
+                                                    <p data-filter-id="{{ ProductFilter['filter_id'] }}"><i class="fa fa-minus-circle"></i>{{ ProductFilter['filter_group_name'] }} > {{ ProductFilter['name'] }}</p>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group d-flex align-middle mt-3">
+                                        <label class="col-sm-2 control-label text-center">محصولات مرتبط</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" id="product-related" class="form-control">
+                                            <div class="auto-recommend-box" id="product-related-auto-recommend-box" style="display: none;">
+                                            </div>
+                                            <div class="show-connect-data" id="product-related-show-connect-data">
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                                {#
+                                    attribute Tab
+                                #}
+                                <div class="tab-pane fade py-3" id="attribute" role="tabpanel" aria-labelledby="link-tab">
+
+                                    <table class="table table-bordered text-center">
+                                        <thead>
+                                        <tr>
+                                            <th class="col-sm-5">نام خصوصیت</th>
+                                            <th class="col-sm-5">مقدار</th>
+                                            <th class="col-sm-2">
+                                                <a href="#" id="add-row-attribute-table" class="add-table-show-data btn btn-primary fa fa-plus"></a>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="table-attribute-show-data">
+                                        {% for ProductAttribute in ProductInfo['attributes'] %}
+
+                                            <tr>
+                                                <td>
+                                                    <input class="form-control" data-attribute-id="{{ ProductAttribute['attribute_id'] }}" value="{{ ProductAttribute['attribute_group_name'] }} > {{ ProductAttribute['name'] }}" type="text" placeholder="نام خصوصیت">
+                                                    <div class="auto-recommend-box"
+                                                         style="display: none;"></div>
+                                                </td>
+                                                <td>
+                                                    {% for Language in Languages %}
+                                                        <textarea data-language-id="{{ Language['language_id'] }}" class="form-control mt-1"
+                                                                  type="text"
+                                                                  placeholder="فارسی">{{ ProductAttribute['value'][Language['language_id']] }}</textarea>
+                                                    {% endfor %}
+                                                </td>
+                                                <td><a href="#" class="btn btn-danger fa fa-minus"></a></td>
+                                            </tr>
+
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+
+                                {#
+                                    Option Tab
+                                #}
+                                <div class="tab-pane fade py-3" id="option" role="tabpanel" aria-labelledby="link-tab">
+
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <div class="nav flex-column nav-pills" id="option-head-tab" role="tablist" aria-orientation="vertical">
+                                                {% for ProductOption in ProductInfo['product_options'] %}
+                                                    <a class="nav-link active show" id="option-head-tab-{{ ProductOption['option_id'] }}"
+                                                       data-toggle="pill" href="#option-body-tab-{{ ProductOption['option_id'] }}" role="tab"
+                                                       aria-controls="option-body-tab-1" aria-selected="true">
+                                                        <i class="fa fa-minus ml-1" data-option-id="{{ ProductOption['option_id'] }}"></i>
+                                                        {{ ProductOption['name'] }}
+                                                    </a>
+                                                {% endfor %}
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col">
+                                                    <input type="text" id="option-input-search" class="form-control">
+                                                    <div class="auto-recommend-box" id="product-option-auto-recommend-box" style="display: none;">
+                                                    </div>
+                                                </div>
+                                                <div class="col p-0 mt-1"><a href="#" id="add-head-option-tab-btn" class="btn btn-warning fa fa-plus"></a></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-9">
+                                            <div class="tab-content" id="option-body-tab">
+                                                {% for ProductOption in ProductInfo['product_options'] %}
+                                                    <div class="tab-content" id="option-body-tab">
+
+                                                        <div class="tab-pane fade active show" id="option-body-tab-{{ ProductOption['option_id'] }}"
+                                                             role="tabpanel" aria-labelledby="option-body-tab-{{ ProductOption['option_id'] }}">
+                                                            <div class="form-group d-flex align-middle mt-3"><label
+                                                                        class="col-sm-2 control-label text-center">الزامی</label>
+                                                                <div class="col-sm-10">
+                                                                    <select class="form-control">
+                                                                        {% if ProductOption['required'] == '1' %}
+                                                                            <option value="1" selected>بله</option>
+                                                                            <option value="0">خیر</option>
+                                                                        {% else %}
+                                                                            <option value="1">بله</option>
+                                                                            <option value="0" selected>خیر</option>
+                                                                        {% endif %}
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group d-flex align-middle mt-3">
+                                                                <table class="table table-bordered text-center">
+                                                                    <thead>
+                                                                    <tr>
+                                                                        <th class="col-3">مقدار گزینه</th>
+                                                                        <th>تعداد</th>
+                                                                        <th>اثر در موجودی</th>
+                                                                        <th>قیمت</th>
+                                                                        <th>وزن</th>
+                                                                        <th><a href="javascript:void(0);"
+                                                                               id="add-row-option-table"
+                                                                               onclick="addOptionRow({{ ProductOption['option_id'] }})"
+                                                                               class="add-table-show-data btn btn-primary fa fa-plus"></a>
+                                                                        </th>
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody id="table-option-{{ ProductOption['option_id'] }}-show-data">
+                                                                        {% set Count = 0 %}
+                                                                        {% for ProductOptionValue in ProductOption['product_option_values'] %}
+                                                                            {% set Count = Count + 1 %}
+                                                                            <tr id="table-option-{{ ProductOption['option_id'] }}-row-{{ Count }}">
+                                                                                <td>
+                                                                                    <select class="form-control">
+                                                                                        {% for OptionValue in Options[ProductOption['option_id']]['options'] %}
+                                                                                            {% if ProductOptionValue['option_value_id'] == OptionValue['option_value_id'] %}
+                                                                                                {% set Checked = "selected" %}
+                                                                                            {% else %}
+                                                                                                {% set Checked = "" %}
+                                                                                            {% endif %}
+                                                                                            <option value="{{ OptionValue['option_value_id'] }}" {{ Checked }}>{{ OptionValue['name'] }}</option>
+                                                                                        {% endfor %}
+                                                                                    </select>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="text" value="{{ ProductOptionValue['quantity'] }}" class="form-control count-option-item">
+                                                                                </td>
+                                                                                <td><select class="form-control">
+                                                                                        {% if ProductOptionValue['subtract'] == '1' %}
+                                                                                            <option value="1" selected>بله</option>
+                                                                                            <option value="0">خیر</option>
+                                                                                        {% else %}
+                                                                                            <option value="1">بله</option>
+                                                                                            <option value="0" selected>خیر</option>
+                                                                                        {% endif %}
+                                                                                    </select></td>
+                                                                                <td><select class="form-control">
+                                                                                        {% if ProductOptionValue['price_prefix'] == '+' %}
+                                                                                            <option value="+" selected>+</option>
+                                                                                            <option value="-">-</option>
+                                                                                        {% else %}
+                                                                                            <option value="+">+</option>
+                                                                                            <option value="-" selected>-</option>
+                                                                                        {% endif %}
+                                                                                    </select><input type="text" value="{{ ProductOptionValue['price'] }}" class="form-control">
+                                                                                </td>
+                                                                                <td><select class="form-control">
+                                                                                        {% if ProductOptionValue['weight_prefix'] == '+' %}
+                                                                                            <option value="+" selected>+</option>
+                                                                                            <option value="-">-</option>
+                                                                                        {% else %}
+                                                                                            <option value="+">+</option>
+                                                                                            <option value="-" selected>-</option>
+                                                                                        {% endif %}
+                                                                                    </select>
+                                                                                    <input type="text" value="{{ ProductOptionValue['weight'] }}" class="form-control">
+                                                                                </td>
+                                                                                <td><a href="#" onclick="deleteRow({{ ProductOptionValue['option_id'] }},{{ Count }})"
+                                                                                       class="btn btn-danger fa fa-minus"></a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        {% endfor %}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                {#
+                                    special Tab
+                                #}
+                                <div class="tab-pane fade py-3" id="special" role="tabpanel" aria-labelledby="link-tab">
+
+                                    <table class="table table-bordered text-center">
+                                        <thead>
+                                        <tr>
+                                            <th class="col-sm-2">اولویت</th>
+                                            <th class="col-sm-2">تعداد</th>
+                                            <th class="col-sm-2">قیمت</th>
+                                            <th class="col-sm-3">زمان شروع</th>
+                                            <th class="col-sm-3">زمان پایان</th>
+                                            <th class="col-sm-2">
+                                                <a href="#" id="add-row-special-table" class="add-table-show-data btn btn-primary fa fa-plus"></a>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="table-special-show-data">
+                                        {% for ProductSpecial in ProductInfo['product_specials'] %}
+                                            <tr>
+                                                <td><input type="number" value="{{ ProductSpecial['product_priority'] }}" class="form-control"></td>
+                                                <td><input type="number" class="form-control"></td>
+                                                <td><input type="number" value="{{ ProductSpecial['price'] }}" class="form-control"></td>
+                                                <td><input type="text" value="{{ ProductSpecial['date_start'] }}" class="form-control pwt-datepicker-input-element"></td>
+                                                <td><input type="text" value="{{ ProductSpecial['date_end'] }}" class="form-control pwt-datepicker-input-element"></td>
+                                                <td><a href="#" class="btn btn-danger fa fa-minus"></a></td>
+                                            </tr>
+
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+
+                                {#
+                                    image Tab
+                                #}
+                                <div class="tab-pane fade py-3" id="image" role="tabpanel" aria-labelledby="link-tab">
+
+                                    <table class="table table-bordered text-center">
+                                        <thead>
+                                        <tr>
+                                            <th class="col-sm-2">عکس پیش فرض</th>
+                                            <th class="col-sm-4">پیش نمایش</th>
+                                            <th class="col-sm-2">ترتیب</th>
+                                            <th class="col-sm-4">
+                                                <a href="#" id="add-row-image-table" class="add-table-show-data btn btn-primary fa fa-plus"></a>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="table-image-show-data">
+                                            {% for ProductImage in ProductInfo['product_images'] %}
+                                                <tr>
+                                                    <td>
+                                                        {% if ProductImage['default'] == '1' %}
+                                                            <input type="radio" name="defaultImage" checked class="form-control">
+                                                        {% else %}
+                                                            <input type="radio" name="defaultImage" class="form-control">
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <div class="image-preview"
+                                                             style="width: 150px; border: 2px dashed rgb(0, 0, 0); margin: 0px auto;">
+                                                            <img style="width: 100%;" src="{{ ProductImage['src'] }}">
+                                                            <input type="hidden" value="{{ ProductImage['image'] }}">
+                                                        </div>
+                                                    </td>
+                                                    <td><input type="number" value="{{ ProductImage['sort_order'] }}" class="form-control"></td>
+                                                    <td><a href="#" class="btn btn-danger fa fa-minus"></a></td>
+                                                </tr>
+
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+
+
+                            </div>
+                        </dib>
+
+                        <div class="form-group text-right pt-3 px-3">
+                            <a href="{{ ADMIN_URL }}product/product/index?token={{ Token }}" class="fa fa-arrow-right btn btn-warning"></a>
+                            <a href="#" id="product-submit-btn" class="fa fa-plus btn btn-success"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+{% endblock %}
+{% block Css %}
+    <link rel="stylesheet" href="{{ URL }}assets/persian_date/persian-datepicker.min.css">
+{% endblock %}
+{% block JsBeforeMain %}
+    <script type="text/javascript" src="{{ URL }}assets/ckfinder/ckfinder.js"></script>
+    <script type="text/javascript" src="{{ URL }}assets/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="{{ URL }}assets/persian_date/persian-date.min.js"></script>
+    <script type="text/javascript" src="{{ URL }}assets/persian_date/persian-datepicker.min.js"></script>
+{% endblock %}
+{% block Js %}
+    {% autoescape %}
+        <script type="text/javascript">
+            let optionRow = 0;
+            let optionData = {};
+            let OptionsID = [
+            {% for ProductOption in ProductInfo['product_options'] %}
+                "{{ ProductOption['option_id'] }}",
+            {% endfor %}
+            ];
+            // optionData['option-1'] = {
+            //     "option_group_name" : "Hello",
+            //     "option_items" : [
+            //         {"option_value_id" : "1", "option_value_name" : "قرمز"},
+            //         {"option_value_id" : "2", "option_value_name" : "ُسفید"},
+            //         {"option_value_id" : "3", "option_value_name" : "آبی"},
+            //     ],
+            // }
+            function addOptionRow(id) {
+                optionRow++;
+                let table = $("#table-option-"+ id +"-show-data");
+                let html = '<tr id="table-option-'+ id +'-row-'+ optionRow +'">';
+                html += '<td>';
+                html += '<select class="form-control">';
+                if(optionData['option-' + id]) {
+                    let items = optionData['option-' + id]['option_items'];
+                    for(let i = 0; i < items.length; i++) {
+                        html += '<option value="'+ items[i]["option_value_id"] +'">'+ items[i]["option_value_name"] +'</option>';
+                    }
+                }
+                html += '</select>';
+                html += '</td>';
+                html += '<td>';
+                html += '<input type="text" class="form-control count-option-item" >';
+                html += '</td>';
+                html += '<td>';
+                html += '<select class="form-control">';
+                html += '<option value="1">بله</option>';
+                html += '<option value="0">خیر</option>';
+                html += '</select>';
+                html += '</td>';
+                html += '<td>';
+                html += '<select class="form-control">';
+                html += '<option value="+">+</option>';
+                html += '<option value="-">-</option>';
+                html += '</select>';
+                html += '<input type="text" class="form-control">';
+                html += '</td>';
+                html += '<td>';
+                html += '<select class="form-control">';
+                html += '<option value="+">+</option>';
+                html += '<option value="-">-</option>';
+                html += '</select>';
+                html += '<input type="text" class="form-control">';
+                html += '</td>';
+                html += '<td>';
+                html += '<a href="#" onclick="deleteRow('+ id +','+ optionRow +')" class="btn btn-danger fa fa-minus"></a>';
+                html += '</td>';
+                html += '</tr>';
+
+                table.append(html);
+            }
+            function deleteRow(id, optionRow) {
+                $('#table-option-'+ id +'-row-'+ optionRow ).remove();
+            }
+            function addOptionTabBody(id) {
+                let tabsBox = $("#option-body-tab");
+                let html = '<div class="tab-pane fade" id="option-body-tab-'+ id +'" role="tabpanel" aria-labelledby="option-body-tab-'+ id +'">';
+                html += '<div class="form-group d-flex align-middle mt-3">';
+                html += '<label class="col-sm-2 control-label text-center">الزامی</label>';
+                html += '<div class="col-sm-10">';
+                html += '<select class="form-control">';
+                html += '<option value="1">بله</option>';
+                html += '<option value="0">خیر</option>';
+                html += '</select>';
+                html += '</div>';
+                html += '</div>';
+                html += '<div class="form-group d-flex align-middle mt-3">';
+                html += '<table class="table table-bordered text-center">';
+                html += '<thead>';
+                html += '<tr>';
+                html += '<th class="col-3">مقدار گزینه</th>';
+                html += '<th>تعداد</th>';
+                html += '<th>اثر در موجودی</th>';
+                html += '<th>قیمت</th>';
+                html += '<th>وزن</th>';
+                html += '<th>';
+                html += '<a href="javascript:void(0);" id="add-row-option-table" onclick="addOptionRow('+ id +')" class="add-table-show-data btn btn-primary fa fa-plus"></a>';
+                html += '</th>';
+                html += '</tr>';
+                html += '</thead>';
+                html += '<tbody id="table-option-'+ id +'-show-data">';
+                html += '</tbody>';
+                html += '</table>';
+                html += '</div>';
+                html += '</div>';
+
+                tabsBox.append(html);
+            }
+
+            function selectFileWithCKFinder( element ) {
+                CKFinder.modal({
+                    chooseFiles: true,
+                    width: 800,
+                    height: 600,
+                    onInit: function (finder) {
+                        finder.on('files:choose', function (evt) {
+                            let file = evt.data.files.first();
+                            let imagePreview = element.parent();
+                            imagePreview.html('');
+                            let image = $('<img>');
+                            image.css({
+                                'width' : '100%',
+                            });
+                            image.attr('src', file.getUrl());
+                            image.appendTo(imagePreview);
+                            let newInput = $('<input type="hidden">');
+                            newInput.val(file.getUrl());
+                            imagePreview.append(newInput);
+
+                        });
+                    }
+                });
+            }
+
+            let url = "{{ CURRENT_URL }}?token={{ Token }}";
+            let searchManufacturerUrl = "{{ ADMIN_URL }}product/manufacturer/getmanufacturers?token={{ Token }}";
+            let searchCategoryUrl = "{{ ADMIN_URL }}product/category/getcategories?token={{ Token }}";
+            let searchFilterUrl = "{{ ADMIN_URL }}product/filter/getfilters?token={{ Token }}";
+            let searchAttributeUrl = "{{ ADMIN_URL }}product/attribute/getattributes?token={{ Token }}";
+            let searchOptionUrl = "{{ ADMIN_URL }}product/option/getoptions?token={{ Token }}";
+            let getOptionInfo = "{{ ADMIN_URL }}product/option/get?token={{ Token }}";
+            let Languages = [
+                {% for Langauge in Languages %}
+                "{{ Langauge['language_id'] }}",
+                {% endfor %}
+            ];
+            let LanguageNames = {
+                {% for Langauge in Languages %}
+                "{{ Langauge['language_id'] }}": "{{ Langauge['name'] }}",
+                {% endfor %}
+            };
+            let LanguageDefaultID = {{ LanguageDefaultID }};
+            CKFinder.setupCKEditor();
+            $(document).ready(function () {
+                let editor = {};
+                /*
+                * Init
+                * */
+                Languages.forEach(function (value, index, array) {
+                    editor[value] = CKEDITOR.replace("ckeditor-" + value, {
+                        filebrowserBrowseUrl: 'http://myshopdemo.test/admin/ckfinder/choose?token={{ Token }}',
+
+                    });
+
+                });
+                $("#product-date").persianDatepicker({
+                    format: 'YYYY/MM/DD',
+                    initialValueType: 'persian'
+                });
+                $("#product-category-show-connect-data").find('i').click(function (e) {
+                    let category_id = +$(this).closest('p').attr('data-category-id');
+                    let index = Cateogries_id.indexOf(category_id);
+                    if(index > -1) {
+                        Cateogries_id.splice(index, 1);
+                    }
+                    $(this).closest('p').remove();
+                    // console.log(Cateogries_id);
+                });
+                $("#product-filter-show-connect-data").find('i').click(function (e) {
+                    let filter_id = +$(this).closest('p').attr('data-filter-id');
+                    let index = Filters_id.indexOf(filter_id);
+                    if(index > -1) {
+                        Filters_id.splice(index, 1);
+                    }
+                    $(this).closest('p').remove();
+                });
+                $("#table-attribute-show-data").find('tr td:nth-child(3) a').click(function (e) {
+                    $(this).closest('tr').remove();
+                    e.preventDefault();
+                });
+                $("#option-head-tab").find('a i').click(function (e) {
+                    let option_id = $(this).attr('data-option-id');
+                    $("#option-head-tab-" + option_id).remove();
+                    $("#option-body-tab-" + option_id).remove();
+                });
+                $("#table-special-show-data").find('tr td:last-child a').click(function (e) {
+                    $(this).closest('tr').remove();
+                    e.preventDefault();
+                });
+                $("#table-image-show-data").find('tr td:last-child a').click(function (e) {
+                    $(this).closest('tr').remove();
+                    e.preventDefault();
+                });
+                OptionsID.forEach(function (option_id) {
+                    $.post(getOptionInfo, {"post": true, "option_id" : option_id}, function (data) {
+                        let response = JSON.parse(data);
+                        if(response['status'] == 1) {
+                            optionData['option-' + response['option']['option_id']] = {
+                                "option_type" : response['option']['option_type'],
+                                "sort_order" : response['option']['sort_order'],
+                                "language_id" : response['option']['language_id'],
+                                "name" : response['option']['name'],
+                                "option_items" : [],
+                            };
+                            for(let i = 0; i < response['option']['options'].length; i++) {
+                                optionData['option-' + response['option']['option_id']]['option_items'][i] = {
+                                    "option_value_id" : response['option']['options'][i]['option_value_id'],
+                                    "option_value_name" : response['option']['options'][i]['name'],
+                                    "option_value_image" : response['option']['options'][i]['image'],
+                                };
+                            }
+                        }
+                    });
+                });
+                /*
+                * Product Manufacturer
+                * */
+                let productManufacturerSearchInputElement = $("#product-manufacturer");
+                let manufacturerAutoRecommendBox = $("#product-manufacturer-auto-recommend-box");
+                let timeOut;
+                productManufacturerSearchInputElement.on("keyup", function (e) {
+
+                    clearTimeout(timeOut);
+                    timeOut = setTimeout(function () {
+                        if(productManufacturerSearchInputElement.val().length >= 2) {
+                            let data = {};
+                            data['s'] = productManufacturerSearchInputElement.val();
+                            data['post'] = true;
+                            $.post(searchManufacturerUrl, data, function (response) {
+                                response = JSON.parse(response);
+                                manufacturerAutoRecommendBox.css('display', 'none');
+                                manufacturerAutoRecommendBox.html('');
+                                if(response.status === 1) {
+                                    for(let i = 0;  i < response['manufacturers'].length; i++) {
+                                        $('<div>').attr('data-manufacturer-id', response['manufacturers'][i]['manufacturer_id']).text(response['manufacturers'][i]['name'])
+                                            .click(function (e) {
+                                                manufacturerAutoRecommendBox.css('display', 'none');
+                                                manufacturerAutoRecommendBox.html('');
+                                                productManufacturerSearchInputElement.val($(this).text());
+                                                productManufacturerSearchInputElement.attr('data-manufacturer-id', $(this).attr('data-manufacturer-id'));
+                                            }).appendTo(manufacturerAutoRecommendBox);
+                                    }
+                                    if(response['manufacturers'].length > 0) {
+                                        manufacturerAutoRecommendBox.css('display', 'block');
+                                    }
+                                }
+
+                            });
+                        }else {
+                            manufacturerAutoRecommendBox.css('display', 'none');
+                            manufacturerAutoRecommendBox.html('');
+                        }
+                    }, 800);
+                });
+
+                /*
+                * Product Category
+                * */
+                let productCategorySearchInputElemet = $("#product-category");
+                let productCategoryAutoRecommendBox = $("#product-category-auto-recommend-box");
+                let productCategoryShowConnectData = $("#product-category-show-connect-data");
+                let Cateogries_id = [
+                    {% for Category in ProductInfo['categories']%}
+                    {{ Category['category_id'] }},
+                    {% endfor %}
+                ];
+                let timeOutCateogry;
+                productCategorySearchInputElemet.on("keyup", function (e) {
+
+                    clearTimeout(timeOutCateogry);
+                    timeOutCateogry = setTimeout(function () {
+                        if(productCategorySearchInputElemet.val().length >= 2) {
+                            let data = {};
+                            data['s'] = productCategorySearchInputElemet.val();
+                            data['post'] = true;
+                            $.post(searchCategoryUrl, data, function (response) {
+                                response = JSON.parse(response);
+                                productCategoryAutoRecommendBox.css('display', 'none');
+                                productCategoryAutoRecommendBox.html('');
+                                if(response.status === 1) {
+                                    for(let i = 0;  i < response['categories'].length; i++) {
+                                        $('<div>').attr('data-category-id', response['categories'][i]['category_id']).text(response['categories'][i]['name'])
+                                            .click(function (e) {
+                                                addCategoryToCateogries(productCategoryShowConnectData, $(this).text(), +$(this).attr('data-category-id'));
+                                                productCategoryAutoRecommendBox.css('display', 'none');
+                                                productCategoryAutoRecommendBox.html('');
+                                                productCategorySearchInputElemet.val('');
+                                                productCategorySearchInputElemet.focus();
+                                            }).appendTo(productCategoryAutoRecommendBox);
+                                    }
+                                    if(response['categories'].length > 0) {
+                                        productCategoryAutoRecommendBox.css('display', 'block');
+                                    }
+                                }
+
+                            });
+                        }else {
+                            productCategoryAutoRecommendBox.css('display', 'none');
+                            productCategoryAutoRecommendBox.html('');
+                        }
+                    }, 800);
+                });
+                function addCategoryToCateogries(boxElement, categoryName, categoryID) {
+                    // <p><i class="fa fa-minus-circle"></i> رم > 12GB</p>
+                    if(Cateogries_id.indexOf(categoryID) < 0) {
+                        let row = $('<p>');
+                        let deleteBtn = $('<i>').addClass('fa fa-minus-circle').click(function (e) {
+                            let category_id = +$(this).closest('p').attr('data-category-id');
+                            let index = Cateogries_id.indexOf(category_id);
+                            if(index > -1) {
+                                Cateogries_id.splice(index, 1);
+                            }
+                            $(this).closest('p').remove();
+                        });
+                        deleteBtn.appendTo(row);
+                        Cateogries_id.push(categoryID);
+                        row.append(categoryName).attr('data-category-id', categoryID);
+                        row.appendTo(boxElement);
+                    }
+                }
+
+                /*
+                * Product Filter
+                * */
+                let productFilterSearchInputElemet = $("#product-filter");
+                let productFilterAutoRecommendBox = $("#product-filter-auto-recommend-box");
+                let productFilterShowConnectData = $("#product-filter-show-connect-data");
+                let Filters_id = [];
+                let timeOutFilter;
+                productFilterSearchInputElemet.on("keyup", function (e) {
+
+                    clearTimeout(timeOutFilter);
+                    timeOutFilter = setTimeout(function () {
+                        if(productFilterSearchInputElemet.val().length >= 2) {
+                            let data = {};
+                            data['s'] = productFilterSearchInputElemet.val();
+                            data['post'] = true;
+                            $.post(searchFilterUrl, data, function (response) {
+                                response = JSON.parse(response);
+                                productFilterAutoRecommendBox.css('display', 'none');
+                                productFilterAutoRecommendBox.html('');
+                                if(response.status === 1) {
+                                    for(let i = 0;  i < response['filters'].length; i++) {
+                                        $('<div>').attr('data-filter-id', response['filters'][i]['filter_id']).text(response['filters'][i]['group'] + " > " + response['filters'][i]['name'])
+                                            .click(function (e) {
+                                                addFilterTOCategoryFilters(productFilterShowConnectData, $(this).text(), +$(this).attr('data-filter-id'));
+                                                productFilterAutoRecommendBox.css('display', 'none');
+                                                productFilterAutoRecommendBox.html('');
+                                                productFilterSearchInputElemet.val('');
+                                                productFilterSearchInputElemet.focus();
+                                            }).appendTo(productFilterAutoRecommendBox);
+                                    }
+                                    if(response['filters'].length > 0) {
+                                        productFilterAutoRecommendBox.css('display', 'block');
+                                    }
+                                }
+
+                            });
+                        }else {
+                            productFilterAutoRecommendBox.css('display', 'none');
+                            productFilterAutoRecommendBox.html('');
+                        }
+                    }, 800);
+                });
+                function addFilterTOCategoryFilters(boxElement, filterName, filterId) {
+                    // <p><i class="fa fa-minus-circle"></i> رم > 12GB</p>
+                    if(Filters_id.indexOf(filterId) < 0) {
+                        let row = $('<p>');
+                        let deleteBtn = $('<i>').addClass('fa fa-minus-circle').click(function (e) {
+                            let filter_id = +$(this).closest('p').attr('data-filter-id');
+                            let index = Filters_id.indexOf(filter_id);
+                            if(index > -1) {
+                                Filters_id.splice(index, 1);
+                            }
+                            $(this).closest('p').remove();
+                        });
+                        deleteBtn.appendTo(row);
+                        Filters_id.push(filterId);
+                        row.append(filterName).attr('data-filter-id', filterId);
+                        row.appendTo(boxElement);
+                    }
+                }
+
+                /*
+                * Product Attribute Table
+                * */
+                let productAttributeAddRowTable = $("#add-row-attribute-table");
+                let productAttributeTableBody = $("#table-attribute-show-data");
+                let timeOutAttribute;
+                productAttributeAddRowTable.click(function (e) {
+                    let newRow = $('<tr>');
+                    let AttributeTableCell = $("<td><input class=\"form-control\" type=\"text\" placeholder=\"نام خصوصیت\">" +
+                    "<div class=\"auto-recommend-box\" style=\"display: none;\"></div></td>");
+                    AttributeTableCell.find('input').on("keyup", function (e) {
+
+                        clearTimeout(timeOutAttribute);
+                        let attributeNameInput = $(this);
+                        timeOutAttribute = setTimeout(function () {
+                            let data = {};
+                            data['s'] = attributeNameInput.val();
+                            data['post'] = true;
+                            $.post(searchAttributeUrl, data, function(response) {
+
+                                response = JSON.parse(response);
+                                let autoRecommendListBox = attributeNameInput.next();
+                                autoRecommendListBox.css("display", "none");
+                                autoRecommendListBox.html('');
+                                if(response.status === 1) {
+                                    for(let i = 0;  i < response['attributes'].length; i++) {
+                                        $('<div>').attr('data-attribute-id', response['attributes'][i]['attribute_id']).text(response['attributes'][i]['attributegroup_name'] + " > " + response['attributes'][i]['name'])
+                                            .click(function (e) {
+                                                autoRecommendListBox.css('display', 'none');
+                                                autoRecommendListBox.html('');
+                                                attributeNameInput.val($(this).text());
+                                                attributeNameInput.attr('data-attribute-id', $(this).attr('data-attribute-id'));
+                                            }).appendTo(autoRecommendListBox);
+                                    }
+                                    if(response['attributes'].length > 0) {
+                                        autoRecommendListBox.css('display', 'block');
+                                    }
+                                }
+
+                            });
+                        }, 800);
+                    });
+                    AttributeTableCell.appendTo(newRow);
+                    let valueTableCell = $('<td>');
+                    Languages.forEach(function (value, index, array) {
+                        $("<textarea  data-language-id=\""+ value +"\" class=\"form-control mt-1\" type=\"text\" placeholder=\"" + LanguageNames[value] + "\"></textarea>").appendTo(valueTableCell);
+                    });
+                    valueTableCell.appendTo(newRow);
+                    let deletebtn = $('<a>').attr("href", "#").addClass('btn btn-danger fa fa-minus').click(function (e) {
+                        $(this).closest('tr').remove();
+                    });
+                    let deleteRow = $('<td>');
+                    deletebtn.appendTo(deleteRow);
+                    deleteRow.appendTo(newRow);
+                    newRow.appendTo(productAttributeTableBody);
+                    e.preventDefault();
+                });
+
+                /*
+                * Product Options
+                * */
+                let productOptionSearchInput = $("#option-input-search");
+                let optionAutoRecommendBox = $("#product-option-auto-recommend-box");
+                let optionAddHeadTabBtn = $("#add-head-option-tab-btn");
+                let optionHeadTabBox = $('#option-head-tab');
+                let timeOutOption;
+                productOptionSearchInput.on("keyup", function (e) {
+
+                    clearTimeout(timeOutOption);
+                    timeOutOption = setTimeout(function () {
+                        let data = {};
+                        data['s'] = productOptionSearchInput.val();
+                        data['post'] = true;
+                        $.post(searchOptionUrl, data, function (response) {
+                            response = JSON.parse(response);
+                            optionAutoRecommendBox.css('display', 'none');
+                            optionAutoRecommendBox.html('');
+                            if(response.status === 1) {
+                                for(let i = 0;  i < response['options'].length; i++) {
+                                    $('<div>').attr('data-option-id', response['options'][i]['option_id']).text(response['options'][i]['name'])
+                                        .click(function (e) {
+                                            optionAutoRecommendBox.css('display', 'none');
+                                            optionAutoRecommendBox.html('');
+                                            productOptionSearchInput.val($(this).text());
+                                            productOptionSearchInput.attr('data-option-id', $(this).attr('data-option-id'));
+                                        }).appendTo(optionAutoRecommendBox);
+                                }
+                                if(response['options'].length > 0) {
+                                    optionAutoRecommendBox.css('display', 'block');
+                                }
+                            }
+
+                        });
+
+                    }, 800);
+                });
+                optionAddHeadTabBtn.click(function (e) {
+                    let option_id = productOptionSearchInput.attr("data-option-id");
+                    let option_name = productOptionSearchInput.val();
+                    if(option_id && option_name) {
+                        let newTabHead = $('<a class="nav-link" id="option-head-tab-'+ option_id +'" data-toggle="pill" href="#option-body-tab-'+ option_id +'" role="tab" aria-controls="option-body-tab-1" aria-selected="false"></a>')
+                        let minus = $('<i class="fa fa-minus ml-1"></i>').attr('data-option-id', option_id).click(function (e) {
+                            let option_id = $(this).attr('data-option-id');
+                            $("#option-head-tab-" + option_id).remove();
+                        });
+                        minus.appendTo(newTabHead);
+                        newTabHead.append(option_name);
+                        newTabHead.appendTo(optionHeadTabBox);
+                        $.post(getOptionInfo, {"post": true, "option_id" : option_id}, function (data) {
+                            let response = JSON.parse(data);
+                            if(response['status'] == 1) {
+                                optionData['option-' + response['option']['option_id']] = {
+                                    "option_type" : response['option']['option_type'],
+                                    "sort_order" : response['option']['sort_order'],
+                                    "language_id" : response['option']['language_id'],
+                                    "name" : response['option']['name'],
+                                    "option_items" : [],
+                                };
+                                for(let i = 0; i < response['option']['options'].length; i++) {
+                                    optionData['option-' + response['option']['option_id']]['option_items'][i] = {
+                                        "option_value_id" : response['option']['options'][i]['option_value_id'],
+                                        "option_value_name" : response['option']['options'][i]['name'],
+                                        "option_value_image" : response['option']['options'][i]['image'],
+                                    };
+                                }
+                            }
+                        });
+                        addOptionTabBody(option_id);
+                        console.log(optionData);
+
+                    }
+                    productOptionSearchInput.val('');
+                    productOptionSearchInput.attr('data-option-id', 0);
+                    e.preventDefault();
+                });
+
+                /*
+                * Special Product
+                * */
+                let specialAddRowBtn = $("#add-row-special-table");
+                let specialShowRowsTable = $("#table-special-show-data");
+                specialAddRowBtn.click(function (e) {
+                    let newRow = $("<tr>");
+                        $('<td><input type="number" class="form-control"></td>').appendTo(newRow);
+                        $('<td><input type="number" class="form-control"></td>').appendTo(newRow);
+                        $('<td><input type="number" class="form-control"></td>').appendTo(newRow);
+                    let newCell = $('<td>');
+                    let newInput = $('<input type="text" class="form-control">');
+                    newInput.persianDatepicker({
+                        format: 'YYYY/MM/DD',
+                        onSelect: function(unix){
+                            $(this).attr('date-timestamp', unix)
+                        }
+                    });
+                    newInput.appendTo(newCell);
+                    newCell.appendTo(newRow);
+                    newCell = $('<td>');
+                    newInput = $('<input type="text" class="form-control">');
+                    newInput.persianDatepicker({
+                        format: 'YYYY/MM/DD',
+                    });
+                    newInput.appendTo(newCell);
+                    newCell.appendTo(newRow);
+                    newCell = $('<td>');
+                    let deleteBtn = $('<a href="#" class="btn btn-danger fa fa-minus"></a>').click(function (e) {
+                        $(this).closest('tr').remove();
+                        e.preventDefault();
+                    });
+                    deleteBtn.appendTo(newCell);
+                    newCell.appendTo(newRow);
+                    newRow.appendTo(specialShowRowsTable);
+                    e.preventDefault();
+                });
+
+                /*
+                * Image Product
+                * */
+                let imageAddRowBtn = $("#add-row-image-table");
+                let imageShowRowTable = $("#table-image-show-data");
+                imageAddRowBtn.click(function (e) {
+                    let newRow = $("<tr>");
+                    $('<td><input type="radio" name="defaultImage" class="form-control"></td>').appendTo(newRow);
+
+                    let newCell = $('<td>');
+                    let imagePreviewBox = $('<div class="image-preview">').css({
+                        'width' : '150px',
+                        'border': '2px dashed #000',
+                        'margin': '0 auto',
+                    });
+                    let imagePreviewbtn = $('<a href="#" class="fa fa-image btn btn-warning" style="margin:55px 0;">');
+                    imagePreviewbtn.click(function (e) {
+                        selectFileWithCKFinder($(this));
+                        e.preventDefault();
+                    });
+                    imagePreviewbtn.appendTo(imagePreviewBox);
+                    imagePreviewBox.appendTo(newCell);
+                    newCell.appendTo(newRow);
+
+                    $('<td><input type="number" class="form-control"></td>').appendTo(newRow);
+
+                    newCell = $('<td>');
+                    let deleteBtn = $('<a href="#" class="btn btn-danger fa fa-minus"></a>').click(function (e) {
+                        $(this).closest('tr').remove();
+                        e.preventDefault();
+                    });
+                    deleteBtn.appendTo(newCell);
+                    newCell.appendTo(newRow);
+                    newRow.appendTo(imageShowRowTable);
+                    e.preventDefault();
+                });
+
+                /*
+                * Post Data
+                * */
+                let successMessageBoxElement = $("#success-message-box");
+                let errorMessageBoxElement = $("#error-message-box");
+
+                $("#product-submit-btn").click(function (e) {
+                    let data = {};
+                    let messages = [];
+                    let error = false;
+                    successMessageBoxElement.find(".messages").html('');
+                    successMessageBoxElement.css("display", "none");
+                    errorMessageBoxElement.find(".messages").html('');
+                    errorMessageBoxElement.css("display", "none");
+
+                    Languages.forEach(function (value) {
+                        let element = $("#product-name-" + value);
+                        if(element.val() != "") {
+                            data['product-name-' + value] = element.val();
+                        }
+                        if(editor[value] && editor[value].getData()) {
+                            data['product-description-' + value] = editor[value].getData();
+                        }
+                    });
+                    /*
+                    * Product Price
+                    * */
+                    let element = $("#product-price");
+                    if(element.val() != "") {
+                        data['product-price'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_price_empty'] }}")
+                    }
+                    /*
+                    * Product Date
+                    * */
+                    element = $("#product-date");
+                    if(element.val() != "") {
+                        data['product-date'] = element.val();
+                    }else {
+                        data['product-date'] = '';
+                    }
+                    /*
+                    * Product Quantity
+                    * */
+                    element = $("#product-quantity");
+                    if(element.val() != "") {
+                        data['product-quantity'] = element.val();
+                    }else {
+                        data['product-quantity'] = 0;
+                    }
+                    /*
+                    * Product Min Quantity Min Per Order
+                    * */
+                    element = $("#product-min-quantity-per-amount");
+                    if(element.val() != "") {
+                        data['product-min-quantity-per-order'] = element.val();
+                    }else {
+                        data['product-min-quantity-per-order'] = 0;
+                    }
+
+                    /*
+                    * Product Stock Status
+                    * */
+                    element = $("#product-stock-status");
+                    if(element.val() != "") {
+                        data['product-stock-status'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_stock_status_not_selected'] }}");
+                    }
+
+                    /*
+                    * Product Weight
+                    * */
+                    element = $("#product-weight-value");
+                    if(element.val() != "") {
+                        data['product-weight'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_weight_value_empty'] }}");
+                    }
+
+                    /*
+                    * Product Wight Unit
+                    * */
+                    element = $("#product-weight-unit");
+                    if(element.val() != "") {
+                        data['product-weight-unit'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_weight_unit_not_selected'] }}");
+                    }
+
+                    /*
+                    * Product Length
+                    * */
+                    element = $("#product-length");
+                    if(element.val() != "") {
+                        data['product-length'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_length'] }}");
+                    }
+
+
+                    /*
+                    * Product Width
+                    * */
+                    element = $("#product-width");
+                    if(element.val() != "") {
+                        data['product-width'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_width'] }}");
+                    }
+
+
+                    /*
+                    * Product height
+                    * */
+                    element = $("#product-height");
+                    if(element.val() != "") {
+                        data['product-height'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_height'] }}");
+                    }
+
+
+                    /*
+                    * Product Length Unit
+                    * */
+                    element = $("#product-length-unit");
+                    if(element.val() != "") {
+                        data['product-length-unit'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_length_not_selected'] }}");
+                    }
+
+                    /*
+                    * Product Sort Order
+                    * */
+                    element = $("#product-sort-order");
+                    if(element.val() != "") {
+                        data['product-sort-order'] = element.val();
+                    }else {
+                        data['product-sort-order'] = 0;
+                    }
+
+                    /*
+                     * Product Manufacturer
+                     * */
+                    element = $("#product-manufacturer");
+                    if(element.val() != "" && element.attr('data-manufacturer-id')) {
+                        data['product-manufacturer-id'] = element.attr('data-manufacturer-id');
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_manufacturer_empty'] }}");
+                    }
+
+                    /*
+                     * Product Category
+                     * */
+                    if(Cateogries_id.length > 0) {
+                        data['product-categories'] = Cateogries_id;
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_product_category_empty'] }}");
+                    }
+                    /*
+                     * Product Filter
+                     * */
+                    if(Filters_id.length > 0) {
+                        data['product-filters'] = Filters_id;
+                    }else {
+                        data['product-filters'] = [];
+                    }
+
+                    /*
+                    * Product Attribute
+                    * */
+                    let table = $("#table-attribute-show-data");
+                    data['product-attribute'] = [];
+                    table.find('tr').each(function (index, element) {
+                        let productAttributeData = {};
+                        productAttributeData['attribute-id'] = $(element).find('td:first-child').find('input').attr('data-attribute-id');
+                        $(element).find('td:nth-child(2)').find('textarea').each(function (index, element) {
+                            if($(element).val() != "") {
+                                let language_id = $(element).attr('data-language-id');
+                                productAttributeData['attribute-value-' + language_id] = $(element).val();
+                            }
+                        });
+                        data['product-attribute'].push(productAttributeData);
+                    });
+
+                    /*
+                    * Product Option
+                    * */
+                    let optionHeadTabBox = $("#option-head-tab");
+                    data['product-option'] = [];
+                    optionHeadTabBox.find('a').each(function (index, element) {
+                        let strSplit = $(element).attr('id').split('-');
+                        let optionID = +strSplit[strSplit.length - 1];
+                        let productOptionData = {};
+                        productOptionData['option-id'] = optionID;
+                        productOptionData['option-is-required'] = +$("#option-body-tab-" + optionID).find('div:first-child').find('select').val();
+                        productOptionData['option-items'] = [];
+                        let optionTableShowData = $("#table-option-" + optionID + "-show-data");
+                        optionTableShowData.find('tr').each(function (index, element) {
+                            let optionItemData = {};
+                            optionItemData['option-item-id'] = +$(element).find('td:first-child').find('select').val();
+                            if($(element).find('td:nth-child(2)').find('input').val() != "") {
+                                optionItemData['quantity'] = +$(element).find('td:nth-child(2)').find('input').val();
+                            }else {
+                                optionItemData['quantity'] = 0;
+                            }
+                            optionItemData['effect-on-stock'] = +$(element).find('td:nth-child(3)').find('select').val();
+                            let sign = $(element).find('td:nth-child(4)').find('select').val();
+                            if(sign == "-") {
+                                optionItemData['price-sign'] = "-";
+                            }else {
+                                optionItemData['price-sign'] = "+";
+                            }
+                            if($(element).find('td:nth-child(4)').find('input').val() != "") {
+                                optionItemData['price'] = +$(element).find('td:nth-child(4)').find('input').val();
+                            }else {
+                                optionItemData['price'] = 0;
+                            }
+                            sign = $(element).find('td:nth-child(5)').find('select').val();
+                            if(sign == "-") {
+                                optionItemData['weight-sign'] = "-";
+                            }else {
+                                optionItemData['weight-sign'] = "+";
+                            }
+                            if($(element).find('td:nth-child(5)').find('input').val() != "") {
+                                optionItemData['weight'] = +$(element).find('td:nth-child(5)').find('input').val();
+                            }else {
+                                optionItemData['weight'] = 0;
+                            }
+
+                            productOptionData['option-items'].push(optionItemData);
+                        });
+                        data['product-option'].push(productOptionData);
+                    });
+
+                    /*
+                    * Off Price
+                    * */
+                    let specialTableShowElement = $("#table-special-show-data");
+                    data['product-special'] = [];
+                    specialTableShowElement.find('tr').each(function (index, element) {
+                        let specialData = {};
+                        specialData['priority'] = +specialTableShowElement.find('tr').find('td:first-child').find('input').val();
+                        specialData['quantity'] = +specialTableShowElement.find('tr').find('td:nth-child(2)').find('input').val();
+                        specialData['price'] = +specialTableShowElement.find('tr').find('td:nth-child(3)').find('input').val();
+                        specialData['start_date'] = specialTableShowElement.find('tr').find('td:nth-child(4)').find('input').val();
+                        specialData['end_date'] = specialTableShowElement.find('tr').find('td:nth-child(5)').find('input').val();
+                        data['product-special'].push(specialData);
+                    });
+
+                    let imageTableShowElement = $("#table-image-show-data");
+                    data['product-image'] = [];
+                    imageTableShowElement.find('tr').each(function (index, element) {
+                        let imageData = {};
+                        imageData['default'] = $(element).find('td:first-child').find('input').is(':checked');
+                        imageData['src'] = $(element).find('td:nth-child(2)').find('input').val();
+                        imageData['sort_order'] = $(element).find('td:nth-child(3)').find('input').val();
+                        data['product-image'].push(imageData);
+                    });
+                    data['post'] = true;
+                    data['product-post'] = true;
+                    if(!error) {
+                        $.post(url, data, function (response) {
+                            response = JSON.parse(response);
+                            if(response.status === 1) {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    successMessageBoxElement.css("display", "block");
+                                }
+
+                                if(response['redirect']) {
+                                    window.setTimeout(function () {
+                                        window.location.href = response['redirect'];
+                                    }, 1000)
+                                }
+                            }else {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(errorMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    errorMessageBoxElement.css("display", "block");
+                                }
+                            }
+                        });
+                    }else {
+                        console.log(data);
+                        for (let i = 0; i < messages.length; i++) {
+                            $('<p>').text(messages[i]).appendTo(errorMessageBoxElement.find('.messages'));
+                        }
+                        if(messages.length > 0) {
+                            errorMessageBoxElement.css("display", "block");
+                        }
+                    }
+
+
+                    e.preventDefault();
+                });
+            });
+        </script>
+    {% endautoescape %}
+{% endblock %}
+

@@ -155,8 +155,9 @@ class Filter extends Model
             $language_id = $lID;
         }
         if($lID != "all") {
-            $this->Database->query("SELECT * FROM filter f JOIN filter_language fl on f.filter_id = fl.filter_id
-            WHERE fl.language_id = :lID AND f.filter_id = :fID", array(
+            $this->Database->query("SELECT *,(SELECT name FROM filter_group_langauge fgl WHERE fgl.filter_group_id = f.filter_group_id AND fgl.language_id = fl.language_id)
+            as `group_name` FROM filter f JOIN filter_language fl on f.filter_id = fl.filter_id WHERE 
+            fl.language_id = :lID AND f.filter_id = :fID", array(
                 'lID'   => $language_id,
                 'fID'   => $filter_id
             ));
@@ -169,7 +170,9 @@ class Filter extends Model
             $this->rows[0] = $row;
             return $row;
         }else {
-            $this->Database->query("SELECT * FROM filter f JOIN filter_langauge fl on f.filter_id = fl.filter_id
+            $this->Database->query("SELECT *,(SELECT name FROM filter_group_langauge fgl WHERE 
+            fgl.filter_group_id = f.filter_group_id AND fgl.language_id = fl.language_id) as `group_name` 
+            FROM filter f JOIN filter_langauge fl on f.filter_id = fl.filter_id
             WHERE f.filter_id = :fID", array(
                 'fID'   => $filter_id
             ));
