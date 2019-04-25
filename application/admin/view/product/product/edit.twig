@@ -317,9 +317,9 @@
                                         <div class="col-3">
                                             <div class="nav flex-column nav-pills" id="option-head-tab" role="tablist" aria-orientation="vertical">
                                                 {% for ProductOption in ProductInfo['product_options'] %}
-                                                    <a class="nav-link active show" id="option-head-tab-{{ ProductOption['option_id'] }}"
+                                                    <a class="nav-link" id="option-head-tab-{{ ProductOption['option_id'] }}"
                                                        data-toggle="pill" href="#option-body-tab-{{ ProductOption['option_id'] }}" role="tab"
-                                                       aria-controls="option-body-tab-1" aria-selected="true">
+                                                       aria-controls="option-body-tab-{{ ProductOption['option_id'] }}" aria-selected="true">
                                                         <i class="fa fa-minus ml-1" data-option-id="{{ ProductOption['option_id'] }}"></i>
                                                         {{ ProductOption['name'] }}
                                                     </a>
@@ -337,9 +337,8 @@
                                         <div class="col-9">
                                             <div class="tab-content" id="option-body-tab">
                                                 {% for ProductOption in ProductInfo['product_options'] %}
-                                                    <div class="tab-content" id="option-body-tab">
 
-                                                        <div class="tab-pane fade active show" id="option-body-tab-{{ ProductOption['option_id'] }}"
+                                                        <div class="tab-pane fade" id="option-body-tab-{{ ProductOption['option_id'] }}"
                                                              role="tabpanel" aria-labelledby="option-body-tab-{{ ProductOption['option_id'] }}">
                                                             <div class="form-group d-flex align-middle mt-3"><label
                                                                         class="col-sm-2 control-label text-center">الزامی</label>
@@ -430,7 +429,6 @@
                                                                 </table>
                                                             </div>
                                                         </div>
-                                                    </div>
                                                 {% endfor %}
                                             </div>
                                         </div>
@@ -609,7 +607,7 @@
             }
             function addOptionTabBody(id) {
                 let tabsBox = $("#option-body-tab");
-                let html = '<div class="tab-pane fade" id="option-body-tab-'+ id +'" role="tabpanel" aria-labelledby="option-body-tab-'+ id +'">';
+                let html = '<div class="tab-pane fade show" id="option-body-tab-'+ id +'" role="tabpanel" aria-labelledby="option-body-tab-'+ id +'">';
                 html += '<div class="form-group d-flex align-middle mt-3">';
                 html += '<label class="col-sm-2 control-label text-center">الزامی</label>';
                 html += '<div class="col-sm-10">';
@@ -747,12 +745,14 @@
                                 "name" : response['option']['name'],
                                 "option_items" : [],
                             };
-                            for(let i = 0; i < response['option']['options'].length; i++) {
+                            let i = 0;
+                            for(let j in response['option']['options']) {
                                 optionData['option-' + response['option']['option_id']]['option_items'][i] = {
-                                    "option_value_id" : response['option']['options'][i]['option_value_id'],
-                                    "option_value_name" : response['option']['options'][i]['name'],
-                                    "option_value_image" : response['option']['options'][i]['image'],
+                                    "option_value_id" : response['option']['options'][j]['option_value_id'],
+                                    "option_value_name" : response['option']['options'][j]['name'],
+                                    "option_value_image" : response['option']['options'][j]['image'],
                                 };
+                                i++;
                             }
                         }
                     });
@@ -1044,12 +1044,14 @@
                                     "name" : response['option']['name'],
                                     "option_items" : [],
                                 };
-                                for(let i = 0; i < response['option']['options'].length; i++) {
+                                let i = 0;
+                                for(let j in response['option']['options']) {
                                     optionData['option-' + response['option']['option_id']]['option_items'][i] = {
-                                        "option_value_id" : response['option']['options'][i]['option_value_id'],
-                                        "option_value_name" : response['option']['options'][i]['name'],
-                                        "option_value_image" : response['option']['options'][i]['image'],
+                                        "option_value_id" : response['option']['options'][j]['option_value_id'],
+                                        "option_value_name" : response['option']['options'][j]['name'],
+                                        "option_value_image" : response['option']['options'][j]['image'],
                                     };
+                                    i++;
                                 }
                             }
                         });
@@ -1439,6 +1441,11 @@
                     }else {
                         console.log(data);
                         for (let i = 0; i < messages.length; i++) {
+                            $('<p>').text(messages[i]).appendTo(errorMessageBoxElement.find('.messages'));
+                        }
+                        if(messages.length > 0) {
+                            errorMessageBoxElement.css("display", "block");
+                        }for (let i = 0; i < messages.length; i++) {
                             $('<p>').text(messages[i]).appendTo(errorMessageBoxElement.find('.messages'));
                         }
                         if(messages.length > 0) {

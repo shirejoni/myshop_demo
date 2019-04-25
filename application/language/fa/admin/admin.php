@@ -49,6 +49,9 @@ $_['error_product_special_price_invalid'] = "قیمت نخفیف محصول مع
 $_['error_product_special_start_date_invalid'] = "تاریخ شروع نخفیف محصول معتبر نمی باشد";
 $_['error_product_special_end_date_invalid'] = "تاریخ پایان نخفیف محصول معتبر نمی باشد";
 $_['error_product_default_image_not_selected'] = "عکس اصلی محصول انتخاب نشده است";
+$_['error_product_comment_description_empty'] = "توضیحات کامن الزامی است";
+$_['error_product_comment_author_empty'] = "نام نویسنده کامن الزامی است";
+
 
 
 /*

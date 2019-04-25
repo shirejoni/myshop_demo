@@ -558,8 +558,8 @@ class ControllerProductProduct extends Controller
                     'product_id' => $product_special['product_id'],
                     'price' => $product_special['price'],
                     'product_priority' => $product_special['priority'],
-                    'date_start' => jdate('Y/m/d', $product_special['date_start']),
-                    'date_end' => jdate('Y/m/d', $product_special['date_end'])
+                    'date_start' => jdate('Y/m/d',(int) $product_special['date_start']),
+                    'date_end' => jdate('Y/m/d', (int) $product_special['date_end'])
                 );
             }
             $product_images = $Product->getImages($productInfo['product_id']);

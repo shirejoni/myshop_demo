@@ -93,11 +93,13 @@ class Option extends Model
             $this->rows = [];
             $this->rows[0] = $row;
             $this->Database->query("SELECT * FROM option_value ov JOIN option_value_language ovl on ov.option_value_id = ovl.option_value_id WHERE
-            ov.option_id = :oID AND ovl.language_id = :lID", array(
+            ov.option_id = :oID AND ovl.language_id = :lID ORDER BY ov.sort_order ASC", array(
                 'oID'  => $option_id,
                 'lID'   => $language_id
             ));
-            $this->optionValues = $this->Database->getRows();
+            foreach ($this->Database->getRows() as $r) {
+                $this->optionValues[$r['option_value_id']] = $r;
+            }
             $row['options'] = $this->optionValues;
             return $row;
         }else {
@@ -110,7 +112,7 @@ class Option extends Model
             $this->option_sort_order = $rows[0]['sort_order'];
             $this->rows = $rows;
             $this->Database->query("SELECT * FROM option_value ov JOIN option_value_language ovl on ov.option_value_id = ovl.option_value_id WHERE
-            ov.option_id = :oID", array(
+            ov.option_id = :oID ORDER BY ov.sort_order ASC", array(
                 'oID'  => $option_id
             ));
             $this->optionValues = $this->Database->getRows();

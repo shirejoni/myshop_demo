@@ -62,17 +62,18 @@ class Application {
         $config = new Config();
         $this->registry->Config = $config;
         $this->registry->Config->load(MAIN_CONFIG_FILENAME);
-        $router = new Router($this->registry);
-        $this->registry->Router = $router;
+        $Router = new Router($this->registry);
+        $this->registry->Router = $Router;
+        require_once SYSTEM_PATH . DS . 'web.php';
         foreach ($config->get("pre_actions") as $preAction) {
-            $router->addPreRoute(new Action($preAction));
+            $Router->addPreRoute(new Action($preAction));
         }
         $this->registry->Request = new Request($this->registry, $this->uri, CONTROLLER_PATH);
         if($this->languageID) {
             $this->registry->Language->setLanguageByID($this->languageID);
         }
         $this->registry->Language->load($config->get("default_language_file_path"));
-        $router->Dispatch();
+        $Router->Dispatch();
         $this->registry->Response->OutPut();
     }
 

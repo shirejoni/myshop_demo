@@ -91,9 +91,6 @@ $(document).ready(function () {
         this.init();
     }
 
-
-    let mainSlider = new Slider("slider");
-
     /*
     * Search Type
     * */

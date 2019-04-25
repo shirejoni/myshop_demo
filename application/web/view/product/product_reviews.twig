@@ -1,0 +1,36 @@
+{% if Product['reviews'] %}
+    <div class="reviews">
+        {% for Review in Product['reviews'] %}
+            <div class="review">
+                <div class="review-author">
+                    {{ Review['author'] }}
+                </div>
+                <div class="review-rate">
+                    <div class="rating-stars text-center" data-review-value="{{ Review['rate'] }}">
+                        <ul id="stars">
+                            <li class="star" title="Poor" data-value="1">
+                                <i class="fa fa-star fa-fw"></i>
+                            </li>
+                            <li class="star" title="Fair" data-value="2">
+                                <i class="fa fa-star fa-fw"></i>
+                            </li>
+                            <li class="star" title="Good" data-value="3">
+                                <i class="fa fa-star fa-fw"></i>
+                            </li>
+                            <li class="star" title="Excellent" data-value="4">
+                                <i class="fa fa-star fa-fw"></i>
+                            </li>
+                            <li class="star" title="WOW!!!" data-value="5">
+                                <i class="fa fa-star fa-fw"></i>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="review-text">
+                    {{ Review['text'] }}
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
+{% endif %}

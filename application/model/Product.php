@@ -216,7 +216,14 @@ class Product extends Model
     }
 
     public function getImages($product_id) {
-        $this->Database->query("SELECT * FROM product_image WHERE product_id = :pID", array(
+        $this->Database->query("SELECT * FROM product_image WHERE product_id = :pID ORDER BY sort_order ASC", array(
+            'pID'   => $product_id
+        ));
+        return $this->Database->getRows();
+    }
+
+    public function getReviews($product_id) {
+        $this->Database->query("SELECT * FROM review WHERE product_id = :pID AND status = 1 ORDER BY date_updated DESC", array(
             'pID'   => $product_id
         ));
         return $this->Database->getRows();
@@ -509,6 +516,15 @@ class Product extends Model
         return $result;
     }
 
+    public function getCategory($product_id) {
+        $this->Database->query("SELECT * FROM product_category pc LEFT JOIN category c ON pc.category_id = c.category_id LEFT JOIN category_language cl ON cl.category_id = c.category_id WHERE  pc.product_id = :pID 
+        AND cl.language_id = :lID ORDER BY c.level DESC", array(
+            'pID'   => $product_id,
+            'lID'   => $this->Language->getLanguageID(),
+        ));
+        return $this->Database->getRow();
+    }
+
     public function getFilters($product_id) {
         $this->Database->query("SELECT filter_id FROM product_filter WHERE product_id = :pID", array(
             'pID'   => $product_id
@@ -520,14 +536,31 @@ class Product extends Model
         return $result;
     }
 
-    public function getAttributes($product_id) {
-        $this->Database->query("SELECT * FROM product_attribute WHERE product_id = :aID ", array(
-            'aID'   => $product_id
-        ));
+    public function getAttributes($product_id, $lID = null) {
+        $language_id = $this->Language->getLanguageID();
+        if($lID && $lID != "all") {
+            $language_id = $lID;
+        }
+        if($lID != "all") {
+            $this->Database->query("SELECT * FROM product_attribute pa LEFT JOIN attribute a ON pa.attribute_id = a.attribute_id  LEFT JOIN attribute_language al 
+            ON al.attribute_id = a.attribute_id LEFT JOIN attribute_group ag ON ag.attribute_group_id = a.attribute_group_id WHERE product_id = :aID AND al.language_id = :lID ORDER BY ag.sort_order, a.attribute_group_id, a.sort_order ASC", array(
+                'aID'   => $product_id,
+                'lID'   => $language_id
+            ));
+        }else {
+            $this->Database->query("SELECT * FROM product_attribute pa LEFT JOIN attribute a ON pa.attribute_id = a.attribute_id  LEFT JOIN attribute_language al 
+            ON al.attribute_id = a.attribute_id WHERE product_id = :aID ORDER BY a.attribute_group_id, a.sort_order ASC", array(
+                'aID'   => $product_id
+            ));
+        }
+
         $result = [];
         foreach ($this->Database->getRows() as $row) {
             $result[] = array(
                 'attribute_id'  => $row['attribute_id'],
+                'attribute_group_id'  => $row['attribute_group_id'],
+                'name'  => $row['name'],
+                'sort_order'  => $row['sort_order'],
                 'value'         => $row['text'],
                 'language_id'   => $row['language_id']
             );
@@ -541,7 +574,7 @@ class Product extends Model
             $language_id = $lID;
         }
         $this->Database->query("SELECT * FROM product_option po LEFT JOIN `option` o ON o.option_id = po.option_id LEFT JOIN 
-        option_language ol ON o.option_id = ol.option_id WHERE product_id = :pID AND language_id = :lID", array(
+        option_language ol ON o.option_id = ol.option_id WHERE product_id = :pID AND language_id = :lID ORDER BY o.sort_order ASC", array(
             'pID'   => $product_id,
         'lID'       => $language_id
         ));
@@ -583,6 +616,58 @@ class Product extends Model
 
         }
         return $product_options;
+    }
+
+    public function getProductComplete($product_id, $lID = null)
+    {
+        $language_id = $this->Language->getLanguageID();
+        if($lID) {
+            $language_id = $lID;
+        }
+        $this->Database->query("SELECT *,p.image as `image`, pl.name AS name, ml.name AS manufacturer_name ,(SELECT ps.price FROM product_special ps WHERE ps.product_id = p.product_id 
+        AND ps.date_start < UNIX_TIMESTAMP() AND ps.date_end > UNIX_TIMESTAMP() ORDER BY ps.priority DESC LIMIT 0,1) AS special, (SELECT ss.name FROM
+         stock_status ss WHERE ss.stock_status_id = p.stock_status_id AND ss.language_id = pl.language_id) as `stock_status_name`,
+         (SELECT wl.unit FROM weight_language wl WHERE wl.weight_id = p.weight_id AND wl.language_id = pl.language_id ) AS weight_unit,
+         (SELECT ll.unit FROM length_language ll WHERE ll.length_id = p.length_id AND ll.language_id = pl.language_id ) AS `length_unit`,
+         (SELECT AVG(r1.rate) FROM review r1 WHERE r1.product_id = p.product_id AND r1.status = 1)  AS rating, (SELECT COUNT(*) FROM 
+         review r2 WHERE r2.product_id = p.product_id AND r2.status = 1) AS reviews
+          FROM product p LEFT JOIN product_language pl ON p.product_id = pl.product_id
+        LEFT JOIN manufacturer m ON m.manufacturer_id = p.manufacturer_id LEFT JOIN manufacturer_language ml ON ml.manufacturer_id = m.manufacturer_id 
+        WHERE p.product_id = :pID  AND pl.language_id = :lID ", array(
+            'pID'   => $product_id,
+            'lID'   => $language_id
+        ));
+        $row = $this->Database->getRow();
+        return array(
+            'product_id'    => $row['product_id'],
+            'special'    => $row['special'],
+            'rate'      => $row['rating'],
+            'reviews_count'   => $row['reviews'],
+            'name'    => $row['name'],
+            'description'    => $row['description'],
+            'language_id'    => $row['language_id'],
+            'quantity'      => $row['quantity'],
+            'stock_status_id'   => $row['stock_status_id'],
+            'stock_status'      => $row['stock_status_name'],
+            'image'             => $row['image'],
+            'manufacturer_id'   => $row['manufacturer_id'],
+            'manufacturer_name'   => $row['manufacturer_name'],
+            'price'             => $row['price'],
+            'date_available'    => $row['date_available'],
+            'date_added'        => $row['date_added'],
+            'date_updated'      => $row['date_updated'],
+            'weight'            => $row['weight'],
+            'weight_id'            => $row['weight_id'],
+            'weight_unit'       => $row['weight_unit'],
+            'length'            => $row['length'],
+            'length_id'            => $row['length_id'],
+            'width'             => $row['width'],
+            'height'            => $row['height'],
+            'length_unit'       => $row['length_unit'],
+            'minimum'           => $row['minimum'],
+            'viewed'            => $row['viewed'],
+            'sort_order'        => $row['sort_order']
+        );
     }
 
 }

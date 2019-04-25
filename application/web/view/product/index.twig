@@ -1,0 +1,439 @@
+{% extends "product/_temp/blank_product_temp.twig" %}
+
+{% block BreadCrump %}
+
+    {% include "_inc/_breadcrump_inc.twig" %}
+{% endblock %}
+
+{% block Content %}
+    <div class="bigWrap">
+        <section class="product-header clearfix">
+            <div class="product-header-images-box">
+                <div class="product-header-show-image">
+                    <img src="{{ Product['image'] }}" alt="Product Image">
+                </div>
+                <div class="product-header-images-thumbnail" style="direction: rtl">
+                    {% for Image in Product['images'] %}
+                        {% if Image['image'] == Product['image'] %}
+                            {% set Default = "selected" %}
+                        {% else %}
+                            {% set Default = "" %}
+                        {% endif %}
+                        <div class="product-header-image-thumbnail {{ Default }}">
+                            <img src="{{ Image['thumbnail'] }}" data-image-src="{{ Image['image'] }}" alt="Product Thumbnail">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="product-header-information-box">
+                <div class="product-title">{{ Product['name'] }}</div>
+                <div class="product-manufacturer-category-box clearfix">
+                    <div class="product-manufacturer">
+                        نام تولیدکننده:
+                        <a href="#">{{ Product['manufacturer_name'] }}</a>
+                    </div>
+                    <div class="product-category">
+                        دسته بندی:
+                        <a href="#">{{ Product['category_name'] }}</a>
+                    </div>
+                </div>
+                <div class="product-rating">
+                    <div class="rating-stars text-center" data-review-value="{{ Product['rate'] }}">
+                        <ul id="stars">
+                            <li class="star selected" title="Poor" data-value="1">
+                                <i class="fa fa-star fa-fw"></i>
+                            </li>
+                            <li class="star selected" title="Fair" data-value="2">
+                                <i class="fa fa-star fa-fw"></i>
+                            </li>
+                            <li class="star selected" title="Good" data-value="3">
+                                <i class="fa fa-star fa-fw"></i>
+                            </li>
+                            <li class="star" title="Excellent" data-value="4">
+                                <i class="fa fa-star fa-fw"></i>
+                            </li>
+                            <li class="star" title="WOW!!!" data-value="5">
+                                <i class="fa fa-star fa-fw"></i>
+                            </li>
+                        </ul>
+                        <span class="rating-counter">
+                            از {{ Product['reviews_count'] }} رای
+                        </span>
+                    </div>
+                </div>
+                <div class="product-status">
+                    وضعیت محصول:
+                    <span class="{{ Product['stock_status_class'] }}">{{ Product['stock_status'] }}</span>
+                </div>
+                <div class="product-price">
+                    قیمت محصول:
+                    {% if Product['special'] == '' %}
+                        <span>{{ Product['price'] }}</span>
+                        <span class="unit">تومان</span>
+
+                    {% else %}
+                        <span class="old">{{ Product['price'] }}</span>
+                        <span class="new">{{ Product['special'] }}</span>
+                        <span class="unit">تومان</span>
+                    {% endif %}
+
+                </div>
+                <div class="product-options">
+                    {% for Option in Product['options'] %}
+                        {% if Option['option_type'] == 'color'%}
+                            {% set OptionType = "option-color" %}
+                        {% else  %}
+                            {% set OptionType = "" %}
+                        {% endif %}
+                        <div class="product-option {{ OptionType }}" id="product-option-{{ Option['product_option_id'] }}">
+                            <div class="product-option-title">
+                                {{ Option['name'] }}:
+                            </div>
+                            <div class="product-option-items">
+                                {% for OptionValue in Option['option_items'] %}
+                                    <div class="product-option-item" data-price-value="{{ OptionValue['price'] }}" data-price-prefix="{{ OptionValue['price_prefix'] }}" data-product-option-value-id="{{ OptionValue['product_option_value_id'] }}">
+                                        {% if OptionValue['image'] != '' %}
+                                            <div class="product-option-item-image">
+                                                <img src="{{ OptionValue['image'] }}" alt="">
+                                            </div>
+                                        {% endif %}
+                                        <div class="product-option-item-title">
+                                            {{ OptionValue['name'] }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                    {% endfor %}
+{#                    <div class="product-option" id="product-option-1">#}
+{#                        <div class="product-option-title">#}
+{#                            گارانتی:#}
+{#                        </div>#}
+{#                        <div class="product-option-items">#}
+{#                            <div class="product-option-item">#}
+{#                                <div class="product-option-item-image">#}
+{#                                    <img src="{{ URL }}assets/img/manufacturer/1080.png" alt="">#}
+{#                                </div>#}
+{#                                <div class="product-option-item-title">#}
+{#                                    پارس خزر#}
+{#                                </div>#}
+{#                            </div>#}
+
+{#                            <div class="product-option-item">#}
+{#                                <div class="product-option-item-image">#}
+{#                                    <img src="{{ URL }}assets/img/manufacturer/2315.png" alt="">#}
+{#                                </div>#}
+{#                                <div class="product-option-item-title">#}
+{#                                    ایکس ویژن#}
+{#                                </div>#}
+{#                            </div>#}
+
+{#                            <div class="product-option-item selected">#}
+{#                                <div class="product-option-item-image">#}
+{#                                    <img src="{{ URL }}assets/img/guarantee/avagang.png" alt="">#}
+{#                                </div>#}
+{#                                <div class="product-option-item-title">#}
+{#                                    آواژنک#}
+{#                                </div>#}
+{#                            </div>#}
+
+
+{#                        </div>#}
+{#                    </div>#}
+                </div>
+                <div class="product-add-to-cart">
+                    <div id="addon-price">
+                    </div>
+                    <div id="add-to-cart">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span>
+                             افزودن به سبد خرید
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <section class="product-description">
+            <div class="section-tittle" id="product-head-tab">
+                <ul>
+                    <li class="selected"><a href="#product-description">نقد و بررسی</a></li>
+                    <li><a href="#product-attributes">مشخصات</a></li>
+                    <li><a href="#product-reviews">نظرات</a></li>
+                </ul>
+            </div>
+            <div class="section-body" id="product-content-tab">
+                <div id="product-description" class="active">
+                    {% autoescape false %}
+                        {{ Product['description'] }}
+                    {% endautoescape %}
+                </div>
+                <div id="product-attributes">
+                    <table>
+                        {% for AttributeGroupRow in Product['attributes'] %}
+                            <tr class="group">
+                                <td colspan="2">
+                                    {{ AttributeGroupRow['name'] }}
+                                </td>
+                            </tr>
+                            {% for AttributeRow in AttributeGroupRow['attributes'] %}
+                                <tr>
+                                    <td>{{ AttributeRow['name'] }}</td>
+                                    <td>{{ AttributeRow['value'] }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+
+
+                    </table>
+                </div>
+                <div id="product-reviews">
+                    <div class="review-form">
+                        <div class="message-box success-box" id="success-message-box" style="display: none;">
+                            <h4>موفقیت!</h4>
+                            <hr>
+                            <div class="messages">
+
+                            </div>
+                        </div>
+                        <div class="message-box error-box" id="error-message-box" style="display: none;">
+                            <h4>خطا!</h4>
+                            <hr>
+                            <div class="messages">
+
+                            </div>
+                        </div>
+                        <div class="input-label clearfix">
+                            <div class="label">
+                                نام:
+                            </div>
+                            <div class="input">
+                                <input type="text" id="product-comment-name" placeholder="نام">
+                            </div>
+                        </div>
+                        <div class="input-label clearfix">
+                            <div class="label">
+                                نظر:
+                            </div>
+                            <div class="input">
+                                <textarea id="product-comment-description" cols="30" rows="5"></textarea>
+                            </div>
+                        </div>
+                        <div class="comment-rating" id="comment-rating">
+                            <div class="rating-stars text-center">
+                                <ul id="stars">
+                                    <li class="star" title="Poor" data-value="1">
+                                        <i class="fa fa-star fa-fw"></i>
+                                    </li>
+                                    <li class="star" title="Fair" data-value="2">
+                                        <i class="fa fa-star fa-fw"></i>
+                                    </li>
+                                    <li class="star" title="Good" data-value="3">
+                                        <i class="fa fa-star fa-fw"></i>
+                                    </li>
+                                    <li class="star" title="Excellent" data-value="4">
+                                        <i class="fa fa-star fa-fw"></i>
+                                    </li>
+                                    <li class="star" title="WOW!!!" data-value="5">
+                                        <i class="fa fa-star fa-fw"></i>
+                                    </li>
+                                </ul>
+                                <span class="rating-counter">
+                        </span>
+                            </div>
+                        </div>
+                        <div class="input-label clearfix">
+                            <div class="input">
+                                <button id="add-review-btn" class="add-review-btn">ارسال</button>
+                            </div>
+                        </div>
+
+                    </div>
+                    {% if Product['reviews'] %}
+                        <div class="reviews">
+                        {% for Review in Product['reviews'] %}
+                            <div class="review">
+                                <div class="review-author">
+                                    {{ Review['author'] }}
+                                </div>
+                                <div class="review-rate">
+                                    <div class="rating-stars text-center" data-review-value="{{ Review['rate'] }}">
+                                        <ul id="stars">
+                                            <li class="star" title="Poor" data-value="1">
+                                                <i class="fa fa-star fa-fw"></i>
+                                            </li>
+                                            <li class="star" title="Fair" data-value="2">
+                                                <i class="fa fa-star fa-fw"></i>
+                                            </li>
+                                            <li class="star" title="Good" data-value="3">
+                                                <i class="fa fa-star fa-fw"></i>
+                                            </li>
+                                            <li class="star" title="Excellent" data-value="4">
+                                                <i class="fa fa-star fa-fw"></i>
+                                            </li>
+                                            <li class="star" title="WOW!!!" data-value="5">
+                                                <i class="fa fa-star fa-fw"></i>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="review-text">
+                                    {{ Review['text'] }}
+                                </div>
+                            </div>
+
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}
+
+{% block Js %}
+    <script type="text/javascript">
+        {% autoescape false %}
+            let commentUrl = "{{ URL }}review/add";
+            function updateAddonPrice() {
+                let addonPriceBox = $('#addon-price');
+                addonPriceBox.html('');
+                $('.product-options .selected').each(function (index, element) {
+                    let price = +$(this).attr('data-price-value');
+                    let pricePrefix = $(this).attr('data-price-prefix');
+                    console.log(pricePrefix);
+                    if(price != 0) {
+                        if(pricePrefix == "+") {
+                            addonPriceBox.append('<p class="green">'+ pricePrefix + price + " تومان" +'</p>')
+                        }else {
+                            addonPriceBox.append('<p class="red">'+ pricePrefix + price + " تومان" +'</p>')
+                        }
+                    }
+                });
+            }
+            $(document).ready(function (e) {
+                $('.rating-stars[data-review-value]').each(function (index, element) {
+                    let rating = +$(element).attr('data-review-value');
+                    for(let i = 1; i <= rating; i++) {
+                        $(element).find('.star:nth-child('+ i +')').addClass('selected');
+                    }
+                });
+
+
+                $('.product-header-image-thumbnail').click(function (e) {
+                    $('.product-header-image-thumbnail').removeClass('selected');
+                    $(this).addClass('selected');
+                    let src = $(this).find('img').attr('data-image-src');
+                    console.log(src);
+                    $('.product-header-show-image:first-child img').attr('src', src);
+                });
+                $('.product-option .product-option-item').click(function (e) {
+                    $(this).parent().find('.product-option-item').removeClass('selected');
+                    $(this).addClass('selected');
+                    updateAddonPrice();
+                });
+                $('#product-head-tab a').click(function (e) {
+                    let elementID = $(this).attr('href');
+                    $(this).parent().parent().find('li.selected').removeClass('selected');
+                    $(this).parent().addClass('selected');
+                    $('#product-content-tab > div.active').css("display", 'none');
+                    $(elementID).addClass('active');
+                    $(elementID).css('display', 'block');
+                    e.preventDefault();
+                });
+                $("#comment-rating .star").hover(function (e) {
+                    $(this).parent().find('.star').removeClass('selected');
+                    $(this).prevAll().addClass('selected');
+                    $(this).addClass('selected');
+                });
+                let selected = 0;
+                $("#comment-rating .star").click(function (e) {
+                    $(this).parent().find('.star').removeClass('selected');
+                    $(this).prevAll().addClass('selected');
+                    $(this).addClass('selected');
+                    selected = $(this).parent().find('.star.selected').length;
+                });
+                $("#comment-rating").mouseleave(function (e) {
+                    $(this).find('.star').removeClass('selected');
+                    for(i = 0; i < selected; i++) {
+                        $(this).find('.star:nth-child('+ (i + 1) +')').addClass('selected');
+                    }
+                    // selected = $(this).parent().find('.star.selected').length;
+                });
+
+                /*
+                * Post Data
+                * */
+                let successMessageBoxElement = $("#success-message-box");
+                let errorMessageBoxElement = $("#error-message-box");
+                let addReviewBtn = $("#add-review-btn");
+                addReviewBtn.click(function (e) {
+                    successMessageBoxElement.find(".messages").html('');
+                    successMessageBoxElement.css("display", "none");
+                    errorMessageBoxElement.find(".messages").html('');
+                    errorMessageBoxElement.css("display", "none");
+
+                    let data = {};
+                    let error = false;
+                    let messages = [];
+                    let element = $("#product-comment-name");
+                    if(element.val() != "") {
+                        data['comment-name'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_empty_comment_name'] }}");
+
+                    }
+                    element = $("#product-comment-description");
+                    if(element.val() != "") {
+                        data['comment-description'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_empty_comment_description'] }}");
+                    }
+                    data['comment-rating'] = +selected;
+                    data['product-id'] = "{{ Product['product_id'] }}";
+                    data['post'] = true;
+                    data['comment-post'] = true;
+                    if(!error) {
+                        $.post(commentUrl, data, function (response) {
+                            response = JSON.parse(response);
+                            if(response.status === 1) {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    successMessageBoxElement.css("display", "block");
+                                }
+
+                                if(response['redirect']) {
+                                    window.setTimeout(function () {
+                                        window.location.href = response['redirect'];
+                                    }, 1000)
+                                }
+                            }else {
+                                for (let i = 0; i < messages.length; i++) {
+                                    $('<p>').text(messages[i]).appendTo(errorMessageBoxElement.find('.messages'));
+                                }
+                                if(messages.length > 0) {
+                                    errorMessageBoxElement.css("display", "block");
+                                }
+                            }
+
+                        });
+                    }else {
+                        for (let i = 0; i < messages.length; i++) {
+                            $('<p>').text(messages[i]).appendTo(errorMessageBoxElement.find('.messages'));
+                        }
+                        if(messages.length > 0) {
+                            errorMessageBoxElement.css("display", "block");
+                        }
+                    }
+
+                });
+
+            });
+        {% endautoescape %}
+    </script>
+{% endblock %}

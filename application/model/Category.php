@@ -7,6 +7,7 @@ use App\System\Model;
 
 /**
  * @property Database Database
+ * @property Language Language
  */
 class Category extends Model {
 
@@ -405,6 +406,22 @@ class Category extends Model {
 
     }
 
+    public function getCategoryInfoInPath($category_id, $lID = null) {
+        $language_id = $this->Language->getLanguageID();
+        if($lID) {
+            $language_id = $lID;
+        }
+        $this->Database->query("SELECT * FROM category_path cp LEFT JOIN category c2 on cp.path_id = c2.category_id LEFT JOIN 
+        category_language cl on c2.category_id = cl.category_id WHERE cp.category_id = :cID AND cl.language_id = :lID ORDER BY cp.level ASC", array(
+            'cID'   => $category_id,
+            'lID'   => $language_id
+        ));
+        $result = [];
+        foreach ($this->Database->getRows() as $row) {
+            $result[$row['category_id']] = $row;
+        }
+        return $result;
+    }
 
 
 }
