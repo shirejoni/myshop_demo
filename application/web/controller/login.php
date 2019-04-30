@@ -86,7 +86,6 @@ class ControllerLogin extends Controller {
             }
             $this->Response->setOutPut(json_encode($json));
         }else {
-            var_dump($_SESSION);
             $this->Response->setOutPut($this->render('login/index'));
         }
     }
