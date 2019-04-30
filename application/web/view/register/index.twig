@@ -94,7 +94,8 @@
                 error = true;
                 messages.push("{{ Translate['error_mobile_empty'] }}");
             }
-
+            data['post'] = true;
+            data['register-post'] = true;
             if(!error) {
                 $.post(url, data, function (response) {
                     response = JSON.parse(response);
