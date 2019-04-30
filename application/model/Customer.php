@@ -75,4 +75,23 @@ class Customer extends Model
         return false;
     }
 
+    public function insertCustomer($data) {
+        $this->Database->query("INSERT INTO customer (language_id, first_name, last_name, email, mobile, password, cart, wishlist, newsletter, address_id, status, date_added) VALUES 
+        (:lID, :cFName, :cLName, :cEmail, :cMobile, :cPassword, :cCart, :cWishlist, :cNews, :cAID, :cStatus, :cDateAdded)", array(
+            'lID'   => $data['language_id'],
+            'cFName'    => $data['first_name'],
+            'cLName'    => $data['last_name'],
+            'cEmail'    => $data['email'],
+            'cMobile'   => $data['mobile'],
+            'cPassword' => password_hash($data['password'], PASSWORD_DEFAULT),
+            'cCart'     => json_encode([]),
+            'cWishlist' => json_encode([]),
+            'cNews'     => 1,
+            'cAID'      => 0,
+            'cStatus'   => 1,
+            'cDateAdded'=> time()
+        ));
+        return $this->Database->insertId();
+    }
+
 }

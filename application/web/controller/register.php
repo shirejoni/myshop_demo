@@ -12,7 +12,7 @@ use App\System\Controller;
 /**
  * @property Response Response
  * @property Request Request
- * @property Languaged Language
+ * @property Language Language
  */
 class ControllerRegister extends Controller {
 
@@ -63,7 +63,16 @@ class ControllerRegister extends Controller {
                     $messages[] = $this->Language->get("error_exist_such_user");
                 }
                 if(!$error) {
-
+                    $data['first_name'] = $first_name;
+                    $data['last_name']  = $last_name;
+                    $data['email']      = $email;
+                    $data['password']   = $password;
+                    $data['mobile']     = $mobile;
+                    $data['language_id']= $this->Language->getLanguageID();
+                    $Customer->insertCustomer($data);
+                    $json['status'] = 1;
+                    $json['messages'] = [$this->Language->get('message_success_done')];
+                    $json['redirect'] = URL . 'login/index';
                 }
             }
             if($error) {
