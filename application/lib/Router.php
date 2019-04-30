@@ -58,6 +58,7 @@ class Router {
                     $this->isResponded = true;
                 }
             }
+
             if(empty($action) || !isset($action)) {
 
                 foreach ($this->runRoutes as $runRoute) {
@@ -77,7 +78,7 @@ class Router {
             if($uri == "" || $uri == "/") {
                 $uri = 'home/index';
             }
-            if(!$this->isResponded) {
+            if(!$this->isResponded && !isset($action)) {
                 $action = new Action($uri);
                 if(!$action->isStatus()) {
                     $action = new Action('error/notFound',"web");
@@ -192,6 +193,7 @@ class Router {
                     } // We have no following parameters: return the whole lot
                     return isset($match[0][0]) ? trim($match[0][0], '/') : null;
                 }, $matches, array_keys($matches));
+
                 // Call the handling function with the URL parameters if the desired input is callable
                 $this->invoke($route['fn'], $route['preRoute'], $route['mainOutPut'], $params);
                 ++$numHandled;
