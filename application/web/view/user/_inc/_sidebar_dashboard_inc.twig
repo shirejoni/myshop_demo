@@ -1,0 +1,17 @@
+<nav id="sidebar" >
+    <div class="navbar">
+        <div class="navbar-nav flex-column sidebar-navigation-box align-items-start">
+            <a href="#" class="nav-item nav-link d-block dropdown-toggle" aria-expanded=true" data-toggle="collapse" data-target="#productCollapse" role="button" aria-expanded="false" >
+                <span class="fa fa-user" style="margin-left: 5px"></span>
+                اکانت من
+            </a>
+            <div class="collapse show" id="productCollapse">
+                <nav class="nav flex-column align-items-start pr-4">
+                    <a href="{{ URL }}user/index?token={{ Token }}" class="nav-link">صفحه اصلی</a>
+                    <a href="{{ URL }}user/edit?token={{ Token }}" class="nav-link">ویرایش</a>
+                </nav>
+            </div>
+
+        </div>
+    </div>
+</nav>
