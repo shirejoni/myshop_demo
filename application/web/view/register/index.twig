@@ -31,9 +31,12 @@
     </div>
     <div class="form">
         <form class="login-form">
-            <input type="text" id="username" placeholder="username"/>
+            <input type="text" id="fist_name" placeholder="First Name"/>
+            <input type="text" id="last_name" placeholder="Last Name"/>
+            <input type="text" id="mobile" placeholder="mobile"/>
+            <input type="text" id="email" placeholder="email"/>
             <input type="password" id="password" placeholder="password"/>
-            <button id="login-submit-btn">login</button>
+            <button id="login-submit-btn">Register</button>
         </form>
     </div>
 </div>
@@ -49,7 +52,7 @@
             let data = {};
             let messages = [];
             let error = false;
-            let element = $("#username");
+            let element = $("#email");
 
             successMessageBoxElement.find(".messages").html('');
             successMessageBoxElement.css("display", "none");
@@ -58,7 +61,7 @@
             errorMessageBoxElement.css("display", "none");
 
             if(element.val() != "") {
-                data['username'] = element.val();
+                data['email'] = element.val();
             }else {
                 error = true;
                 messages.push("{{ Translate['error_email_invalid'] }}");
@@ -70,6 +73,28 @@
                 error = true;
                 messages.push("{{ Translate['error_password_invalid'] }}");
             }
+            element = $("#fist_name");
+            if(element.val() != "") {
+                data['first_name'] = element.val();
+            }else {
+                error = true;
+                messages.push("{{ Translate['error_first_name_empty'] }}");
+            }
+            element = $("#last_name");
+            if(element.val() != "") {
+                data['last_name'] = element.val();
+            }else {
+                error = true;
+                messages.push("{{ Translate['error_last_name_empty'] }}");
+            }
+            element = $("#mobile");
+            if(element.val() != "") {
+                data['mobile'] = element.val();
+            }else {
+                error = true;
+                messages.push("{{ Translate['error_mobile_empty'] }}");
+            }
+
             if(!error) {
                 $.post(url, data, function (response) {
                     response = JSON.parse(response);
