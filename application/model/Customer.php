@@ -33,7 +33,7 @@ class Customer extends Model
         ));
         if($this->Database->hasRows()) {
             $result = $this->Database->getRow();
-            $this->customer_id = $result['user_id'];
+            $this->customer_id = $result['customer_id'];
             $this->first_name = $result['first_name'];
             $this->last_name = $result['last_name'];
             $this->language_id = $result['language_id'];
@@ -57,7 +57,7 @@ class Customer extends Model
         ));
         if($this->Database->hasRows()) {
             $result = $this->Database->getRow();
-            $this->customer_id = $result['user_id'];
+            $this->customer_id = $result['customer_id'];
             $this->first_name = $result['first_name'];
             $this->last_name = $result['last_name'];
             $this->language_id = $result['language_id'];
@@ -92,6 +92,23 @@ class Customer extends Model
             'cDateAdded'=> time()
         ));
         return $this->Database->insertId();
+    }
+
+    public function login($option = array())
+    {
+        if(!empty($this->email) && !empty($this->customer_id)) {
+            $_SESSION['customer'] = [];
+            session_regenerate_id();
+            $_SESSION['customer'] = array(
+                'user_id'   => $this->customer_id,
+                'email'     => $this->email,
+                'status'        => $this->status,
+            );
+
+        }else {
+            throw new \Exception("Customer->Login() : You Should First Get User info from Database after that login it");
+        }
+
     }
 
 }
