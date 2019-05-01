@@ -6,9 +6,11 @@ $_['error_empty_comment_description'] = "نظر باید نوشته شود";
 $_['error_product_comment_description_empty'] = "توضیحات کامن الزامی است";
 
 $_['error_product_comment_author_empty'] = "نام نویسنده کامن الزامی است";
+$_['message_success_login'] = "با موفقیت وارد شدید";
 
 $_['message_success_done'] = "با موفقیت انجام شد!";
 $_['error_zip_code_empty'] = "کد پستی خالی می باشد";
+$_['are_you_sure_?'] = "آیا از انجام این عملیات مطمئن هستید؟";
 $_['error_province_empty'] = "استانی انتخاب نشده است";
 $_['error_city_empty'] = "شهری انتخاب نشده است";
 $_['error_zip_code_invalid'] = "کد پستی معتبر نمی باشد";

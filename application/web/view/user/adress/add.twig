@@ -43,6 +43,7 @@
                             <label class="col-sm-2 control-label text-center">استان:</label>
                             <div class="col-sm-10">
                                 <select  id="address-province-id" class="form-control">
+                                    <option value=""></option>
                                     {% for Province in Provinces %}
                                         <option value="{{ Province['id'] }}">{{ Province['name'] }}</option>
                                     {% endfor %}

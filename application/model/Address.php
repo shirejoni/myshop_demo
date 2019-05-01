@@ -71,4 +71,22 @@ class Address extends Model
         }
         return false;
     }
+
+    public function getAddress($address_id, $customer_id) {
+        $this->Database->query("SELECT * FROM address WHERE address_id = :aID AND customer_id = :cID", array(
+            'aID'   => $address_id,
+            'cID'   => $customer_id
+        ));
+        if($this->Database->hasRows()) {
+            return $this->Database->getRow();
+        }
+        return false;
+    }
+
+    public function deleteAddress($address_id) {
+        $this->Database->query("DELETE FROM address WHERE address_id = :aID", array(
+            'aID'   => $address_id
+        ));
+        return $this->Database->affectedRows();
+    }
 }

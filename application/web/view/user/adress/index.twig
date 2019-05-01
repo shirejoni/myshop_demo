@@ -65,12 +65,6 @@
         <script type="text/javascript">
             let url = "{{ CURRENT_URL }}?token={{ Token }}";
             let urlDelete = "{{ URL }}user/address/delete?token={{ Token }}";
-            let Languages = [
-                {% for Language in Languages %}
-                "{{ Language['language_id'] }}",
-                {% endfor %}
-            ];
-            let LanguageDefaultID = {{ LanguageDefaultID }};
             let successMessageBoxElement = $("#success-message-box");
             let errorMessageBoxElement = $("#error-message-box");
             let selectAllCheckboxElement = $("#select-all-checkbox");

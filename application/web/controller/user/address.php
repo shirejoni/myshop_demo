@@ -3,6 +3,7 @@
 namespace App\Web\Controller;
 
 use App\Lib\Action;
+use App\Lib\Database;
 use App\Lib\Request;
 use App\Lib\Response;
 use App\Lib\Validate;
@@ -14,6 +15,7 @@ use App\System\Controller;
  * @property Response Response
  * @property Request Request
  * @property Language Language
+ * @property Database Database
  */
 class ControllerUserAddress extends Controller {
 
@@ -118,6 +120,43 @@ class ControllerUserAddress extends Controller {
             }
         }
         return new Action('error/notFound', 'web');
+    }
+
+    public function delete() {
+        if(!empty($this->Request->post['addresses_id'])) {
+            $json = [];
+            /** @var Address $Address */
+            $Address = $this->load("Address", $this->registry);
+            $error = false;
+            $this->Database->db->beginTransaction();
+            foreach ($this->Request->post['addresses_id'] as $address_id) {
+                $address = $Address->getAddress((int) $address_id, $_SESSION['customer']['customer_id']);
+                if((int) $address_id && $address) {
+                    $Address->deleteAddress($address_id);
+                }else {
+                    $error = true;
+                }
+            }
+            if($error) {
+                $this->Database->db->rollBack();
+                $json['status'] = 0;
+                $json['messages'] = [$this->Language->get('error_done')];
+            }else {
+                $this->Database->db->commit();
+                $json['status'] = 1;
+                $json['messages'] = [$this->Language->get('message_success_done')];
+                $data = [];
+                $language_id = $this->Language->getLanguageID();
+                $data['Addresses'] = $Address->getAddressesByCustomerID($_SESSION['customer']['customer_id']);
+                $Language = $this->Language;
+                $data['Languages'] = $Language->getLanguages();
+                $data['LanguageDefaultID'] = $Language->getDefaultLanguageID();
+                $json['data'] = $this->render("user/adress/addresses_table", $data);
+            }
+            $this->Response->setOutPut(json_encode($json));
+            return;
+        }
+        return new Action("error/notFound", 'web');
     }
 
 }
