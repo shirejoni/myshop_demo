@@ -13,9 +13,15 @@
                     </span>
         </div>
         <div id="account">
-            <a href="#">ورود</a>
-            |
-            <a href="#">ثبت نام</a>
+            <span>
+                {% if Customer %}
+                    <a href="{{ URL }}user/index">{{ Customer.getFirstName }} {{ Customer.getLastName }}</a>
+                {% else %}
+                    <a href="#">ورود</a>
+                    |
+                    <a href="#">ثبت نام</a>
+                {% endif %}
+            </span>
             |
             <a href="#" id="language">
                 فارسی

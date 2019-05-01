@@ -685,23 +685,23 @@ footer #social-box .copy-right {
 .product-status span.yellow {
     color: #f3ed17;
 }
-.product-price {
+.product--price {
     padding-right: 30px;
     font: 12px yekan;
     color: #acb7c0;
     line-height: 40px;
     position: relative;
 }
-.product-price span:first-child {
+.product--price span:first-child {
     color: #242424;
     margin-right: 10px;
     font: 14px "Maven Pro";
     font-weight: bold;
 }
-.product-price span.old {
+.product--price span.old {
     text-decoration: line-through;
 }
-.product-price span.new {
+.product--price span.new {
     color: #23ce27;
     position: absolute;
     font: 14px "Maven Pro";
@@ -710,7 +710,7 @@ footer #social-box .copy-right {
     top: -5px;
 }
 
-.product-price span.unit {
+.product--price span.unit {
     color: #242424;
     font: 10px yekan;
 }

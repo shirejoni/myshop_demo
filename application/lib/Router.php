@@ -11,6 +11,7 @@ class Router {
     private $preRoutes = [];
     private $routes = [];
     private $runRoutes = [];
+    private $data = [];
     /**
      * @var array
      */
@@ -68,7 +69,10 @@ class Router {
                     $result = $preAction->execute($this->registry);
                     if($result instanceof Action) {
                         $action = $result;
+                    }else if(is_array($result)) {
+                        $this->data = array_merge($this->data, $result);
                     }
+
                     if($runRoute['mainOutPut'] == true) {
                         $this->isResponded = true;
                     }
@@ -86,6 +90,10 @@ class Router {
             }
         }
         if(isset($action)) {
+
+            foreach ($this->data as $key => $value) {
+                $action->setData($key, $value);
+            }
             while($action instanceof \App\Lib\Action) {
                 $action = $action->execute($this->registry, array(
                     'error_route'   => 'error/notFound',

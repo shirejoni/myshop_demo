@@ -11,6 +11,7 @@ class Controller {
 
     public function __construct(Registry $registry, $data = array())
     {
+
         $this->registry = $registry;
         $this->data = $data;
         $loader = new \Twig_Loader_Filesystem(VIEW_PATH);
@@ -30,7 +31,7 @@ class Controller {
             "CURRENT_URL"   => $this->Application->getUrl(),
             "Translate"     => $this->Language->all(),
         );
-        $data = array_merge($_, $data);
+        $data = array_merge($this->data, array_merge($_, $data));
         return $this->twig->render($path . ".twig", $data);
     }
 

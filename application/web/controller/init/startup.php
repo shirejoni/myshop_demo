@@ -4,6 +4,7 @@ namespace App\Web\Controller;
 
 use App\Lib\Config;
 use App\Lib\Database;
+use App\model\Customer;
 use App\System\Controller;
 
 /**
@@ -22,6 +23,17 @@ class ControllerInitStartup extends Controller {
 
                 $Config->set($config['key'], unserialize($config['value']));
             }
+        }
+    }
+
+    public function customer() {
+        if(isset($_SESSION['customer'])) {
+            /** @var Customer $Customer */
+            $Customer = $this->load('Customer', $this->registry);
+            $Customer->getCustomerByID($_SESSION['customer']['customer_id']);
+            return array(
+                'Customer'  => $Customer
+            );
         }
     }
 }
