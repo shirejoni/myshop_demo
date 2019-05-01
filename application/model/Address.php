@@ -6,6 +6,7 @@ namespace App\model;
 
 use App\Lib\Database;
 use App\System\Model;
+use function PHPSTORM_META\elementType;
 
 /**
  * @property Database Database
@@ -59,5 +60,15 @@ class Address extends Model
             'aZipCode'  => $data['zip_code']
         ));
         return $this->Database->insertId();
+    }
+
+    public function getAddressesByCustomerID($customer_id) {
+        $this->Database->query("SELECT * FROM address WHERE customer_id = :cID", array(
+            'cID'   => $customer_id
+        ));
+        if($this->Database->hasRows()) {
+            return $this->Database->getRows();
+        }
+        return false;
     }
 }

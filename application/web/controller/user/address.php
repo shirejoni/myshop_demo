@@ -18,6 +18,10 @@ use App\System\Controller;
 class ControllerUserAddress extends Controller {
 
     public function index() {
+        $data = [];
+        $Address = $this->load("Address", $this->registry);
+        $data['Addresses'] = $Address->getAddressesByCustomerID($_SESSION['customer']['customer_id']);
+        $this->Response->setOutPut($this->render('user/adress/index', $data));
     }
 
     public function add() {
