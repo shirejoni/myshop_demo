@@ -1020,3 +1020,122 @@ footer #social-box .copy-right {
     color: #000;
     margin-top: 10px;
 }
+div.shopping {
+    position: relative;
+}
+#shopping-cart-box {
+    background-color: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+    position: absolute;
+    top: 70px;
+    width: 350px;
+    left: 0;
+    overflow: hidden;
+}
+#shopping-cart-box .shopping-cart-header {
+    width: 100%;
+    height: 40px;
+    background-color: #fafafa;
+    font: 12px yekan;
+    box-sizing: border-box;
+    padding: 0 10px;
+    line-height: 40px;
+    text-align: right;
+}
+#shopping-cart-box .shopping-cart-header .price {
+    color: #fb344f;
+    font-family: "Maven Pro" ;
+    font-weight: bold;
+}
+#shopping-cart-box .shopping-cart-header .toman {
+    font-size: 10px;
+    color: #fb344f;
+}
+#shopping-cart-box .shopping-cart-item-row {
+    width: 100%;
+    background-color: white;
+    height: 80px;
+}
+#shopping-cart-box .shopping-cart-item-image {
+    background-color: #ffffff;
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    position: relative;
+    float: right;
+}
+#shopping-cart-box .shopping-cart-item-image img {
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#shopping-cart-box .shopping-cart-item-detail {
+    width: 220px;
+    float: right;
+    height: 100%;
+}
+#shopping-cart-box .shopping-cart-item-detail p:first-child {
+    font: 12px yekan;
+    text-align: right;
+    box-sizing: border-box;
+    padding: 10px 10px 0 5px;
+    color: #444444;
+}
+#shopping-cart-box .shopping-cart-item-detail p:nth-child(2) {
+    font: 9px yekan;
+    text-align: right;
+    box-sizing: border-box;
+    padding: 0 10px 0 0;
+    color: #5d5d5d;
+}
+#shopping-cart-box .shopping-cart-item-detail p:nth-child(3) {
+    font: 9px "Maven Pro";
+    text-align: right;
+    box-sizing: border-box;
+    padding: 0 10px 0 0;
+    color: #fb344f;
+    font-weight: bold;
+}
+#shopping-cart-box .shopping-cart-item-detail p:nth-child(3) .toman {
+    font: 8px yekan;
+    font-weight: normal;
+}
+#shopping-cart-box .shopping-cart-item-remove {
+    font-size: 15px;
+    float: right;
+    width: 50px;
+    text-align: center;
+}
+#shopping-cart-box .shopping-cart-item-remove i {
+    color: #444444;
+    cursor: pointer;
+}
+#shopping-cart-box .shopping-cart-footer {
+    width: 100%;
+    height: 40px;
+    background-color: #0a90eb;
+    line-height: 30px;
+}
+#shopping-cart-box .shopping-cart-footer a {
+    font: 14px yekan;
+    color: #ffffff;
+    line-height: 30px;
+}
+.product-quantity {
+    width: 60px;
+    height: 40px;
+    border: 1px solid #e5e5e5;
+    box-sizing: border-box;
+    padding: 0 10px;
+    font: 14px "Maven Pro";
+    border-radius: 5px;
+}
+#shopping-cart-box {
+    display: none;
+}
+#shopping-cart-box.active {
+    display: block;
+}

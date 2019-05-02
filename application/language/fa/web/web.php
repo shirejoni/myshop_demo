@@ -23,3 +23,4 @@ $_['error_first_name_empty'] = "نام نباید خالی باشد";
 $_['error_last_name_empty'] = "فامیلی نباید خالی باشد";
 $_['error_mobile_empty'] = "شماره موبایل نباید خالی باشد";
 $_['error_exist_such_user'] = "کاربری با ایمیل/شماره موبایل موجود است";
+$_['error_cart_option_item_required'] = 'ایتم های الزامی انتخاب نشده است';

@@ -30,14 +30,14 @@ class ControllerInitLogin extends Controller {
         }
         if(isset($_SESSION['customer'])) {
             if($_SESSION['login_time_expiry'] < time()) {
-                unset($_SESSION['user'], $_SESSION['login_time_expiry'], $_SESSION['login_time'], $_SESSION['user_agent'], $_SESSION['ip']);
+                unset($_SESSION['customer'], $_SESSION['login_time_expiry'], $_SESSION['login_time'], $_SESSION['user_agent'], $_SESSION['ip']);
                 $action = new Action('login/index');
                 return $action;
             }else {
                 $_SESSION['login_time_expiry'] = time() + $this->Config->get('max_inactive_login_session_time');
             }
             if($_SESSION['user_agent'] != $this->Request->server['HTTP_USER_AGENT'] || $_SESSION['user_ip'] != get_ip_address()){
-                unset($_SESSION['user'], $_SESSION['login_time_expiry'], $_SESSION['login_time'], $_SESSION['user_agent'], $_SESSION['ip']);
+                unset($_SESSION['customer'], $_SESSION['login_time_expiry'], $_SESSION['login_time'], $_SESSION['user_agent'], $_SESSION['ip']);
                 $action = new Action('login/index');
                 return $action;
             }

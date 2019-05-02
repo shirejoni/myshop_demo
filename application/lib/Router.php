@@ -66,6 +66,9 @@ class Router {
 
                     /** @var Action $preAction */
                     $preAction = $runRoute['action'];
+                    foreach ($this->data as $key => $value) {
+                        $preAction->setData($key, $value);
+                    }
                     $result = $preAction->execute($this->registry);
                     if($result instanceof Action) {
                         $action = $result;
@@ -90,7 +93,6 @@ class Router {
             }
         }
         if(isset($action)) {
-
             foreach ($this->data as $key => $value) {
                 $action->setData($key, $value);
             }

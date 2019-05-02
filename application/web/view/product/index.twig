@@ -7,6 +7,20 @@
 
 {% block Content %}
     <div class="bigWrap">
+        <div class="message-box success-box" id="top-success-message-box" style="display: none;">
+            <h4>موفقیت!</h4>
+            <hr>
+            <div class="messages">
+
+            </div>
+        </div>
+        <div class="message-box error-box" id="top-error-message-box" style="display: none;">
+            <h4>خطا!</h4>
+            <hr>
+            <div class="messages">
+
+            </div>
+        </div>
         <section class="product-header clearfix">
             <div class="product-header-images-box">
                 <div class="product-header-show-image">
@@ -91,7 +105,7 @@
                             </div>
                             <div class="product-option-items">
                                 {% for OptionValue in Option['option_items'] %}
-                                    <div class="product-option-item" data-price-value="{{ OptionValue['price'] }}" data-price-prefix="{{ OptionValue['price_prefix'] }}" data-product-option-value-id="{{ OptionValue['product_option_value_id'] }}">
+                                    <div class="product-option-item" data-price-value="{{ OptionValue['price'] }}" data-price-prefix="{{ OptionValue['price_prefix'] }}" data-product-option-id="{{ Option['product_option_id'] }}" data-product-option-value-id="{{ OptionValue['product_option_value_id'] }}">
                                         {% if OptionValue['image'] != '' %}
                                             <div class="product-option-item-image">
                                                 <img src="{{ OptionValue['image'] }}" alt="">
@@ -144,6 +158,9 @@
                 </div>
                 <div class="product-add-to-cart">
                     <div id="addon-price">
+                    </div>
+                    <div>
+                        <input type="number" id="product-quantity" class="product-quantity" value="{{ Product['minimum'] }}">
                     </div>
                     <div id="add-to-cart">
                         <i class="fa fa-shopping-cart"></i>
@@ -209,7 +226,11 @@
                                 نام:
                             </div>
                             <div class="input">
-                                <input type="text" id="product-comment-name" placeholder="نام">
+                                {% if Customer %}
+                                    <input type="text" id="product-comment-name" value="{{ Customer.getFirstName }} {{ Customer.getLastName }}" disabled placeholder="نام">
+                                {% else %}
+                                    <input type="text" id="product-comment-name" placeholder="نام">
+                                {% endif %}
                             </div>
                         </div>
                         <div class="input-label clearfix">
@@ -295,6 +316,9 @@
 {% block Js %}
     <script type="text/javascript">
         {% autoescape false %}
+            let addToCartUrl = "{{ URL }}checkout/cart/add";
+            let removeFromCartUrl = "{{ URL }}checkout/cart/remove";
+            let cartInfo = "{{ URL }}checkout/cart/info";
             let commentUrl = "{{ URL }}review/add";
             function updateAddonPrice() {
                 let addonPriceBox = $('#addon-price');
@@ -312,12 +336,53 @@
                     }
                 });
             }
+
+            function refreshBasketCart() {
+                $.post(cartInfo, {'post' : true, 'cart-post' : true}, function (response) {
+                    response = JSON.parse(response);
+                    if(response.status == 1) {
+                        $("#shopping-cart-box-body").html('');
+                        $('#shopping-cart-box-total-price').html(response['data']['total_formatted']);
+                        for(i = 0; i < response['data']['Products'].length; i++) {
+                            let product = response['data']['Products'][i];
+                            let cartItemRow = $('<div class="shopping-cart-item-row">');
+                            let cartItemRowImage = $("<div class='shopping-cart-item-image'>");
+                            cartItemRowImage.html($('<img>').attr('src', product['image']));
+                            cartItemRowImage.appendTo(cartItemRow);
+                            let cartItemRowDetail = $('<div class="shopping-cart-item-detail">');
+                            $('<p>').text(product['name']).appendTo(cartItemRowDetail);
+                            $('<p>').text(product['quantity'] + ' عدد').appendTo(cartItemRowDetail);
+                            $('<p>').html(product['total_formatted'] + ' <span class="toman">تومان</span>').appendTo(cartItemRowDetail);
+                            cartItemRowDetail.appendTo(cartItemRow);
+                            let cartItemRowRemove = $('<div class="shopping-cart-item-remove">');
+                            let cartITemRowRemoveIcon = $('<span data-cart-id="'+ product['cart_id'] +'"><i class="fa fa-times"></i></span>');
+                            cartITemRowRemoveIcon.click(function (e) {
+                                let cart_id = $(this).attr('data-cart-id');
+                                $.post(removeFromCartUrl, {"post" : true, 'cart-post' : true, 'cart-id' : cart_id}, function (response) {
+                                   response = JSON.parse(response);
+                                   if(response.status == 1) {
+                                       refreshBasketCart();
+                                   }
+                                });
+                            });
+                            cartITemRowRemoveIcon.appendTo(cartItemRowRemove);
+                            cartItemRowRemove.appendTo(cartItemRow);
+                            $("#shopping-cart-box-body").append(cartItemRow);
+                        }
+                    }
+                });
+            }
             $(document).ready(function (e) {
                 $('.rating-stars[data-review-value]').each(function (index, element) {
                     let rating = +$(element).attr('data-review-value');
                     for(let i = 1; i <= rating; i++) {
                         $(element).find('.star:nth-child('+ i +')').addClass('selected');
                     }
+                });
+                refreshBasketCart();
+                $("#shopping-cart-btn").click(function (e) {
+                    $("#shopping-cart-box").toggleClass('active');
+                    e.preventDefault();
                 });
 
 
@@ -363,7 +428,7 @@
                 });
 
                 /*
-                * Post Data
+                * Post Comment Data
                 * */
                 let successMessageBoxElement = $("#success-message-box");
                 let errorMessageBoxElement = $("#error-message-box");
@@ -431,6 +496,64 @@
                         }
                     }
 
+                });
+
+                /*
+                * Post add to Cart
+                * */
+                let addProductToCartBtn = $("#add-to-cart");
+                let topSuccessMessageBoxElement = $("#top-success-message-box");
+                let topErrorMessageBoxElement = $("#top-error-message-box");
+                addProductToCartBtn.click(function (e) {
+                    let data = {};
+                    let messages = [];
+                    let error = false;
+                    data['options'] = {};
+                    $('.product-option-item.selected').each(function (index, element) {
+                        let option_group_id = +$(element).attr('data-product-option-id');
+                        let option_item_id = +$(element).attr('data-product-option-value-id');
+                        data['options'][option_group_id] = option_item_id;
+                    });
+                    data['product_id'] = "{{ Product['product_id'] }}";
+                    let element = $("#product-quantity");
+                    if(element.val() != "" && +element.val()) {
+                        data['quantity'] = +element.val();
+                    }else {
+                        data['quantity'] = {{ Product['minimum'] }};
+                    }
+                    data['cart-post'] = true;
+                    data['post'] = true;
+                    $.post(addToCartUrl, data, function (response) {
+                        topSuccessMessageBoxElement.find('.messages').html('');
+                        topSuccessMessageBoxElement.css('display', 'none');
+                        topErrorMessageBoxElement.find('.messages').html('');
+                        topErrorMessageBoxElement.css('display', 'none');
+                        response = JSON.parse(response);
+                        if(response.status === 1) {
+                            for (let i = 0; i < response['messages'].length; i++) {
+                                $('<p>').text(response['messages'][i]).appendTo(topSuccessMessageBoxElement.find('.messages'));
+                            }
+                            if(response['messages'].length > 0) {
+                                topSuccessMessageBoxElement.css("display", "block");
+                            }
+                            refreshBasketCart();
+
+                            if(response['redirect']) {
+                                window.setTimeout(function () {
+                                    window.location.href = response['redirect'];
+                                }, 1000)
+                            }
+                        }else {
+                            for (let i = 0; i < response['messages'].length; i++) {
+                                $('<p>').text(response['messages'][i]).appendTo(topErrorMessageBoxElement.find('.messages'));
+                            }
+                            if(response['messages'].length > 0) {
+                                topErrorMessageBoxElement.css("display", "block");
+                            }
+                        }
+                    });
+
+                    e.preventDefault();
                 });
 
             });

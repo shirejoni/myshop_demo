@@ -31,6 +31,7 @@ class ControllerInitStartup extends Controller {
             /** @var Customer $Customer */
             $Customer = $this->load('Customer', $this->registry);
             $Customer->getCustomerByID($_SESSION['customer']['customer_id']);
+            $this->registry->Customer = $Customer;
             return array(
                 'Customer'  => $Customer
             );

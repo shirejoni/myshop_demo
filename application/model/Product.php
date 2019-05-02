@@ -247,14 +247,33 @@ class Product extends Model
                 'lID'   => $language_id,
                 'pID'   => $product_id
             ));
-            $row = $this->Database->getRow();
-            $this->product_id = $row['product_id'];
-            $this->manufacturer_id = $row['manufacturer_id'];
-            $this->sort_order = $row['sort_order'];
-            $this->language_id = $row['language_id'];
-            $this->name = $row['name'];
-            $this->rows = [];
-            $this->rows[0] = $row;
+            if($this->Database->hasRows()) {
+                $row = $this->Database->getRow();
+
+                $this->product_id = $row['product_id'];
+                $this->manufacturer_id = $row['manufacturer_id'];
+                $this->sort_order = $row['sort_order'];
+                $this->language_id = $row['language_id'];
+                $this->name = $row['name'];
+                $this->rows = [];
+                $this->rows[0] = $row;
+            }else {
+                $this->Database->query("SELECT * FROM product p LEFT JOIN product_language pl ON p.product_id = pl.product_id WHERE 
+            p.product_id = :pID AND pl.language_id = :lID", array(
+                    'lID'   => $this->Language->getDefaultLanguageID(),
+                    'pID'   => $product_id
+                ));
+                $row = $this->Database->getRow();
+
+                $this->product_id = $row['product_id'];
+                $this->manufacturer_id = $row['manufacturer_id'];
+                $this->sort_order = $row['sort_order'];
+                $this->language_id = $row['language_id'];
+                $this->name = $row['name'];
+                $this->rows = [];
+                $this->rows[0] = $row;
+            }
+
             return $row;
         }else {
             $this->Database->query("SELECT * FROM product p LEFT JOIN product_language pl ON p.product_id = pl.product_id WHERE 
@@ -598,7 +617,7 @@ class Product extends Model
                'pOID'   => $product_option['product_option_id']
             ));
             foreach ($this->Database->getRows() as $row) {
-                $product_option_values_data[] = array(
+                $product_option_values_data[$row['product_option_value_id']] = array(
                     'product_option_value_id'   => $row['product_option_value_id'],
                     'product_id'                => $row['product_id'],
                     'product_option_id'         => $row['product_option_id'],
@@ -641,7 +660,7 @@ class Product extends Model
         return array(
             'product_id'    => $row['product_id'],
             'special'    => $row['special'],
-            'rate'      => $row['rating'],
+            'rate'      => round($row['rating']),
             'reviews_count'   => $row['reviews'],
             'name'    => $row['name'],
             'description'    => $row['description'],
