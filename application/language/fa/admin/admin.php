@@ -51,7 +51,13 @@ $_['error_product_special_end_date_invalid'] = "تاریخ پایان نخفیف
 $_['error_product_default_image_not_selected'] = "عکس اصلی محصول انتخاب نشده است";
 $_['error_product_comment_description_empty'] = "توضیحات کامن الزامی است";
 $_['error_product_comment_author_empty'] = "نام نویسنده کامن الزامی است";
-
+$_['error_coupon_name_empty'] = "نام کد تخفیف خالی است";
+$_['error_coupon_code_empty'] = "کد تخفیف خالی است";
+$_['error_coupon_type_empty'] = "نوع کد تخفیف انتخاب نشده است";
+$_['error_coupon_value_empty'] = "مقدار تخفیف خالی است";
+$_['error_coupon_minimum_price_empty'] = "حداقل مقدار تخفیف خالی است";
+$_['error_coupon_date_start_empty'] = "تاریخ شروع تخفیف خالی است";
+$_['error_coupon_date_end_empty'] = "تاریخ پایان تخفیف خالی است";
 
 
 /*
@@ -61,3 +67,6 @@ $_['message_success_login'] = "با موفقیت وارد شدید";
 $_['message_success_manufacturer_added'] = "تولیدکننده با موفقیت اضافه شد!";
 $_['message_success_done'] = "با موفقیت انجام شد!";
 $_['are_you_sure_?'] = "آیا از انجام این عملیات مطمئن هستید؟";
+
+$_['percentage'] = 'درصدی';
+$_['fixed_amount'] = 'قیمت ثابت';

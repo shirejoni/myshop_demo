@@ -87,6 +87,9 @@ class Router {
             }
             if(!$this->isResponded && !isset($action)) {
                 $action = new Action($uri);
+                if(!$action->getMethod()) {
+                    $action->setMethod('index');
+                }
                 if(!$action->isStatus()) {
                     $action = new Action('error/notFound',"web");
                 }
@@ -96,6 +99,7 @@ class Router {
             foreach ($this->data as $key => $value) {
                 $action->setData($key, $value);
             }
+
             while($action instanceof \App\Lib\Action) {
                 $action = $action->execute($this->registry, array(
                     'error_route'   => 'error/notFound',

@@ -34,6 +34,7 @@ class Product extends Model
             if(isset($data['filter_name'])) {
                 $sql .= " AND pl.name LIKE :fName ";
             }
+
             $sql .= " GROUP BY p.product_id ";
 
             $sort_data = array(
@@ -72,7 +73,7 @@ class Product extends Model
                 'lID'   => $data['language_id'],
             );
             if(isset($data['filter_name'])) {
-                $params['fName'] = $data['filter_name'] . "%";
+                $params['fName'] = "%" . $data['filter_name'] . "%";
             }
             $this->Database->query($sql, $params);
             $rows = $this->Database->getRows();
