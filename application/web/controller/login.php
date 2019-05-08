@@ -29,6 +29,7 @@ class ControllerLogin extends Controller {
             header("location:" . URL . "user/index?token=" . $token);
             exit();
         }
+
         if(isset($this->Request->post['login-post'])) {
             if(!$this->registry->has("Validate")) {
                 $this->registry->Validate = new Validate();
@@ -68,7 +69,11 @@ class ControllerLogin extends Controller {
                         $_SESSION['login_time'] = time();
                         $_SESSION['login_time_expiry'] = time() + $this->Config->get('max_inactive_login_session_time');
                         $_SESSION['login_status'] = LOGIN_STATUS_LOGIN_FORM;
-                        $json['redirect'] = $this->Application->getUrl() . "?token=" . $token;
+                        if(isset($this->Request->post['checkout-post'])) {
+                            $json['redirect'] = URL . "checkout/index?token=" . $token;
+                        }else {
+                            $json['redirect'] = $this->Application->getUrl() . "?token=" . $token;
+                        }
                         $json['messages'] = $messages;
                     }else {
                         $error = true;

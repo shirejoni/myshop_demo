@@ -28,6 +28,7 @@ class ControllerInitStartup extends Controller {
 
     public function customer() {
         if(isset($_SESSION['customer'])) {
+
             /** @var Customer $Customer */
             $Customer = $this->load('Customer', $this->registry);
             $Customer->getCustomerByID($_SESSION['customer']['customer_id']);

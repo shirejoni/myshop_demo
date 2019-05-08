@@ -6,6 +6,7 @@ use App\Lib\Action;
 use App\lib\Cart;
 use App\Lib\Request;
 use App\Lib\Response;
+use App\model\Customer;
 use App\model\Image;
 use App\Model\Language;
 use App\model\Product;
@@ -15,6 +16,7 @@ use App\System\Controller;
  * @property Request Request
  * @property Language Language
  * @property Response Response
+ * @property Customer Customer
  * */
 class ControllerCheckoutCart extends Controller {
 
@@ -55,6 +57,7 @@ class ControllerCheckoutCart extends Controller {
                     $Cart = new Cart($this->registry);
                     $this->registry->Cart = $Cart;
                     $Cart->add($data['product_id'], $data['quantity'], $data['options']);
+
                     $json['status'] = 1;
                     $json['messages'] = [$this->Language->get('message_success_done')];
                 }
@@ -70,7 +73,12 @@ class ControllerCheckoutCart extends Controller {
     }
 
     public function info() {
-        $Cart = new Cart($this->registry);
+        if($this->Customer && $this->Customer->getCustomerId()) {
+            $old_session = isset($_SESSION['old_session_id']) ? $_SESSION['old_session_id'] : false;
+            $Cart = new Cart($this->registry, $old_session);
+        }else {
+            $Cart = new Cart($this->registry);
+        }
         /** @var Product $Product */
         $Product = $this->load("Product", $this->registry);
         $product_data = $Cart->getProducts($Product);
@@ -84,6 +92,7 @@ class ControllerCheckoutCart extends Controller {
             }
             $total += $product['total'];
             $product_data[$index]['total_formatted'] = number_format($product['total']);
+            $product_data[$index]['total_price_for_unit_formatted'] = number_format($product['total_price_for_unit']);
             $product_data[$index]['image'] = $image;
         }
         $data['Products'] = $product_data;

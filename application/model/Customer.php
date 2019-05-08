@@ -122,7 +122,9 @@ class Customer extends Model
     {
         if(!empty($this->email) && !empty($this->customer_id)) {
             $_SESSION['customer'] = [];
+            $_old_session = session_id();
             session_regenerate_id();
+            $_SESSION['old_session_id'] = $_old_session;
             $_SESSION['customer'] = array(
                 'customer_id'   => $this->customer_id,
                 'email'     => $this->email,

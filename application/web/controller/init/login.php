@@ -24,6 +24,7 @@ class ControllerInitLogin extends Controller {
             'login/reset',
 
         );
+
         if(!in_array($route, $ignore_routes) && !isset($_SESSION['customer'])) {
             $action = new Action('login/index');
             return $action;

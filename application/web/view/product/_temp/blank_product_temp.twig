@@ -26,6 +26,55 @@
 
 {% endblock %}
 <script type="text/javascript" src="{{ URL }}assets/js/main.js"></script>
+<script type="text/javascript">
+    let cartInfo = "{{ URL }}checkout/cart/info";
+    let removeFromCartUrl = "{{ URL }}checkout/cart/remove";
+    function refreshBasketCart() {
+        $.post(cartInfo, {'post' : true, 'cart-post' : true}, function (response) {
+            response = JSON.parse(response);
+            if(response.status == 1) {
+                $("#shopping-cart-box-body").html('');
+                $('#shopping-cart-box-total-price').html(response['data']['total_formatted']);
+                for(i = 0; i < response['data']['Products'].length; i++) {
+                    let product = response['data']['Products'][i];
+                    let cartItemRow = $('<div class="shopping-cart-item-row">');
+                    let cartItemRowImage = $("<div class='shopping-cart-item-image'>");
+                    cartItemRowImage.html($('<img>').attr('src', product['image']));
+                    cartItemRowImage.appendTo(cartItemRow);
+                    let cartItemRowDetail = $('<div class="shopping-cart-item-detail">');
+                    $('<p>').text(product['name']).appendTo(cartItemRowDetail);
+                    $('<p>').text(product['quantity'] + ' عدد').appendTo(cartItemRowDetail);
+                    $('<p>').html(product['total_formatted'] + ' <span class="toman">تومان</span>').appendTo(cartItemRowDetail);
+                    cartItemRowDetail.appendTo(cartItemRow);
+                    let cartItemRowRemove = $('<div class="shopping-cart-item-remove">');
+                    let cartITemRowRemoveIcon = $('<span data-cart-id="'+ product['cart_id'] +'"><i class="fa fa-times"></i></span>');
+                    cartITemRowRemoveIcon.click(function (e) {
+                        let cart_id = $(this).attr('data-cart-id');
+                        $.post(removeFromCartUrl, {"post" : true, 'cart-post' : true, 'cart-id' : cart_id}, function (response) {
+                            response = JSON.parse(response);
+                            if(response.status == 1) {
+                                refreshBasketCart();
+                                if(typeof refreshBigBasketCart == "function") {
+                                    refreshBigBasketCart();
+                                }
+                            }
+                        });
+                    });
+                    cartITemRowRemoveIcon.appendTo(cartItemRowRemove);
+                    cartItemRowRemove.appendTo(cartItemRow);
+                    $("#shopping-cart-box-body").append(cartItemRow);
+                }
+            }
+        });
+    }
+    $(document).ready(function () {
+        refreshBasketCart();
+        $("#shopping-cart-btn").click(function (e) {
+            $("#shopping-cart-box").toggleClass('active');
+            e.preventDefault();
+        });
+    });
+</script>
 {% block Js %}
 
 {% endblock %}

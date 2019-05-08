@@ -69,10 +69,30 @@ class ControllerRegister extends Controller {
                     $data['password']   = $password;
                     $data['mobile']     = $mobile;
                     $data['language_id']= $this->Language->getLanguageID();
-                    $Customer->insertCustomer($data);
+                    $customer_id = $Customer->insertCustomer($data);
+                    $Customer->getCustomerByID($customer_id);
                     $json['status'] = 1;
                     $json['messages'] = [$this->Language->get('message_success_done')];
-                    $json['redirect'] = URL . 'login/index';
+                    $ip = get_ip_address();
+                    $option = [];
+                    if($ip) {
+                        $option['ip'] = $ip;
+                    }
+                    $Customer->login($option);
+
+                    $token = generateToken();
+                    $_SESSION['token'] = $token;
+                    $_SESSION['token_time_expiry'] = time() + $this->Config->get('max_token_time_expiry');
+                    $_SESSION['user_ip'] = $ip;
+                    $_SESSION['user_agent'] = $this->Request->server['HTTP_USER_AGENT'];
+                    $_SESSION['login_time'] = time();
+                    $_SESSION['login_time_expiry'] = time() + $this->Config->get('max_inactive_login_session_time');
+                    $_SESSION['login_status'] = LOGIN_STATUS_LOGIN_FORM;
+                    if(isset($this->Request->post['checkout-post'])) {
+                        $json['redirect'] = URL . "checkout/index?token=" . $token;
+                    }else {
+                        $json['redirect'] = URL . "user/index";
+                    }
                 }
             }
             if($error) {

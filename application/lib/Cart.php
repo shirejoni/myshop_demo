@@ -28,7 +28,7 @@ class Cart
      */
     private $Language;
 
-    public function __construct(Registry $registry)
+    public function __construct(Registry $registry, $old_session_id = false)
     {
         $this->Config = $registry->Config;
         $this->Customer = $registry->Customer;
@@ -42,6 +42,18 @@ class Cart
                 'cID'   => $this->Customer->getCustomerId(),
                 'sID'   => session_id(),
             ));
+            if($old_session_id) {
+                $this->Database->query("SELECT * FROM cart WHERE session_id = :sID AND customer_id = 0", array(
+                    'sID'   => $old_session_id,
+                ));
+                foreach ($this->Database->getRows() as $row) {
+                    $this->Database->query("DELETE FROM cart WHERE cart_id = :cID", array(
+                        'cID'   => $row['cart_id']
+                    ));
+                    $this->add($row['product_id'], $row['quantity'], json_decode($row['product_option']));
+                }
+
+            }
             $this->Database->query("SELECT * FROM cart WHERE session_id = :sID AND customer_id = 0", array(
                 'sID'   => session_id(),
             ));
@@ -137,6 +149,11 @@ class Cart
                 if(!$product['quantity'] || $product['quantity'] < $cart_row['quantity']) {
                     $stock = false;
                 }
+                if($special) {
+                    $totalPricePerUnit = $special + $option_price;
+                }else {
+                    $totalPricePerUnit = $price + $option_price;
+                }
                 $product_data[] = array(
                     'cart_id'       => $cart_row['cart_id'],
                     'product_id'    => $product['product_id'],
@@ -147,7 +164,8 @@ class Cart
                     'minimum'       => $product['minimum'],
                     'stock'         => $stock,
                     'price'         => $price + $option_price,
-                    'total'         => ($price + $option_price) * $cart_row['quantity'],
+                    'total_price_for_unit'  => $totalPricePerUnit,
+                    'total'         => ($totalPricePerUnit) * $cart_row['quantity'],
                     'weight'        => ($product['weight'] + $option_weight) * $cart_row['quantity'],
                     'weight_id'     => $product['weight_id'],
                     'length'        => $product['length'],
