@@ -64,7 +64,11 @@ class Application {
         $this->registry->Config->load(MAIN_CONFIG_FILENAME);
         $Router = new Router($this->registry);
         $this->registry->Router = $Router;
-        require_once SYSTEM_PATH . DS . 'web.php';
+        if($this->isAdminRequested) {
+
+        }else {
+            require_once SYSTEM_PATH . DS . 'web.php';
+        }
         foreach ($config->get("pre_actions") as $preAction) {
             $Router->addPreRoute(new Action($preAction));
         }

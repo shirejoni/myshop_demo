@@ -325,6 +325,7 @@ header {
     box-sizing: border-box;
     font: 14px Vazir;
     font-weight: bold;
+    z-index: 1000;
 }
 .auto-recommend-box div {
     box-sizing: border-box;
@@ -342,4 +343,21 @@ header {
 .show-connect-data i {
     font-size: 10px;
     cursor: pointer;
+}
+.transfer {
+    font-family: "Roboto", Arial;
+    font-size: 14px;
+    line-height: 1.8;
+}
+.transfer label {
+    line-height: 1.8;
+}
+.transfer #transfer_double_languageInput {
+    height: 630px!important;
+}
+.transfer .transfer-double-content-left, .transfer .transfer-double-content-right {
+    height: 570px;
+}
+.transfer .transfer-double-list-main, .transfer .transfer-double-selected-list-main {
+    height: 460px;
 }

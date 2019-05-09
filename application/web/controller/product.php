@@ -25,7 +25,6 @@ class ControllerProduct extends Controller {
 
     public function index() {
         if(isset($this->data['params'][0])) {
-
             $product_id = (int) $this->data['params'][0];
             /** @var Product $Product */
             $Product = $this->load("Product", $this->registry);

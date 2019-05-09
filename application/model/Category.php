@@ -90,6 +90,10 @@ class Category extends Model {
 
             $sql .= " AND cl.name LIKE :fName ";
         }
+        if(isset($data['parent_id'])) {
+
+            $sql .= " AND c.parent_id = :cPID ";
+        }
 
         if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
             $sql .= " ORDER BY " . $data['sort'];
@@ -120,6 +124,9 @@ class Category extends Model {
         );
         if(isset($data['filter_name'])) {
             $params['fName'] = $data['filter_name'] . '%';
+        }
+        if(isset($data['parent_id'])) {
+            $params['cPID'] = $data['parent_id'];
         }
         $this->Database->query($sql,$params);
         $rows = $this->Database->getRows();
@@ -241,6 +248,53 @@ class Category extends Model {
         }
         $params =  array(
             'lID'   => $data['language_id'],
+        );
+        if(isset($data['filter_name'])) {
+            $params['fName'] = $data['filter_name'] . '%';
+        }
+        $this->Database->query($sql,$params);
+        $rows = $this->Database->getRows();
+        return $rows;
+    }
+
+    public function getCategoryMenu($data) {
+        $data['sort'] = isset($data['sort']) ? $data['sort'] : '';
+        $data['order'] = isset($data['order']) ? strtoupper($data['order']) : 'ASC';
+        $data['language_id'] = isset($data['language_id']) ? $data['language_id'] : $this->Language->getLanguageID();
+
+        $sql = "SELECT *, c2.level as level FROM category_path cp LEFT JOIN category c2 on cp.category_id = c2.category_id LEFT  JOIN category_language cl on c2.category_id = cl.category_id
+        WHERE cp.path_id = :cID AND cl.language_id = :lID AND c2.parent_id != 0";
+
+        if(!empty($data['filter_name'])) {
+
+            $sql .= " AND cl.name LIKE :fName ";
+        }
+
+
+        $sql .= " ORDER BY c2.sort_order, c2.level ";
+
+
+
+        if (isset($data['order']) && ($data['order'] == 'DESC')) {
+            $sql .= " DESC";
+        } else {
+            $sql .= " ASC";
+        }
+
+        if (isset($data['start']) || isset($data['limit'])) {
+            if ($data['start'] < 0) {
+                $data['start'] = 0;
+            }
+
+            if ($data['limit'] < 1) {
+                $data['limit'] = 20;
+            }
+
+            $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+        }
+        $params =  array(
+            'lID'   => $data['language_id'],
+            'cID'   => $data['path_id'],
         );
         if(isset($data['filter_name'])) {
             $params['fName'] = $data['filter_name'] . '%';

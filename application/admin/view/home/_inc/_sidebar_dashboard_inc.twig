@@ -29,10 +29,15 @@
                     <a href="{{ ADMIN_URL }}coupon/index?token={{ Token }}" class="nav-link">کد تخفیف</a>
                 </nav>
             </div>
-            <a href="#" class="nav-item nav-link d-block">
-                <span class="fa fa-chart-pie" style="margin-left: 5px"></span>
-                گزارشات
+            <a href="#" class="nav-item nav-link d-block dropdown-toggle" data-toggle="collapse" data-target="#themeCollapse" role="button" aria-expanded="false" >
+                <span class="fa fa-clone  " style="margin-left: 5px"></span>
+                قالب
             </a>
+            <div class="collapse" id="themeCollapse">
+                <nav class="nav flex-column align-items-start pr-4">
+                    <a href="{{ ADMIN_URL }}theme/category?token={{ Token }}" class="nav-link">دسته بندی</a>
+                </nav>
+            </div>
             <a href="#" class="nav-item nav-link d-block">
                 <span class="fa fa-credit-card" style="margin-left: 5px"></span>
                 کیف پول

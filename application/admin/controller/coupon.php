@@ -345,5 +345,27 @@ class ControllerCoupon extends Controller {
         return new Action("error/notFound", 'web');
     }
 
-
+    public function status() {
+        if (isset($this->Request->post['coupon_id']) && isset($this->Request->post['coupon_status'])) {
+            $coupon_id = (int)$this->Request->post['coupon_id'];
+            $coupon_status = (int)$this->Request->post['coupon_status'];
+            /** @var Coupon $Coupon */
+            $Coupon = $this->load('Coupon', $this->registry);
+            $coupon = $Coupon->getCoupon($coupon_id);
+            $json = [];
+            if ($coupon_id && $coupon) {
+                $Coupon->editCoupon($coupon_id, array(
+                    'status' => $coupon_status
+                ));
+                $json['status'] = 1;
+                $json['messages'] = [$this->Language->get('message_success_done')];
+            } else {
+                $json['status'] = 0;
+                $json['messages'] = [$this->Language->get('error_done')];
+            }
+            $this->Response->setOutPut(json_encode($json));
+            return;
+        }
+        return new Action('error/notFound', 'web');
+    }
 }
