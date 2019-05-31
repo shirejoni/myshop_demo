@@ -65,8 +65,12 @@ class ControllerCheckoutCheckout extends Controller {
             $product_data[$index]['image'] = $image;
         }
         $data['Products'] = $product_data;
-        $data['total'] = $total;
-        $data['total_formatted'] = number_format($total);
+        $data['Total'] = $total;
+        $data['TotalFormatted'] = number_format($total);
+        $data['Off'] = 0;
+        $data['OffFormatted'] = number_format(0);
+        $data['PaymentPrice'] = $total - 0;
+        $data['PaymentPriceFormatted'] = number_format($data['PaymentPrice']);
 //        var_dump($data);
         $this->Response->setOutPut($this->render('checkout/cart', $data));
     }

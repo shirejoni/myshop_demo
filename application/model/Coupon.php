@@ -126,6 +126,7 @@ class Coupon extends Model
         ));
         return $this->Database->numRows();
     }
+
     public function editCoupon($coupon_id, $data) {
         if(count($data) > 0) {
             $sql = "UPDATE coupon SET ";
@@ -199,5 +200,31 @@ class Coupon extends Model
             return $this->Database->numRows() > 0 ? true : false;
         }
         return false;
+    }
+
+    public function getCouponByCode($coupon_key) {
+        $this->Database->query("SELECT * FROM coupon WHERE BINARY code = :cCode", array(
+            'cCode'   => $coupon_key
+        ));
+        if($this->Database->hasRows()) {
+            $row = $this->Database->getRow();
+            $this->Database->query("SELECT category_id FROM coupon_category WHERE coupon_id = :cID", array(
+                'cID'   => $row['coupon_id']
+            ));
+            $row['categories_id'] = [];
+            foreach ($this->Database->getRows() as $r) {
+                $row['categories_id'][] = $r['category_id'];
+            }
+            $this->Database->query("SELECT product_id FROM coupon_product WHERE coupon_id = :cID", array(
+                'cID'   => $row['coupon_id']
+            ));
+            $row['products_id'] = [];
+            foreach ($this->Database->getRows() as $r) {
+                $row['products_id'][] = $r['product_id'];
+            }
+            $this->rows = [];
+            $this->rows[0] = $row;
+            return $row;
+        }
     }
 }

@@ -48,13 +48,39 @@
             <input type="text" id="off-code-value" placeholder="کد تخفیف">
             <button id="off-code-btn">اعمال</button>
         </div>
+
+        <div class="total-price-box">
+            <table>
+                <tr>
+                    <th>مبلغ کل</th>
+                    <td class="gray">
+                        <span class="price" id="cart_total_price">{{ TotalFormatted }}</span><span class="toman">تومان</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>تخیفیف</th>
+                    <td class="green">
+                        <span class="price" id="cart_off_price">{{ OffFormatted }}</span><span class="toman">تومان</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>مبلغ پرداختی:</th>
+                    <td>
+                        <span class="price" id="cart_payment_price">{{ PaymentPriceFormatted }}
+                        </span><span class="toman">تومان</span>
+                    </td>
+                </tr>
+            </table>
+            <a class="fa fa-arrow-left btn-next-link"></a>
+        </div>
+
     </div>
 {% endblock %}
 
 {% block Js %}
     {% autoescape false %}
         <script type="text/javascript">
-            let loginUrl = "{{ URL }}/login/index";
+            let applyCouponUrl = "{{ URL }}/checkout/coupon/applycoupon";
             function refreshBigBasketCart() {
                 $.post(cartInfo, {'post' : true, 'cart-post' : true}, function (response) {
                     response = JSON.parse(response);
@@ -91,38 +117,33 @@
             $(document).ready(function () {
                 let successMessageBoxElement = $("#success-message-box");
                 let errorMessageBoxElement = $("#error-message-box");
-                $('#login-btn').click(function (e) {
+
+                $("#off-code-btn").click(function (e) {
                     let data = {};
                     let messages = [];
                     let error = false;
-                    let element = $("#login-email");
+                    let element;
+                    element = $("#off-code-value");
 
                     successMessageBoxElement.find(".messages").html('');
                     successMessageBoxElement.css("display", "none");
 
                     errorMessageBoxElement.find(".messages").html('');
                     errorMessageBoxElement.css("display", "none");
-
+                    $("#cart_off_price").html("{{ OffFormatted }}");
+                    $("#cart_total_price").html("{{ TotalFormatted }}");
+                    $("#cart_payment_price").html("{{ PaymentPriceFormatted }}");
                     if(element.val() != "") {
-                        data['email'] = element.val();
+                        data['coupon'] = element.val();
                     }else {
                         error = true;
-                        messages.push("{{ Translate['error_email_invalid'] }}");
+                        messages.push("{{ Translate['error_coupon_empty'] }}");
                     }
-                    element = $("#login-password");
-
-                    if(element.val() != "") {
-                        data['password'] = element.val();
-                    }else {
-                        error = true;
-                        messages.push("{{ Translate['error_password_invalid'] }}");
-                    }
-
                     data['post'] = true;
-                    data['login-post'] = true;
+                    data['coupon-post'] = true;
                     data['checkout-post'] = true;
                     if(!error) {
-                        $.post(loginUrl, data, function (response) {
+                        $.post(applyCouponUrl, data, function (response) {
                             response = JSON.parse(response);
                             if(response.status === 1) {
                                 for (let i = 0; i < response['messages'].length; i++) {
@@ -131,7 +152,17 @@
                                 if(response['messages'].length > 0) {
                                     successMessageBoxElement.css("display", "block");
                                 }
+                                if(response['off_price_formatted'] != undefined) {
+                                    $("#cart_off_price").html(response['off_price_formatted']);
+                                }
 
+                                if(response['total_formatted'] != undefined) {
+                                    $("#cart_total_price").html(response['total_formatted']);
+                                }
+
+                                if(response['payment_price_formatted'] != undefined) {
+                                    $("#cart_payment_price").html(response['payment_price_formatted']);
+                                }
                                 if(response['redirect']) {
                                     window.setTimeout(function () {
                                         window.location.href = response['redirect'];
@@ -156,7 +187,6 @@
                     }
                     e.preventDefault();
                 });
-
 
 
 
