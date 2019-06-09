@@ -690,4 +690,101 @@ class Product extends Model
         );
     }
 
+    public function getProductsComplete($option = [], $lID = null) {
+        $language_id = $this->Language->getLanguageID();
+        if($lID) {
+            $language_id = $lID;
+        }
+        $sql = "SELECT *,p.image as `image`, pl.name AS name, ml.name AS manufacturer_name ,(SELECT ps.price FROM product_special ps WHERE ps.product_id = p.product_id 
+        AND ps.date_start < UNIX_TIMESTAMP() AND ps.date_end > UNIX_TIMESTAMP() ORDER BY ps.priority DESC LIMIT 0,1) AS special, (SELECT ss.name FROM
+         stock_status ss WHERE ss.stock_status_id = p.stock_status_id AND ss.language_id = pl.language_id) as `stock_status_name`,
+         (SELECT AVG(r1.rate) FROM review r1 WHERE r1.product_id = p.product_id AND r1.status = 1)  AS rating, (SELECT COUNT(*) FROM 
+         review r2 WHERE r2.product_id = p.product_id AND r2.status = 1) AS reviews ";
+
+        if(!empty($option['category_id'])) {
+            $sql .= "FROM category_path cp LEFT JOIN product_category pc ON cp.category_id = pc.category_id ";
+            if(!empty($option['filters_id'])) {
+                $sql .= "LEFT JOIN product_filter pf ON pc.product_id = pf.product_id LEFT JOIN product p ON 
+                pf.product_id = p.product_id ";
+            }else {
+                $sql .= "LEFT JOIN product p ON pc.product_id = p.product_id ";
+            }
+        }else {
+            $sql .= "FROM product p ";
+        }
+
+
+        $sql .= "LEFT JOIN product_language pl ON p.product_id = pl.product_id
+        LEFT JOIN manufacturer m ON m.manufacturer_id = p.manufacturer_id LEFT JOIN manufacturer_language ml ON ml.manufacturer_id = m.manufacturer_id 
+        WHERE pl.language_id = :lID AND ml.language_id = :lID AND p.status = 1 AND date_available < :pDAvailable ";
+        if(!empty($option['category_id'])) {
+            $sql .= "AND cp.path_id = :cPID ";
+            if(!empty($option['filters_id'])) {
+                $sql .= "AND pf.filter_id IN(:pFFilterID) ";
+            }
+        }
+        if(!empty($option['filter_name'])) {
+            $sql .= "AND pl.name LIKE :fName ";
+        }
+        if(!empty($option['manufacturer_id'])) {
+            $sql .= "AND p.manufacturer_id = :mID ";
+        }
+        $sql .= " GROUP BY p.product_id";
+        $sort_order = array(
+            'pl.name',
+            'p.quantity',
+            'p.price',
+            'rating',
+            'p.sort_order',
+            'p.date_added'
+        );
+        if(isset($option['sort']) && in_array($option['sort'], $sort_order)) {
+            if($option['sort'] == "p.price") {
+                $sql .= " ORDER BY (CASE WHEN special IS NOT NULL THEN special ELSE p.price END) ";
+            }else {
+                $sql .= " ORDER BY " . $option['sort'];
+            }
+        }
+        if (isset($option['order']) && ($option['order'] == 'DESC')) {
+            $sql .= " DESC, pl.name DESC";
+        } else {
+            $sql .= " ASC, pl.name ASC";
+        }
+
+        if (isset($option['start']) || isset($option['limit'])) {
+            if ($option['start'] < 0) {
+                $option['start'] = 0;
+            }
+
+            if ($option['limit'] < 1) {
+                $option['limit'] = 20;
+            }
+
+            $sql .= " LIMIT " . (int)$option['start'] . "," . (int)$option['limit'];
+        }
+
+        $params =  array(
+            'lID'   => $language_id,
+            'pDAvailable'   => time(),
+        );
+        if(!empty($option['category_id'])) {
+            $params['cPID'] = $option['category_id'];
+            if(!empty($option['filters_id'])) {
+                $params['pFFilterID'] = implode(',', $option['filters_id']);
+            }
+        }
+        if(!empty($option['filter_name'])) {
+            $params['fName'] = "%" . $option['filter_name'];
+        }
+        if(!empty($option['manufacturer_id'])) {
+            $params['mID']  = $option['manufacturer_id'];
+        }
+        $this->Database->query($sql, $params);
+        if(!$this->Database->hasRows()) {
+            $params['lID'] = $this->Language->getDefaultLanguageID();
+            $this->Database->query($sql, $params);
+        }
+        return $this->Database->getRows();
+    }
+
 }

@@ -12,3 +12,4 @@ $Router->get('.*', 'init/front/category', 'web', false);
 $Router->all('checkout/index', 'checkout/checkout/index', 'web', true);
 $Router->all('checkout/cart', 'checkout/checkout/cart', 'web', true);
 $Router->get('product/(\d+)', 'product/index', 'web', true);
+$Router->get('category/(\d+)', 'category/showList', 'web', true);

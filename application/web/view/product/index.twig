@@ -44,11 +44,11 @@
                 <div class="product-manufacturer-category-box clearfix">
                     <div class="product-manufacturer">
                         نام تولیدکننده:
-                        <a href="#">{{ Product['manufacturer_name'] }}</a>
+                        <a href="{{ URL }}manufacturer/{{ Product['manufacturer_id'] }}">{{ Product['manufacturer_name'] }}</a>
                     </div>
                     <div class="product-category">
                         دسته بندی:
-                        <a href="#">{{ Product['category_name'] }}</a>
+                        <a href="{{ URL }}category/{{ Product['category_id'] }}">{{ Product['category_name'] }}</a>
                     </div>
                 </div>
                 <div class="product-rating">
