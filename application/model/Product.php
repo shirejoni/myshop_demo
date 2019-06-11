@@ -699,7 +699,8 @@ class Product extends Model
         AND ps.date_start < UNIX_TIMESTAMP() AND ps.date_end > UNIX_TIMESTAMP() ORDER BY ps.priority DESC LIMIT 0,1) AS special, (SELECT ss.name FROM
          stock_status ss WHERE ss.stock_status_id = p.stock_status_id AND ss.language_id = pl.language_id) as `stock_status_name`,
          (SELECT AVG(r1.rate) FROM review r1 WHERE r1.product_id = p.product_id AND r1.status = 1)  AS rating, (SELECT COUNT(*) FROM 
-         review r2 WHERE r2.product_id = p.product_id AND r2.status = 1) AS reviews ";
+         review r2 WHERE r2.product_id = p.product_id AND r2.status = 1) AS reviews,(SELECT ps.price FROM product_special ps WHERE ps.product_id = p.product_id 
+        AND ps.date_start < UNIX_TIMESTAMP() AND ps.date_end > UNIX_TIMESTAMP() ORDER BY ps.priority DESC LIMIT 0,1) AS special ";
 
         if(!empty($option['category_id'])) {
             $sql .= "FROM category_path cp LEFT JOIN product_category pc ON cp.category_id = pc.category_id ";

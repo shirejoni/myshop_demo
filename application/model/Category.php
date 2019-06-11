@@ -199,6 +199,62 @@ class Category extends Model {
         }
     }
 
+    /**
+     * @return array
+     */
+    public function getCategoryFilters(): array
+    {
+        $filters_id = [];
+        foreach ($this->category_filters as $category_filter) {
+            $filters_id[] = $category_filter['filter_id'];
+        }
+        if($filters_id) {
+            $something = function () {
+                return "?";
+            };
+            $place_holder = [];
+            $place_holder_value  =[];
+            $i = 0;
+            foreach ($filters_id as $filter_id) {
+                $place_holder[] = ":param" . $i;
+                $place_holder_value["param" . $i] = $filter_id;
+                $i++;
+            }
+
+            $params = $place_holder_value;
+            $params['lID'] = $this->Language->getLanguageID();
+            $this->Database->query("SELECT DISTINCT f.filter_group_id, fgl.name, fg.sort_order FROM filter f LEFT JOIN filter_group fg on f.filter_group_id = fg.filter_group_id
+            LEFT JOIN filter_group_langauge fgl on fg.filter_group_id = fgl.filter_group_id WHERE f.filter_id IN (" . implode(',', $place_holder) . ") AND fgl.language_id = :lID GROUP BY f.filter_group_id ORDER BY fg.sort_order, fgl.name", $params);
+            if(!$this->Database->hasRows()) {
+                $params['lID'] = $this->Language->getDefaultLanguageID();
+                $this->Database->query("SELECT DISTINCT f.filter_group_id, fgl.name, fg.sort_order FROM filter f LEFT JOIN filter_group fg on f.filter_group_id = fg.filter_group_id
+            LEFT JOIN filter_group_langauge fgl on fg.filter_group_id = fgl.filter_group_id WHERE f.filter_id IN (" . implode(',', $place_holder) . ") AND fgl.language_id = :lID GROUP BY f.filter_group_id ORDER BY fg.sort_order, fgl.name", $params);
+            }
+
+            $filter_group_data = [];
+            foreach ($this->Database->getRows() as $row) {
+                $filter_data = [];
+                $this->Database->query("SELECT *,COALESCE(fl.name, fl2.name) as name FROM filter f LEFT JOIN filter_language fl on f.filter_id = fl.filter_id AND fl.language_id = :lID
+                LEFT JOIN filter_language fl2 ON f.filter_id = fl2.filter_id AND fl2.language_id = :lDID WHERE f.filter_group_id = :fGID ORDER BY f.sort_order, f.filter_id", array(
+                    'fGID'  => $row['filter_group_id'],
+                    'lID'   => $this->Language->getLanguageID(),
+                    'lDID'  => $this->Language->getDefaultLanguageID()
+                ));
+                if($this->Database->hasRows()) {
+                    $filter_data = $this->Database->getRows();
+                }
+                $filter_group_data[] = array(
+                    'filter_group_id'   => $row['filter_group_id'],
+                    'name'              => $row['name'],
+                    'sort_order'        => $row['sort_order'],
+                    'filter_items'      => $filter_data,
+                );
+            }
+            return $filter_group_data;
+        }
+        return false;
+    }
+
     public function getCategoriesComplete($data =  [])
     {
         $data['sort'] = isset($data['sort']) ? $data['sort'] : '';

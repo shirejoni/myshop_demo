@@ -42,7 +42,7 @@
 
                     {% for TopCategory in TopCategories %}
                         <li>
-                            <a href="#">
+                            <a href="{{ URL }}category/{{ TopCategory['category_id'] }}">
                                 {{ TopCategory['name'] }}
                                 <i class="fa fa-angle-left"></i>
                             </a>
@@ -55,9 +55,9 @@
                                         <ul>
                                         {% endif %}
                                         {% if SubCategory['level'] == 1 %}
-                                            <li class="title"><a href="#">{{ SubCategory['name'] }}</a></li>
+                                            <li class="title"><a href="{{ URL }}category/{{ SubCategory['category_id'] }}">{{ SubCategory['name'] }}</a></li>
                                         {% else %}
-                                            <li><a href="#">{{ SubCategory['name'] }}</a></li>
+                                            <li><a href="{{ URL }}category/{{ SubCategory['category_id'] }}">{{ SubCategory['name'] }}</a></li>
                                         {% endif %}
                                         {% set countItemInColumn = countItemInColumn - 1 %}
                                         {% if countItemInColumn == 0 %}

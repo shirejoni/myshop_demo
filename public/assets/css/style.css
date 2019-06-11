@@ -1365,3 +1365,165 @@ table.big-shopping-cart-table td:nth-child(6)  {
     padding: 7px 9px;
     margin: 15px;
 }
+#products-list {
+    box-sizing: border-box;
+    padding: 10px 0;
+}
+#products-list .products-list-sidebar {
+    width: 300px;
+    height: auto;
+    background-color: white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    float: right;
+}
+#products-list .products-list-box {
+    float: left;
+    width: calc(100% - 305px);
+    margin-right: 5px;
+    background-color: white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+    padding: 5px;
+}
+#products-list .product-item-box:hover {
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 100;
+}
+#products-list .products-list-box {
+    font-size: 0px;
+}
+#products-list .product-item-box {
+    width: 310px;
+    display: block;
+    float: right;
+    height: 350px;
+    border: 1px solid rgba(204, 204, 204, 0.5);
+}
+#products-list .product-item-box .product-item-image-box{
+    width: 100%;
+    height: 220px;
+    text-align: center;
+    background-color: white;
+    position: relative;
+    box-sizing: border-box;
+    padding: 5px;
+    overflow: hidden;
+}
+#products-list .product-item-box .product-item-image-box img {
+    width: 300px;
+    max-height: 220px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+#products-list .product-item-box .product-item-content-box {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 5px;
+    padding-top: 10px;
+    text-align: center;
+}
+#products-list .product-item-box .product-item-content-box a {
+    text-align: center;
+    width: 100%;
+    display: block;
+    font: 14px yekan;
+    color: #444444;
+}
+#products-list .product-item-box .product-item-content-box .product--price {
+    margin-top: 10px;
+}
+#products-list .product-item-box .product-item-content-box .product--price .new {
+    right: 125px;
+}
+.products-list-sidebar {
+    padding-bottom: 20px;
+}
+.products-list-sidebar h3 {
+    text-align: center;
+    margin: 10px 0;
+    font-family: yekan;
+}
+.category-filter-group-box {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px;
+}
+.category-filter-group-box .category-filter-group-title-box {
+    font: 14px yekan;
+    font-weight: bold;
+    text-align: center;
+    color: #535353;
+    border-bottom: 1px solid rgba(204, 204, 204, 0.6);
+    box-sizing: border-box;
+    padding-bottom: 5px;
+}
+.check {
+    cursor: pointer;
+    position: relative;
+    margin: auto;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    -webkit-tap-highlight-color: transparent;
+    transform: translate3d(0, 0, 0);
+}
+.check:before {
+    /*content: "";*/
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(34,50,84,0.03);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.check svg {
+    position: relative;
+    z-index: 1;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke: #c8ccd4;
+    stroke-width: 1.5;
+    transform: translate3d(0, 0, 0);
+    transition: all 0.2s ease;
+}
+.check svg path {
+    stroke-dasharray: 60;
+    stroke-dashoffset: 0;
+}
+.check svg polyline {
+    stroke-dasharray: 22;
+    stroke-dashoffset: 66;
+}
+.check:hover:before {
+    opacity: 1;
+}
+.check:hover svg {
+    stroke: #4285f4;
+}
+.cbx:checked + .check svg {
+    stroke: #4285f4;
+}
+.cbx:checked + .check svg path {
+    stroke-dashoffset: 60;
+    transition: all 0.3s linear;
+}
+.cbx:checked + .check svg polyline {
+    stroke-dashoffset: 42;
+    transition: all 0.2s linear;
+    transition-delay: 0.15s;
+}
+.category-filter-item {
+    margin-top: 7px;
+    margin-right: 20px;
+}
+.category-filter-item span {
+    font: 13px yekan;
+    line-height: 20px;
+}

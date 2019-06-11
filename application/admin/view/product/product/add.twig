@@ -805,12 +805,14 @@
                                     "name" : response['option']['name'],
                                     "option_items" : [],
                                 };
-                                for(let i = 0; i < response['option']['options'].length; i++) {
+                                let i = 0;
+                                for(let j in response['option']['options']) {
                                     optionData['option-' + response['option']['option_id']]['option_items'][i] = {
-                                        "option_value_id" : response['option']['options'][i]['option_value_id'],
-                                        "option_value_name" : response['option']['options'][i]['name'],
-                                        "option_value_image" : response['option']['options'][i]['image'],
+                                        "option_value_id" : response['option']['options'][j]['option_value_id'],
+                                        "option_value_name" : response['option']['options'][j]['name'],
+                                        "option_value_image" : response['option']['options'][j]['image'],
                                     };
+                                    i++;
                                 }
                             }
                         });

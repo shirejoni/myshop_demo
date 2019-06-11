@@ -36,7 +36,7 @@ class Resize {
      * @var int
      */
     private $dest_y;
-    private $quality_jpeg = 90;
+    private $quality_jpeg = 70;
     private $quality_png = 7;
 
 
