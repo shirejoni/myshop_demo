@@ -275,4 +275,67 @@ class Manufacturer extends Model {
         }
         return $this->Database->numRows();
     }
+
+    public function getManufacturersProduct(array $data)
+    {
+        $data['sort'] = isset($data['sort']) ? $data['sort'] : '';
+        $data['order'] = isset($data['order']) ? strtoupper($data['order']) : 'ASC';
+        $data['language_id'] = isset($data['language_id']) ? $data['language_id'] : $this->Language->getLanguageID();
+
+        $sql = "SELECT m.*,ml.*, COUNT(DISTINCT p.product_id) AS `products_count`  FROM manufacturer m INNER JOIN product p ON p.manufacturer_id = m.manufacturer_id";
+        if(!empty($data['category_id'])) {
+            $sql .= " INNER JOIN product_category pc ON pc.product_id = p.product_id INNER JOIN category_path cp ON cp.category_id = pc.category_id ";
+        }
+        $sql .= "LEFT JOIN manufacturer_language ml ON ml.manufacturer_id = m.manufacturer_id WHERE ml.language_id = :lID";
+
+        $sort_data = array(
+            'name',
+            'sort_order'
+        );
+        if(!empty($data['category_id'])) {
+            $sql .= " AND cp.path_id = :cPID";
+        }
+        if(!empty($data['filter_name'])) {
+            $sql .= " AND ml.name LIKE :fName ";
+        }
+
+        $sql .= " GROUP BY m.manufacturer_id";
+        if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+            $sql .= " ORDER BY " . $data['sort'];
+        }else {
+            $data['sort'] = '';
+            $sql .= " ORDER BY `products_count`";
+        }
+
+        if (isset($data['order']) && ($data['order'] == 'DESC')) {
+            $sql .= " DESC";
+        } else {
+            $sql .= " ASC";
+        }
+
+        if (isset($data['start']) || isset($data['limit'])) {
+            if ($data['start'] < 0) {
+                $data['start'] = 0;
+            }
+
+            if ($data['limit'] < 1) {
+                $data['limit'] = 20;
+            }
+
+            $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+        }
+        $params =  array(
+            'lID'   => $data['language_id'],
+        );
+        if(isset($data['filter_name'])) {
+            $params['fName'] = $data['filter_name'] . '%';
+        }
+        if(isset($data['category_id'])) {
+            $params['cPID'] = $data['category_id'];
+        }
+        $this->Database->query($sql,$params);
+        $rows = $this->Database->getRows();
+
+        return $rows;
+    }
 }

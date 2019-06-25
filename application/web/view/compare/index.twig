@@ -1,0 +1,73 @@
+{% extends "product/_temp/blank_product_temp.twig" %}
+{% block Content %}
+    <div class="bigWrap">
+        <div class="compare">
+            <div class="product-compare-row-image">
+                {% for Product in Products %}
+                    {% if Product %}
+                        <div class="compare-row-item">
+                            <div class="product-compare-item-image">
+                                <img src="{{ Product['image'] }}" alt="">
+                            </div>
+                            <h3>{{ Product['name'] }}</h3>
+                            <div class="product--price">
+                                {% if Product['special'] %}
+                                    <span class="old">{{ Product['price'] }}</span>
+                                    <span class="new">{{ Product['special'] }}</span>
+                                    <span class="unit">تومان</span>
+                                {% else %}
+                                    <span>{{ Product['price'] }}</span>
+                                    <span class="unit">تومان</span>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+            {% for AttributeGroup in AttributeGroups %}
+            <div class="group-row">
+                <h4>{{ AttributeGroup['name'] }}</h4>
+                <table>
+                    {% for attribute_id, Attribute in AttributeGroup['attributes'] %}
+                    <tr>
+                        <td colspan="4">{{ Attribute['name'] }}</td>
+                    </tr>
+                    <tr>
+                        {% for Product in Products %}
+                            <td>{{ Product['attributes'][attribute_id]['value'] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            {% endfor %}
+            <div class="group-row">
+                <h4> مشخصات فیزیکی </h4>
+                <table>
+                    <tr>
+                        <td colspan="4">ابعاد</td>
+                    </tr>
+                    <tr>
+                        <td> 159.8×76.8× 7.5 میلی‌متر </td>
+                        <td> 7.8 × 74.1 × 157.6 میلی‌متر </td>
+                        <td>  2688 × 1242 </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">وزن</td>
+                    </tr>
+                    <tr>
+                        <td>  166 گرم  </td>
+                        <td>  رنگ های معمول 175 گرم و رنگ های سرامیکی 198 گرم  </td>
+                        <td>  2688 × 1242 </td>
+                        <td></td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

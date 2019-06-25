@@ -1,0 +1,29 @@
+{% if Products %}
+    {% for Product in Products %}
+        <div class="product-item-box">
+            <a href="{{ URL }}product/{{ Product['product_id'] }}">
+                <div class="product-item-image-box">
+                    <img src="{{ Product['image'] }}" alt="Product Title">
+                </div>
+                <div class="product-item-content-box">
+                    <a href="{{ URL }}product/{{ Product['product_id'] }}">{{ Product['name'] }}</a>
+                    <div class="product--price">
+                        {% if Product['special'] %}
+                            <span class="old">{{ Product['price'] }}</span>
+                            <span class="new">{{ Product['special'] }}</span>
+                            <span class="unit">تومان</span>
+                        {% else %}
+                            <span>{{ Product['price'] }}</span>
+                            <span class="unit">تومان</span>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </a>
+            <div class="product-item-footer">
+                <span><i class="fa fa-clone btn-compare {{ Product['is_compare'] ? 'active' : '' }}" data-product-id="{{ Product['product_id'] }}" data-is-compare="{{ Product['is_compare'] }}"></i></span>
+                <span><i class="fa fa-heart btn-favorite" data-product-id="{{ Product['product_id'] }}"></i></span>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}

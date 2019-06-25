@@ -695,33 +695,54 @@ class Product extends Model
         if($lID) {
             $language_id = $lID;
         }
-        $sql = "SELECT *,p.image as `image`, pl.name AS name, ml.name AS manufacturer_name ,(SELECT ps.price FROM product_special ps WHERE ps.product_id = p.product_id 
-        AND ps.date_start < UNIX_TIMESTAMP() AND ps.date_end > UNIX_TIMESTAMP() ORDER BY ps.priority DESC LIMIT 0,1) AS special, (SELECT ss.name FROM
+        $sql = "SELECT *,p.price as `price`, p.image as `image`, pl.name AS name, ml.name AS manufacturer_name , (SELECT ss.name FROM
          stock_status ss WHERE ss.stock_status_id = p.stock_status_id AND ss.language_id = pl.language_id) as `stock_status_name`,
          (SELECT AVG(r1.rate) FROM review r1 WHERE r1.product_id = p.product_id AND r1.status = 1)  AS rating, (SELECT COUNT(*) FROM 
-         review r2 WHERE r2.product_id = p.product_id AND r2.status = 1) AS reviews,(SELECT ps.price FROM product_special ps WHERE ps.product_id = p.product_id 
-        AND ps.date_start < UNIX_TIMESTAMP() AND ps.date_end > UNIX_TIMESTAMP() ORDER BY ps.priority DESC LIMIT 0,1) AS special ";
-
+         review r2 WHERE r2.product_id = p.product_id AND r2.status = 1) AS reviews,ps.price AS special";
+        $sql .= " FROM product p ";
         if(!empty($option['category_id'])) {
-            $sql .= "FROM category_path cp LEFT JOIN product_category pc ON cp.category_id = pc.category_id ";
-            if(!empty($option['filters_id'])) {
-                $sql .= "LEFT JOIN product_filter pf ON pc.product_id = pf.product_id LEFT JOIN product p ON 
-                pf.product_id = p.product_id ";
-            }else {
-                $sql .= "LEFT JOIN product p ON pc.product_id = p.product_id ";
+            if(!empty($option['filters_data'])) {
+                foreach ($option['filters_data'] as $filter_group_id => $filters_id) {
+                    $sql .= " LEFT JOIN product_filter pf{$filter_group_id} ON  p.product_id = pf{$filter_group_id}.product_id";
+                }
             }
-        }else {
-            $sql .= "FROM product p ";
+            $sql .= " INNER JOIN product_category pc ON p.product_id = pc.product_id INNER JOIN category_path cp ON pc.category_id = cp.category_id";
         }
 
-
-        $sql .= "LEFT JOIN product_language pl ON p.product_id = pl.product_id
+        $sql .= " LEFT JOIN (SELECT ps.price, ps.product_id, ps.date_start, ps.date_end FROM product_special ps ORDER BY ps.priority DESC LIMIT 0,1) AS ps ON  ps.product_id = p.product_id 
+        AND ps.date_start < UNIX_TIMESTAMP() AND ps.date_end > UNIX_TIMESTAMP() ";
+        $sql .= " LEFT JOIN product_language pl ON p.product_id = pl.product_id
         LEFT JOIN manufacturer m ON m.manufacturer_id = p.manufacturer_id LEFT JOIN manufacturer_language ml ON ml.manufacturer_id = m.manufacturer_id 
         WHERE pl.language_id = :lID AND ml.language_id = :lID AND p.status = 1 AND date_available < :pDAvailable ";
+        if(isset($option['min'])) {
+            $sql .= " AND ((ps.price IS NOT NULL AND ps.price >= :pMinPrice) || (ps.price IS NULL AND p.price >= :pMinPrice)) ";
+        }
+        if(isset($option['max'])) {
+            $sql .= " AND ((ps.price IS NOT NULL AND ps.price <= :pMaxPrice) || (ps.price IS NULL AND p.price <= :pMaxPrice))";
+        }
+
+        $i = 0;
+        $params =  array(
+            'lID'   => $language_id,
+            'pDAvailable'   => time(),
+        );
+        /*
+         *  WHERE  (pf.filter_id IN ("2") AND pf2.filter_id IN ("18"))AND cp.path_id = "2" GROUP BY p.product_id
+         * */
         if(!empty($option['category_id'])) {
-            $sql .= "AND cp.path_id = :cPID ";
-            if(!empty($option['filters_id'])) {
-                $sql .= "AND pf.filter_id IN(:pFFilterID) ";
+            $sql .= " AND cp.path_id = :cPID ";
+            if(!empty($option['filters_data'])) {
+                foreach ($option['filters_data'] as $filter_group_id => $filters_id) {
+                    $place_holder = [];
+                    $place_holder_value  =[];
+                    foreach ($filters_id as $filter_id) {
+                        $place_holder[] = ":PF{$filter_group_id}Param" . $i;
+                        $place_holder_value["PF{$filter_group_id}Param" . $i] = $filter_id;
+                        $i++;
+                        $params = array_merge($params, $place_holder_value);
+                    }
+                    $sql .= "AND pf{$filter_group_id}.filter_id IN(" . implode(',', $place_holder) . ") ";
+                }
             }
         }
         if(!empty($option['filter_name'])) {
@@ -729,7 +750,19 @@ class Product extends Model
         }
         if(!empty($option['manufacturer_id'])) {
             $sql .= "AND p.manufacturer_id = :mID ";
+        }else if(!empty($option['manufacturers_id'])) {
+            $place_holder = [];
+            $place_holder_value  =[];
+            foreach ($option['manufacturers_id'] as $manufacturer_id) {
+                $place_holder[] = ":MParam" . $i;
+                $place_holder_value["MParam" . $i] = $manufacturer_id;
+                $i++;
+                $params = array_merge($params, $place_holder_value);
+            }
+            $sql .= "AND p.manufacturer_id IN (" . implode(',', $place_holder) .")";
+
         }
+
         $sql .= " GROUP BY p.product_id";
         $sort_order = array(
             'pl.name',
@@ -764,15 +797,8 @@ class Product extends Model
             $sql .= " LIMIT " . (int)$option['start'] . "," . (int)$option['limit'];
         }
 
-        $params =  array(
-            'lID'   => $language_id,
-            'pDAvailable'   => time(),
-        );
         if(!empty($option['category_id'])) {
             $params['cPID'] = $option['category_id'];
-            if(!empty($option['filters_id'])) {
-                $params['pFFilterID'] = implode(',', $option['filters_id']);
-            }
         }
         if(!empty($option['filter_name'])) {
             $params['fName'] = "%" . $option['filter_name'];
@@ -780,11 +806,18 @@ class Product extends Model
         if(!empty($option['manufacturer_id'])) {
             $params['mID']  = $option['manufacturer_id'];
         }
+        if(!empty($option['min'])) {
+            $params['pMinPrice']  = $option['min'];
+        }
+        if(!empty($option['max'])) {
+            $params['pMaxPrice']  = $option['max'];
+        }
         $this->Database->query($sql, $params);
         if(!$this->Database->hasRows()) {
             $params['lID'] = $this->Language->getDefaultLanguageID();
             $this->Database->query($sql, $params);
         }
+
         return $this->Database->getRows();
     }
 

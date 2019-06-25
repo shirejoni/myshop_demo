@@ -5,10 +5,39 @@
     {% include "_inc/_breadcrump_inc.twig" %}
 {% endblock %}
 {% block Content %}
+    <div class="bigWrap">
+        <div class="message-box success-box" id="top-success-message-box" style="display: none;">
+            <h4>موفقیت!</h4>
+            <hr>
+            <div class="messages">
+
+            </div>
+        </div>
+        <div class="message-box error-box" id="top-error-message-box" style="display: none;">
+            <h4>خطا!</h4>
+            <hr>
+            <div class="messages">
+
+            </div>
+        </div>
+    </div>
     <div id="products-list">
         <div class="bigWrap clearfix">
             <div class="products-list-sidebar">
                 <h3>فیلتر ها</h3>
+                <div class="category-filter-group-box">
+                    <div class="category-filter-group-title-box">
+                        محدودی قیمت:
+                    </div>
+                    <div class="category-filter-item" style="margin: 10px;">
+                        <div id="price-range"></div>
+                        <div class="min-price" id="price-range-min-price">از <span>0</span></div>
+                        <div class="max-price" id="price-range-max-price">تا <span>0</span></div>
+                        <div>
+                            <button class="price-range-button" id="price-range-button">اعمال محدوده قیمت</button>
+                        </div>
+                    </div>
+                </div>
                 {% if Manufacturers %}
                 <div class="category-filter-group-box">
                     <div class="category-filter-group-title-box">
@@ -23,7 +52,7 @@
                                     <polyline points="1 9 7 14 15 4"></polyline>
                                 </svg>
                             </label>
-                            <span> {{ Manufacturer['name'] }}</span>
+                            <span> {{ Manufacturer['name'] }}({{ Manufacturer['products_count'] }})</span>
                         </div>
                     {% endfor %}
                 </div>
@@ -36,7 +65,7 @@
                             </div>
                             {% for Filter in CategoryFilter['filter_items'] %}
                                 <div class="category-filter-item">
-                                    <input type="checkbox" id="cbx-{{ Filter['filter_id'] }}" class="cbx" data-filter-type="filter" data-filter-id="{{ Filter['filter_id'] }}" style="display: none;">
+                                    <input type="checkbox" id="cbx-{{ Filter['filter_id'] }}" class="cbx" data-filter-type="filter" data-filter-id="{{ Filter['filter_group_id'] }}-{{ Filter['filter_id'] }}" style="display: none;">
                                     <label for="cbx-{{ Filter['filter_id'] }}" class="check">
                                         <svg width="18px" height="18px" viewBox="0 0 18 18">
                                             <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
@@ -51,35 +80,183 @@
 
                 {% endif %}
             </div>
-            <div class="products-list-box">
-                {% if Products %}
-                    {% for Product in Products %}
-                        <div class="product-item-box">
-                            <a href="{{ URL }}product/{{ Product['product_id'] }}">
-                                <div class="product-item-image-box">
-                                    <img src="{{ Product['image'] }}" alt="Product Title">
-                                </div>
-                                <div class="product-item-content-box">
-                                    <a href="{{ URL }}product/{{ Product['product_id'] }}">{{ Product['name'] }}</a>
-                                    <div class="product--price">
-                                        {% if Product['special'] %}
-                                            <span class="old">{{ Product['price'] }}</span>
-                                            <span class="new">{{ Product['special'] }}</span>
-                                            <span class="unit">تومان</span>
-                                        {% else %}
-                                            <span>{{ Product['price'] }}</span>
-                                            <span class="unit">تومان</span>
-                                        {% endif %}
-
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    {% endfor %}
-                {% endif %}
+            <div class="products-list-box" style="position: relative">
+                <div class="loader-box">
+                    <div class="loader loader--style1" title="0">
+                        <svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                             width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+  <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+    s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+    c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/>
+                            <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+    C22.32,8.481,24.301,9.057,26.013,10.047z">
+                                <animateTransform attributeType="xml"
+                                                  attributeName="transform"
+                                                  type="rotate"
+                                                  from="0 20 20"
+                                                  to="360 20 20"
+                                                  dur="0.5s"
+                                                  repeatCount="indefinite"/>
+                            </path>
+  </svg>
+                    </div>
+                </div>
+                <div id="products-list-item">
+                    {% include "category/products.twig" %}
+                </div>
 
 
             </div>
         </div>
+        {% if CompareCount >= 2%}
+        <a href="{{ URL }}compare/index">
+            <div id="compare-page-btn">
+                مقایسه
+            </div>
+        </a>
+        {% endif %}
     </div>
+{% endblock %}
+{% block Css %}
+<link rel="stylesheet" href="{{ URL }}assets/nouislider/nouislider.min.css">
+    <style>
+        /*
+        Set the color of the icon
+        */
+        .loader svg path,
+        .loader svg rect {
+            fill: #FF6700;
+        }
+        .loader svg {
+            transform: scale(1.5) translate(-50%, -50%);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+        }
+        .loader-box {
+            width: calc(100% - 10px);
+            height:  calc(100% - 10px);
+            top: 5px;
+            left: 5px;
+            position: absolute;
+            z-index: 100;
+            background-color: #ffffff;
+            display: none;
+        }
+    </style>
+
+{% endblock %}
+{% block BeforeMainJS %}
+<script type="text/javascript" src="{{ URL }}assets/nouislider/nouislider.min.js"></script>
+{% endblock %}
+
+{% block Js %}
+    <script type="text/javascript">
+        let url = "{{ CURRENT_URL }}";
+        let compareToggleUrl = "{{ URL }}compare/toggle";
+        {% autoescape false %}
+            function formatMoney(n, c, d, t) {
+                    var c = isNaN(c = Math.abs(c)) ? 2 : c,
+                    d = d == undefined ? "." : d,
+                    t = t == undefined ? "," : t,
+                    s = n < 0 ? "-" : "",
+                    i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
+                    j = (j = i.length) > 3 ? j % 3 : 0;
+
+                return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+            };
+            let sliderElement = document.getElementById("price-range");
+            $(document).ready(function () {
+                noUiSlider.create(sliderElement, {
+                    start : [{{ MinPrice }},{{ MaxPrice }}],
+                    connect : true,
+                    step : 10000,
+                    range: {
+                        'min' : {{ MinPrice }},
+                        'max' : {{ MaxPrice }}
+                    },
+                });
+                sliderElement.noUiSlider.on('update', function (values, handle) {
+                    if(handle) {
+                        $("#price-range-max-price span").html(formatMoney(parseInt(values[handle]), 0));
+                    }else {
+                        $("#price-range-min-price span").html(formatMoney(parseInt(values[handle]), 0));
+                    }
+                });
+                $('input[type="checkbox"].cbx').on('change', ajaxSearchFunc);
+                $('#price-range-button').on('click', ajaxSearchFunc);
+                let successMessageBoxElement = $("#top-success-message-box");
+                let errorMessageBoxElement = $("#top-error-message-box");
+                let compareCount = {{ CompareCount }};
+                $('.btn-compare').click(function (e) {
+                    successMessageBoxElement.find(".messages").html('');
+                    successMessageBoxElement.css("display", "none");
+                    errorMessageBoxElement.find(".messages").html('');
+                    errorMessageBoxElement.css("display", "none");
+                    let compareElement = $(this);
+                    let data = {};
+                    let product_id = compareElement.attr('data-product-id');
+                    let is_compare = +compareElement.attr('data-is-compare');
+                    data['product_id'] = product_id;
+                    $.post(compareToggleUrl, data, function (response) {
+                        response = JSON.parse(response);
+                        if(response['status'] == 1) {
+                            for (let i = 0; i < response['messages'].length; i++) {
+                                $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement.find('.messages'));
+                            }
+                            if(response['messages'].length > 0) {
+                                successMessageBoxElement.css("display", "block");
+                            }
+                            compareCount = response['count_compare']
+                            if(is_compare) {
+                                compareElement.removeClass('active');
+                                compareElement.attr('data-is-compare', '0');
+                            }else {
+
+                                compareElement.addClass('active');
+                                compareElement.attr('data-is-compare', '1');
+                            }
+                            if(compareCount >= 2) {
+                                $("#compare-page-btn").css("display", 'block');
+                            }else {
+                                $("#compare-page-btn").css("display", 'none');
+                            }
+                        }
+                    });
+                    e.preventDefault();
+                });
+            });
+            function ajaxSearchFunc() {
+                let data = {};
+                data['manufacturer'] = [];
+                data['filter'] = [];
+                $('input[type="checkbox"].cbx:checked').each(function (index, element) {
+                    if($(element).attr('data-filter-type') && $(element).attr('data-filter-type') === "filter") {
+                        data['filter'].push($(element).attr('data-filter-id'));
+                    }else if($(element).attr('data-filter-type') && $(element).attr('data-filter-type') === "manufacturer") {
+                        data['manufacturer'].push($(element).attr('data-filter-id'));
+                    }
+                });
+                let price_ranges = sliderElement.noUiSlider.get();
+                data['min'] = price_ranges[0];
+                data['max'] = price_ranges[1];
+                data['json-response'] = true;
+                if(!$.isEmptyObject(data)) {
+                    $.ajax({
+                        "url" : url,
+                        "data" : data
+                    }).done(function (response) {
+                        response = JSON.parse(response);
+                        if(response['status'] == 1) {
+                            if(response['data']) {
+                                $("#products-list-item").html(response['data']);
+                            }else {
+                                $("#products-list-item").html("<p class='not-found-products'>محصولی وجود ندارد</p>");
+                            }
+                        }
+                    });
+                }
+            }
+        {% endautoescape %}
+    </script>
 {% endblock %}

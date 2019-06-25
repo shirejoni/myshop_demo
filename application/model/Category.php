@@ -252,7 +252,7 @@ class Category extends Model {
             }
             return $filter_group_data;
         }
-        return false;
+        return [];
     }
 
     public function getCategoriesComplete($data =  [])
