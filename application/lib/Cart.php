@@ -122,6 +122,7 @@ class Cart
                                 'product_option_id'     => $product_option_id,
                                 'product_option_value_id'   => $product_option_value_id,
                                 'option_id'             => $option['option_id'],
+                                'option_group_name'     => $option['name'],
                                 'option_value_id'       => $option_value['option_value_id'],
                                 'type'                  => $option['option_type'],
                                 'name'                  => $option_value['name'],
@@ -218,6 +219,15 @@ class Cart
                 'pOption'   => json_encode($product_option),
                 'cQuantity' => $quantity,
             ));
+        }
+    }
+
+    public function emptyCustomerCart($customer_id) {
+        $this->Database->query("SELECT * FROM cart WHERE customer_id = :cID", array(
+            'cID'   => $customer_id
+        ));
+        foreach ($this->Database->getRows() as $row) {
+            $this->remove($row['cart_id']);
         }
     }
 }

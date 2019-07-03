@@ -1,0 +1,74 @@
+{% extends "checkout/_temp/blank_checkout_temp.twig" %}
+
+{% block CheckoutBody %}
+    <div class="big-shopping-cart-box">
+        {% if Addresses %}
+            <table id="addressesList" class="table table-bordered text-center">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">نام</th>
+                    <th scope="col">نام خانوادگی</th>
+                    <th scope="col">آدرس</th>
+                </tr>
+                </thead>
+                <tbody id="table-show-data">
+                {% for Address in Addresses %}
+                    <tr>
+                        <th scope="row"><input type="radio" name="select-address" class="select-row-radio" data-address-id="{{ Address['address_id'] }}"></th>
+                        <td>{{ Address['first_name'] }}</td>
+                        <td>{{ Address['last_name'] }}</td>
+                        <td>{{ Address['address'] }}</td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            شما باید آدرسی در پنلتون ثبت کنید
+        {% endif %}
+        <div class="total-price-box">
+            <a href="{{ URL }}checkout/checkout/payment" id="linkToPaymentPage" class="fa fa-arrow-left btn-next-link"></a>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block Js %}
+    {% autoescape false %}
+        <script type="text/javascript">
+            let urlApplyUserAddress = "{{ URL }}checkout/checkout/applyAddress";
+            $(document).ready(function () {
+                let successMessageBoxElement = $("#success-message-box");
+                let errorMessageBoxElement = $("#error-message-box");
+                $("#linkToPaymentPage").click(function (e) {
+                    if($(".select-row-radio:checked").length > 0) {
+                        let address_id = $(".select-row-radio:checked").attr('data-address-id');
+                        $.post(urlApplyUserAddress, {'address_id' : address_id}, function (response) {
+                            response = JSON.parse(response);
+                            if(response['status'] == 1) {
+                                if(response['redirect']) {
+                                    window.setTimeout(function () {
+                                        window.location.href = response['redirect'];
+                                    }, 1000)
+                                }
+                            }else {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(errorMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    errorMessageBoxElement.css("display", "block");
+                                }
+                                e.preventDefault();
+                            }
+                        });
+                    }else {
+                        e.preventDefault();
+                    }
+                    e.preventDefault();
+                });
+            });
+
+        </script>
+    {% endautoescape %}
+{% endblock %}

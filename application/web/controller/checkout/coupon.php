@@ -18,7 +18,7 @@ use App\System\Controller;
  * */
 class ControllerCheckoutCoupon extends Controller {
 
-    public function applycoupon() {
+    public function applycoupon($returnInfo = false) {
         if(isset($this->Request->post['coupon-post']) && $this->Customer) {
             $coupon_key = isset($this->Request->post['coupon']) ? $this->Request->post['coupon'] : '';
         }else if(isset($_SESSION['customer']['coupon']) && $this->Customer) {
@@ -31,7 +31,7 @@ class ControllerCheckoutCoupon extends Controller {
                 if(!isset($coupon)) {
                     $coupon = $Coupon->getCouponByCode($coupon_key);
                 }
-                if($coupon) {
+                if($coupon && $coupon['date_end'] > time()) {
                     $old_session_id = isset($_SESSION['old_session_id']) ? $_SESSION['old_session_id'] : false;
                     $Cart = new Cart($this->registry,$old_session_id);
                     $Product = $this->load("Product", $this->registry);
@@ -70,6 +70,8 @@ class ControllerCheckoutCoupon extends Controller {
 
                         }
                         if($status) {
+                            $_SESSION['customer']['coupon'] = $coupon;
+                            $_SESSION['customer']['coupon']['code'] = $coupon_key;
                             $json['status'] = 1;
                             $json['off_price'] = $off_price;
                             $json['total'] = $total;
@@ -78,6 +80,7 @@ class ControllerCheckoutCoupon extends Controller {
                             $json['total_formatted'] = number_format($json['total']);
                             $json['payment_price_formatted'] = number_format($json['payment_price']);
                             $json['messages'] = [$this->Language->get('success_message_off_price')];
+                            $json['code'] = $coupon_key;
                         }
                     }else {
                         $json['status'] = 0;
@@ -90,10 +93,17 @@ class ControllerCheckoutCoupon extends Controller {
                     $json['off_price'] = 0;
                     $json['messages'] = [$this->Language->get('error_messages_invalid')];
                 }
-                $this->Response->setOutPut(json_encode($json));
+                if($returnInfo) {
+
+                    return $json;
+                }else {
+                    $this->Response->setOutPut(json_encode($json));
+                }
                 return;
             }
         return new Action('error/notFound');
     }
+
+
 
 }

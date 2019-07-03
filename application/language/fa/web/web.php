@@ -31,3 +31,4 @@ $_['success_message_off_price'] = "تخفیف با موفقیت اعمال شد"
 $_['error_messages_off_price'] = "کد تخفیف برای این محصولات معتبر نمی باشد";
 $_['error_messages_invalid'] = "کد تخفیف معتبر نمی باشد";
 $_['error_off_code_minimum_price'] = "مبلغ سبد خرید شما باید حداقل {{MINIMUM_PRICE}} باشد";
+$_['error_address_is_register_for_checkout'] = "آدرس با موفقیت به سفارش اضافه شد";

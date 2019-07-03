@@ -198,6 +198,33 @@ class Customer extends Model
         }
     }
 
+    public function getCustomerFavorite($customer_id) {
+        $this->Database->query("SELECT * FROM customer_favorite cf WHERE cf.customer_id = :cID", array(
+            'cID'   => $customer_id
+        ));
+        $products_id = [];
+
+        foreach ($this->Database->getRows() as $row) {
+            $products_id[] = $row['product_id'];
+        }
+        return $products_id;
+    }
+
+    public function deleteCustomerFavorite($customer_id, $product_id) {
+        $this->Database->query("DELETE FROM customer_favorite WHERE customer_id = :cID AND product_id = :pID", array(
+            'cID'   => $customer_id,
+            'pID'   => $product_id
+        ));
+        return $this->Database->numRows();
+    }
+    public function insertCustomerFavorite($customer_id, $product_id) {
+        $this->Database->query("INSERT INTO customer_favorite (customer_id, product_id) VALUES (:cID, :pID)", array(
+            'cID'   => $customer_id,
+            'pID'   => $product_id
+        ));
+        return $this->Database->insertId();
+    }
+
     /**
      * @return mixed
      */

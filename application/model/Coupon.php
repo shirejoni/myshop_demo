@@ -227,4 +227,19 @@ class Coupon extends Model
             return $row;
         }
     }
+
+    public function useCoupon($order_id, $customer_id, $coupon_id, $order_off_amount)
+    {
+        $this->Database->query("INSERT INTO coupon_history (coupon_id, order_id, customer_id, amount, date_added) VALUES
+        (:cID, :oID, :cCID, :cAmount, :cDADDED)", array(
+            'cID'   => $coupon_id,
+            'oID'   => $order_id,
+            'cCID'  => $customer_id,
+            'cAmount'   => $order_off_amount,
+            'cDADDED'   => time()
+        ));
+        $this->Database->query("UPDATE coupon SET count = count - 1 WHERE coupon_id = :cID", array(
+            'cID'   => $coupon_id
+        ));
+    }
 }

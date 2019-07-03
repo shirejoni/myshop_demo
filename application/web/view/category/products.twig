@@ -22,7 +22,7 @@
             </a>
             <div class="product-item-footer">
                 <span><i class="fa fa-clone btn-compare {{ Product['is_compare'] ? 'active' : '' }}" data-product-id="{{ Product['product_id'] }}" data-is-compare="{{ Product['is_compare'] }}"></i></span>
-                <span><i class="fa fa-heart btn-favorite" data-product-id="{{ Product['product_id'] }}"></i></span>
+                <span><i class="fa fa-heart btn-favorite {{ Product['is_favorite'] ? 'active' : '' }}" data-is-favorite="{{ Product['is_favorite'] }}" data-product-id="{{ Product['product_id'] }}"></i></span>
             </div>
         </div>
     {% endfor %}

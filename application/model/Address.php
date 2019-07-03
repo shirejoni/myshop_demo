@@ -78,7 +78,12 @@ class Address extends Model
             'cID'   => $customer_id
         ));
         if($this->Database->hasRows()) {
-            return $this->Database->getRow();
+            $row = $this->Database->getRow();
+            $provinceRow = $this->getProvince($row['province_id']);
+            $row['province_name'] = $provinceRow['name'];
+            $cityRow = $this->getCity($row['city']);
+            $row['city_name'] = $cityRow['name'];
+            return $row;
         }
         return false;
     }

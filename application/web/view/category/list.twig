@@ -108,13 +108,11 @@
 
             </div>
         </div>
-        {% if CompareCount >= 2%}
         <a href="{{ URL }}compare/index">
-            <div id="compare-page-btn">
+            <div id="compare-page-btn" style="{{ CompareCount >= 2 ?  "display:block" : "display:none"}}">
                 مقایسه
             </div>
         </a>
-        {% endif %}
     </div>
 {% endblock %}
 {% block Css %}
@@ -154,6 +152,7 @@
     <script type="text/javascript">
         let url = "{{ CURRENT_URL }}";
         let compareToggleUrl = "{{ URL }}compare/toggle";
+        let favoriteToggleUrl = "{{ URL }}favorite/toggle";
         {% autoescape false %}
             function formatMoney(n, c, d, t) {
                     var c = isNaN(c = Math.abs(c)) ? 2 : c,
@@ -207,7 +206,7 @@
                             if(response['messages'].length > 0) {
                                 successMessageBoxElement.css("display", "block");
                             }
-                            compareCount = response['count_compare']
+                            compareCount = response['count_compare'];
                             if(is_compare) {
                                 compareElement.removeClass('active');
                                 compareElement.attr('data-is-compare', '0');
@@ -220,6 +219,44 @@
                                 $("#compare-page-btn").css("display", 'block');
                             }else {
                                 $("#compare-page-btn").css("display", 'none');
+                            }
+                        }
+                    });
+                    e.preventDefault();
+                });
+                $('.btn-favorite').click(function (e) {
+                    successMessageBoxElement.find(".messages").html('');
+                    successMessageBoxElement.css("display", "none");
+                    errorMessageBoxElement.find(".messages").html('');
+                    errorMessageBoxElement.css("display", "none");
+                    let favortieElement = $(this);
+                    let data = {};
+                    let product_id = favortieElement.attr('data-product-id');
+                    let is_favorite = +favortieElement.attr('data-is-favorite');
+                    data['product_id'] = product_id;
+                    $.post(favoriteToggleUrl, data, function (response) {
+                        response = JSON.parse(response);
+                        if(response['status'] == 1) {
+                            for (let i = 0; i < response['messages'].length; i++) {
+                                $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement.find('.messages'));
+                            }
+                            if(response['messages'].length > 0) {
+                                successMessageBoxElement.css("display", "block");
+                            }
+                            if(is_favorite) {
+                                favortieElement.removeClass('active');
+                                favortieElement.attr('data-is-favorite', '0');
+                            }else {
+
+                                favortieElement.addClass('active');
+                                favortieElement.attr('data-is-favorite', '1');
+                            }
+                        }else {
+                            for (let i = 0; i < response['messages'].length; i++) {
+                                $('<p>').text(response['messages'][i]).appendTo(errorMessageBoxElement.find('.messages'));
+                            }
+                            if(response['messages'].length > 0) {
+                                errorMessageBoxElement.css("display", "block");
                             }
                         }
                     });

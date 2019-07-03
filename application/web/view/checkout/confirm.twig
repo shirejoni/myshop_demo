@@ -1,0 +1,108 @@
+{% extends "checkout/_temp/blank_checkout_temp.twig" %}
+
+{% block CheckoutBody %}
+        <div class="order-customer-info">
+            <div class="order-customer-info-row">
+                <div class="order-customer-info-item">
+                    <span class="order-customer-info-item-title">تحویل گیرنده:</span>
+                    {{ FullName }}
+                </div>
+                <div class="order-customer-info-item">
+                    <span class="order-customer-info-item-title">شماره تماس:</span>
+                    {{ PhoneNumber }}
+                </div>
+            </div>
+            <div class="order-customer-info-row clearfix">
+                <div class="order-customer-info-item">
+                    <span class="order-customer-info-item-title">آدرس تحویل گیرنده:</span>
+                    {{ CustomerAddress }}
+                </div>
+                <div class="order-customer-info-item">
+                    <span class="order-customer-info-item-title">مبلغ کل:</span>
+                    <span style="font-family: 'Maven Pro'">{{ PaymentPriceFormatted }}</span>
+                    تومان
+                </div>
+            </div>
+            <div class="order-customer-info-row clearfix">
+                <div class="order-customer-info-item">
+                    <span class="order-customer-info-item-title">وزن کل:</span>
+                    <span style="font-family: 'Maven Pro'">{{ Weight }}</span>
+                    {{ WeightUnit }}
+                </div>
+                <div class="order-customer-info-item">
+                    <span class="order-customer-info-item-title">تعداد مرسوله:</span>
+                    <span style="font-family: 'Maven Pro'">5</span>
+                </div>
+            </div>
+        </div>
+
+    {% if Products %}
+        <table border="1" class="big-shopping-cart-table" id="big-shopping-cart-table">
+            <thead>
+            <tr>
+                <th>عکس</th>
+                <th>نام محصول</th>
+                <th>تعداد</th>
+                <th>فی</th>
+                <th>قیمت کل</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for Product in Products %}
+                <tr>
+                    <td>
+                        <img src="{{ Product['image'] }}">
+                    </td>
+                    <td>
+                        {{ Product['name'] }}
+                    </td>
+                    <td>
+                        <input type="number" disabled class="quantity" value="{{ Product['quantity'] }}">
+                    </td>
+                    <td>
+                        {{ Product['total_price_for_unit_formatted'] }} <span class="toman">تومان</span>
+                    </td>
+                    <td>
+                        {{ Product['total_formatted'] }} <span class="toman">تومان</span>
+                    </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        سبد شما خالی است
+    {% endif %}
+    <div class="total-price-box">
+        <table>
+            <tr>
+                <th>مبلغ کل</th>
+                <td class="gray">
+                    <span class="price" id="cart_total_price">{{ TotalFormatted }}</span><span class="toman">تومان</span>
+                </td>
+            </tr>
+            <tr>
+                <th>تخیفیف</th>
+                <td class="green">
+                    <span class="price" id="cart_off_price">{{ OffFormatted }}</span><span class="toman">تومان</span>
+                </td>
+            </tr>
+            <tr>
+                <th>مبلغ پرداختی:</th>
+                <td>
+                        <span class="price" id="cart_payment_price">{{ PaymentPriceFormatted }}
+                        </span><span class="toman">تومان</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="order-footer">
+        <a href="http://myshopdemo.test/checkout/checkout/pay/{{ OrderID }}?token_payment={{ token_payment }}" class="payment-btn">پرداخت</a>
+    </div>
+{% endblock %}
+
+{% block Js %}
+    {% autoescape false %}
+
+    {% endautoescape %}
+{% endblock %}

@@ -1,0 +1,20 @@
+
+{% extends "checkout/_temp/blank_checkout_temp.twig" %}
+
+{% block CheckoutBody %}
+        {% if Status %}
+            <div class="verify-confirm">
+                <p>پرداخت شما با موفقیت انجام</p>
+                <p>شماره تراکنش: {{ TransactionCode }}</p>
+                <p>شماره سفارش: {{ OrderID }}</p>
+            </div>
+        {% else %}
+            <p>مشکلی در پرداخت شما رخ داده است</p>
+        {% endif %}
+{% endblock %}
+
+{% block Js %}
+    {% autoescape false %}
+
+    {% endautoescape %}
+{% endblock %}
