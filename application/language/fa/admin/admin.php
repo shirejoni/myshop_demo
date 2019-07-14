@@ -58,8 +58,7 @@ $_['error_coupon_value_empty'] = "مقدار تخفیف خالی است";
 $_['error_coupon_minimum_price_empty'] = "حداقل مقدار تخفیف خالی است";
 $_['error_coupon_date_start_empty'] = "تاریخ شروع تخفیف خالی است";
 $_['error_coupon_date_end_empty'] = "تاریخ پایان تخفیف خالی است";
-
-
+$_['error_order_status_empty'] = "وضعیت سفارش تعیین نشده است";
 /*
  * Messages
  * */

@@ -296,8 +296,13 @@ class ControllerCheckoutCheckout extends Controller {
                 if($response['status'] == 1 && $response['factorNumber'] == $order['order_id'] && $this->Request->get['token'] == $order['payment_code'] && $response['amount'] == $order['total']) {
                     $Order->editOrder($order['order_id'], array(
                         'order_status_id'   => 2,
-                        'transaction_code'           => $response['transId'],
+                        'transaction_code'           => $response['transId']
                     ));
+                    $Order->insertOrderHistory([
+                        'order_id'  => $order['order_id'],
+                        'order_status_id'   => 2,
+                        'date_added'        => time(),
+                    ]);
                     $data = [];
                     $data['Status'] = 1;
                     $data['TransactionCode'] = $response['transId'];

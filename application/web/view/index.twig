@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>فروشگاه من</title>
-    <link rel="stylesheet" href="{{ URL }}assets/css/fontawesome-all.min.css">
-    <link rel="stylesheet" href="{{ URL }}assets/css/style.css">
-</head>
-<body>
-<div id="main">
-    {% include "_inc/_header_inc.twig" %}
+{% extends "product/_temp/blank_product_temp.twig" %}
+
+
+{% block Content %}
     <div id="slider" class="slider-box">
         <div class="slider" style="left: 0%;">
             <div class="slide" style="background-color: rgb(215, 161, 81); left: 0%;">
@@ -23,245 +16,203 @@
             <div class="right-icon" style="opacity: 1;"></div>
         </div>
     </div>
-    <div id="amazing-offer" class="clearfix">
-        <div class="bigWrap">
-            <div id="amazing-offer-box">
-                <span>پیشنهاد امروز</span>
-                <h2>Amazing Offer</h2>
-                <div class="counter">
-                    <span>5</span>
-                    <span>16</span>
-                    <span>10</span>
-                    <span>23</span>
-                </div>
-                <div class="counter-text">
-                    <span>روز</span>
-                    <span>ساعت</span>
-                    <span>دقیقه</span>
-                    <span>ثانیه</span>
-                </div>
+    {% for Amazing in Amazings %}
+        <div id="amazing-offer" class="clearfix">
+            <div class="bigWrap">
+                <div id="amazing-offer-box">
+                    <span>{{ Amazing['name'] }}</span>
+                    <h2>Amazing Offer</h2>
+                    <div class="counter" id="counter{{ Amazing['amazing_id'] }}">
 
-                <i class="fa fa-long-arrow-alt-right"></i>
+                    </div>
+                    <div class="counter-text">
+                        <span>روز</span>
+                        <span>ساعت</span>
+                        <span>دقیقه</span>
+                        <span>ثانیه</span>
+                    </div>
+
+                    <a href="{{ URL }}amazing/{{ Amazing['amazing_id'] }}"><i
+                                class="fa fa-long-arrow-alt-right" style="color:#374250;margin-top: 30px"></i></a>
+                </div>
+                <div class="product-row clearfix">
+                    {% for Product in Amazing['products'] %}
+                        <div class="product">
+                            <div class="product-img">
+                                <img src="{{ Product['image'] }}" alt="Photo Product">
+                            </div>
+                            <div class="product-price">
+                                {% if Product['special'] %}
+                                    <span class="price new">{{ Product['special'] | number_format }}</span>
+                                    <span class="price old">{{ Product['price'] | number_format }}</span>
+                                    <span class="toman">تومان</span>
+                                {% else %}
+                                    <span class="price">{{ Product['price'] | number_format }}</span>
+                                    <span class="toman">تومان</span>
+                                {% endif %}
+                            </div>
+                            <div class="product-title">
+                                <a href="{{ URL }}product/{{ Product['product_id'] }}">{{ Product['name'] }}</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                </div>
             </div>
-            <div class="product-row clearfix" >
-                <div class="product">
-                    <div class="product-img">
-                        <img src="{{ URL }}assets/img/product/thumbnail/product-01.png" alt="Photo Product">
-                    </div>
-                    <div class="product-price">
-                        <span class="price new">1,000,000</span>
-                        <span class="price old">1,200,000</span>
-                        <span class="toman">تومان</span>
 
-                    </div>
-                    <div class="product-title">
-                        گوشی شاهین
-                    </div>
-                </div>
-
-                <div class="product">
-                    <div class="product-img">
-                        <img src="{{ URL }}assets/img/product/thumbnail/product-01.png" alt="Photo Product">
-                    </div>
-                    <div class="product-price">
-                        <span class="price new">1,000,000</span>
-                        <span class="price old">1,200,000</span>
-                        <span class="toman">تومان</span>
-
-                    </div>
-                    <div class="product-title">
-                        گوشی شاهین
-                    </div>
-                </div>
-
-                <div class="product">
-                    <div class="product-img">
-                        <img src="{{ URL }}assets/img/product/thumbnail/product-01.png" alt="Photo Product">
-                    </div>
-                    <div class="product-price">
-                        <span class="price new">1,000,000</span>
-                        <span class="price old">1,200,000</span>
-                        <span class="toman">تومان</span>
-
-                    </div>
-                    <div class="product-title">
-                        گوشی شاهین
-                    </div>
-                </div>
-
-            </div>
         </div>
-
-    </div>
+    {% endfor %}
     <div id="best-seller" class="product-box clearfix">
         <div class="product-box-title">
             پرفروش ترین کالاها
         </div>
         <div class="bigWrap">
-            <div class="product">
-                <div class="product-img">
-                    <img src="{{ URL }}assets/img/product/thumbnail/product-01.png" alt="Photo Product">
+            {% for Product in BestSellerProducts %}
+                <div class="product">
+                    <div class="product-img">
+                        <img src="{{ Product['image'] }}" alt="Photo Product">
+                    </div>
+                    <div class="product-price">
+                        {% if Product['special'] %}
+                            <span class="price new">{{ Product['special'] | number_format }}</span>
+                            <span class="price old">{{ Product['price'] | number_format }}</span>
+                            <span class="toman">تومان</span>
+                        {% else %}
+                            <span class="price">{{ Product['price'] | number_format }}</span>
+                            <span class="toman">تومان</span>
+                        {% endif %}
+                    </div>
+                    <div class="product-title">
+                        <a href="{{ URL }}product/{{ Product['product_id'] }}">{{ Product['name'] }}</a>
+                    </div>
                 </div>
-                <div class="product-price">
-                    <span class="price new">1,000,000</span>
-                    <span class="price old">1,200,000</span>
-                    <span class="toman">تومان</span>
-
-                </div>
-                <div class="product-title">
-                    گوشی شاهین
-                </div>
-            </div>
-            <div class="product">
-                <div class="product-img">
-                    <img src="{{ URL }}assets/img/product/thumbnail/product-01.png" alt="Photo Product">
-                </div>
-                <div class="product-price">
-                    <span class="price new">1,000,000</span>
-                    <span class="price old">1,200,000</span>
-                    <span class="toman">تومان</span>
-
-                </div>
-                <div class="product-title">
-                    گوشی شاهین
-                </div>
-            </div>
-            <div class="product">
-                <div class="product-img">
-                    <img src="{{ URL }}assets/img/product/thumbnail/product-01.png" alt="Photo Product">
-                </div>
-                <div class="product-price">
-                    <span class="price new">1,000,000</span>
-                    <span class="price old">1,200,000</span>
-                    <span class="toman">تومان</span>
-
-                </div>
-                <div class="product-title">
-                    گوشی شاهین
-                </div>
-            </div>
-            <div class="product">
-                <div class="product-img">
-                    <img src="{{ URL }}assets/img/product/thumbnail/product-01.png" alt="Photo Product">
-                </div>
-                <div class="product-price">
-                    <span class="price new">1,000,000</span>
-                    <span class="price old">1,200,000</span>
-                    <span class="toman">تومان</span>
-
-                </div>
-                <div class="product-title">
-                    گوشی شاهین
-                </div>
-            </div>
+            {% endfor %}
 
         </div>
     </div>
-
     <div id="newest" class="product-box clearfix">
         <div class="product-box-title">
             جدیدترین کالاها
         </div>
         <div class="bigWrap">
-            <div class="product">
-                <div class="product-img">
-                    <img src="{{ URL }}assets/img/product/thumbnail/product-01.png" alt="Photo Product">
+            {% for Product in NewestProducts %}
+                <div class="product">
+                    <div class="product-img">
+                        <img src="{{ Product['image'] }}" alt="Photo Product">
+                    </div>
+                    <div class="product-price">
+                        {% if Product['special'] %}
+                            <span class="price new">{{ Product['special'] | number_format }}</span>
+                            <span class="price old">{{ Product['price'] | number_format }}</span>
+                            <span class="toman">تومان</span>
+                        {% else %}
+                            <span class="price">{{ Product['price'] | number_format }}</span>
+                            <span class="toman">تومان</span>
+                        {% endif %}
+                    </div>
+                    <div class="product-title">
+                        <a href="{{ URL }}product/{{ Product['product_id'] }}">{{ Product['name'] }}</a>
+                    </div>
                 </div>
-                <div class="product-price">
-                    <span class="price new">1,000,000</span>
-                    <span class="price old">1,200,000</span>
-                    <span class="toman">تومان</span>
-
-                </div>
-                <div class="product-title">
-                    گوشی شاهین
-                </div>
-            </div>
-            <div class="product">
-                <div class="product-img">
-                    <img src="{{ URL }}assets/img/product/thumbnail/product-01.png" alt="Photo Product">
-                </div>
-                <div class="product-price">
-                    <span class="price new">1,000,000</span>
-                    <span class="price old">1,200,000</span>
-                    <span class="toman">تومان</span>
-
-                </div>
-                <div class="product-title">
-                    گوشی شاهین
-                </div>
-            </div>
-            <div class="product">
-                <div class="product-img">
-                    <img src="{{ URL }}assets/img/product/thumbnail/product-01.png" alt="Photo Product">
-                </div>
-                <div class="product-price">
-                    <span class="price new">1,000,000</span>
-                    <span class="price old">1,200,000</span>
-                    <span class="toman">تومان</span>
-
-                </div>
-                <div class="product-title">
-                    گوشی شاهین
-                </div>
-            </div>
-            <div class="product">
-                <div class="product-img">
-                    <img src="{{ URL }}assets/img/product/thumbnail/product-01.png" alt="Photo Product">
-                </div>
-                <div class="product-price">
-                    <span class="price new">1,000,000</span>
-                    <span class="price old">1,200,000</span>
-                    <span class="toman">تومان</span>
-
-                </div>
-                <div class="product-title">
-                    گوشی شاهین
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
-    <footer class="clearfix">
-        <div class="bigWrap">
-            <div id="about-us">
-                <div>
-                    <img src="{{ URL }}assets/img/logo.png" alt="Site Logo">
-                </div>
-                <p>
-                    لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد. کتابهای زیادی در شصت و سه درصد گذشته، حال و آینده شناخت فراوان جامعه و متخصصان را می طلبد تا با نرم افزارها شناخت بیشتری
-                </p>
-            </div>
-            <div id="newsletter-box">
-                <h2>خبرنامه</h2>
-                <p>
-                    برای دریافت اخرین تخفیفات و پیشنهادات ایمیل خود رو وارد کنید
-                </p>
-                <div id="newsletter-input">
-                    <input type="text" placeholder="ایمیل">
-                    <i class="fa fa-check"></i>
-                </div>
-            </div>
-            <div id="social-box">
-                <h2>
-                    فروشگاه من را دنبال کنید در:
-                </h2>
-                <div class="social-icon">
-                    <i class="fab fa-instagram"></i>
-                    <i class="fab fa-twitter"></i>
-                    <i class="fab fa-facebook"></i>
-                    <i class="fab fa-youtube"></i>
-                </div>
-                <div class="copy-right">
-                    copy @ 2018
-                </div>
-            </div>
-        </div>
-    </footer>
-</div>
-<script type="text/javascript" src="{{ URL }}assets/js/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="{{ URL }}assets/js/main.js"></script>
-<script type="text/javascript">
-    let mainSlider = new Slider("slider");
-</script>
-</body>
-</html>
+{% endblock %}
+{% block BeforeMainJS %}
+    <script type="text/javascript" src="{{ URL }}assets/js/countdown.jquery.min.js"></script>
+{% endblock %}
+{% block Js %}
+    <script type="text/javascript">
+        {% autoescape false %}
+        function Slider(boxSliderID) {
+            let $ = this;
+            this.element = document.getElementById(boxSliderID);
+            this.slides = [];
+            this.slider = '';
+            this.buttons = [];
+            this.timeOut = '';
+            this.current = 0;
+
+
+            this.move = function (index) {
+
+                $.slider.style.left = "-"+ (index * 100) +"%";
+                if(index === ($.slides.length - 1)) {
+                    $.buttons[1].style.opacity = "0.3";
+                }else {
+                    $.buttons[1].style.opacity = "1";
+                }
+                if(index === 0) {
+                    $.buttons[0].style.opacity = "0.3";
+                }else {
+                    $.buttons[0].style.opacity = "1";
+                }
+                $.current = index;
+            };
+
+            this.loop = function () {
+                clearTimeout($.timeOut);
+                $.timeOut = setTimeout($.loop, 3000);
+                if($.current === ($.slides.length - 1)) {
+                    $.move(0);
+                }else {
+                    $.move($.current + 1);
+                }
+
+            };
+
+            this.init = function () {
+                this.slider = this.element.querySelector(".slider");
+                this.slides = this.element.querySelectorAll(".slide");
+                this.buttons = this.element.querySelectorAll(".slider-buttons > div");
+                $.buttons[0].style.opacity = "0.3";
+                let left = 100;
+                let i = 0;
+                $.slides.forEach(function (value) {
+                    value.style.left = (left * i) + "%";
+                    i += 1;
+                });
+
+                $.timeOut = setTimeout($.loop,3000);
+
+                this.initButton();
+            };
+
+            this.initButton = function () {
+                this.buttons[0].addEventListener('click', function () {
+                    clearTimeout($.timeOut);
+                    $.timeOut = setTimeout($.loop, 3000);
+                    if($.current !== 0) {
+                        $.move($.current - 1);
+                    }
+                }, false);
+                this.buttons[1].addEventListener('click', function () {
+                    clearTimeout($.timeOut);
+                    $.timeOut = setTimeout($.loop, 3000);
+                    if($.current !== ($.slides.length - 1)) {
+                        $.move($.current + 1);
+                    }
+                }, false);
+            };
+
+            this.init();
+        }
+        jQuery(document).ready(function (e) {
+            let mainSlider = new Slider("slider");
+            {% for Amazing in Amazings %}
+                jQuery('#counter{{ Amazing['amazing_id'] }}').countdown({
+                    year : {{ Amazing['year'] }},
+                    month : {{ Amazing['month']}},
+                    day : {{ Amazing['day'] }},
+                    hour: {{ Amazing['hour'] }},
+                    minute: {{ Amazing['minute'] }},
+                    second : {{ Amazing['second'] }},
+                    labels: false
+                });
+            {% endfor %}
+        });
+        {% endautoescape %}
+    </script>
+{% endblock %}
+
+

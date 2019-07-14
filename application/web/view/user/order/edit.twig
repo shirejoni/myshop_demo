@@ -1,0 +1,242 @@
+{% extends "home/_temp/blank_dashboard_temp.twig" %}
+{% block Content %}
+    <div class="container">
+        <section class="row">
+            <div class="col-12 px-5 pt-4">
+                <div class="message-box success-box" id="success-message-box" style="display: none;">
+                    <h4>موفقیت!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="message-box error-box" id="error-message-box" style="display: none;">
+                    <h4>خطا!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="row" style="box-shadow: 0 0 5px rgba(0,0,0,0.1)">
+                    <div class="col-12 p-2">
+                        <div class="container">
+                            <div class="row">
+                                <div class="card col-5 offset-1 p-0">
+                                    <div class="card-header text-center">
+                                        اطلاعات مشتری
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="list-group list-group-flush text-center">
+                                            <div class="list-group-item">
+                                                {{ Customer['first_name'] }} {{  Customer['last_name'] }}
+                                            </div>
+                                            <div class="list-group-item">
+                                                {{ Customer['mobile'] }}
+                                            </div>
+                                            <div class="list-group-item">
+                                                {{ Customer['email'] }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card col-5 p-0">
+                                    <div class="card-header text-center">
+                                        اطلاعات سفارش
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="list-group list-group-flush text-center">
+                                            <div class="list-group-item">
+                                                شماره سفارش: <span class="font-weight-bold">{{ Order['order_id'] }}</span>
+                                            </div>
+                                            <div class="list-group-item">
+                                                تاریخ سفارش: <span class="font-weight-bold">{{ Order['date_added_formatted'] }}</span>
+                                            </div>
+                                            <div class="list-group-item">
+                                                کد پیگیری: <span class="font-weight-bold">{{ Order['transaction_code'] }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row my-3">
+                                <div class="card col p-0">
+                                    <div class="card-header text-right">
+                                        سفارش
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-bordered text-center">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th>گیرنده:</th>
+                                                    <th>آدرس سفارش</th>
+                                                </tr>
+                                            </thead>
+                                            <tr>
+                                                <td>
+                                                    {{ Order['first_name'] }} {{ Order['last_name'] }}
+                                                </td>
+                                                <td>
+                                                    {{ Order['province_name'] }}, {{ Order['city_name'] }}, {{ Order['payment_address'] }}
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <table class="table table-hover table-bordered text-center">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th>نام محصول</th>
+                                                    <th>تعداد</th>
+                                                    <th>فی</th>
+                                                    <th>قیمت کل</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for Product in Order['products'] %}
+                                                <tr>
+                                                    <td>
+                                                        {{  Product['name'] }}
+                                                        {% for ProductOption in Product['order_product_options'] %}
+                                                        [<span class="text-primary">{{ ProductOption['name'] }}</span>: <span class="text-info"> {{ ProductOption['value'] }} </span>]
+                                                        {% endfor %}
+                                                    </td>
+                                                    <td>{{ Product['quantity'] }}</td>
+                                                    <td> {{ Product['price_formatted'] }} تومان </td>
+                                                    <td> {{ Product['total_formatted'] }} تومان </td>
+                                                </tr>
+                                            {% endfor %}
+                                                <tr>
+                                                    <td colspan="3">قیمت کل:</td>
+                                                    <td class="text-secondary"> {{ Order['off']['total']['value']|number_format }} تومان </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3">تخفیف:</td>
+                                                    <td class="text-success"> {{ Order['off']['off']['value']['off']|number_format }} تومان </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3">قیمت پرداختی:</td>
+                                                    <td class="text-danger"> {{ Order['total'] | number_format }} تومان </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group d-flex align-middle mt-3">
+                            <div class="card  col p-0 bg-dark">
+                                <div class="card-header text-right text-white">
+                                    پیشرفت سفارش
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-bordered table-light text-center">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th>
+                                                    زمان
+                                                </th>
+                                                <th>
+                                                    وضعیت
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for OrderHistory in Order['order_histories'] %}
+                                            <tr>
+                                                <td>
+                                                    {{ OrderHistory['date_added_formatted'] }}
+                                                </td>
+                                                <td> {{ OrderHistory['name'] }} </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+
+                                    <div class="form-group text-right pt-3 px-3">
+                                        <a href="{{ URL }}customer/order/index?token={{ Token }}"
+                                           class="fa fa-arrow-right btn btn-warning"></a>
+                                        <a href="#" id="order-submit-btn" class="fa fa-plus btn btn-success"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+{% endblock %}
+
+{% block Js %}
+    {% autoescape %}
+        <script type="text/javascript">
+            {#let url = "{{ URL }}customer/order/addorderhistory?token={{ Token }}";#}
+
+            {#$(document).ready(function () {#}
+            {#    let successMessageBoxElement = $("#success-message-box");#}
+            {#    let errorMessageBoxElement = $("#error-message-box");#}
+            {#   $("#order-submit-btn").click(function (e) {#}
+            {#       let data = {};#}
+            {#       let error = false;#}
+            {#       let element;#}
+            {#       let messages = [];#}
+
+            {#       successMessageBoxElement.find(".messages").html('');#}
+            {#       successMessageBoxElement.css("display", "none");#}
+            {#       errorMessageBoxElement.find(".messages").html('');#}
+            {#       errorMessageBoxElement.css("display", "none");#}
+
+            {#       element = $('#order-status');#}
+            {#       if(element.val() == '') {#}
+            {#           error = true;#}
+            {#           messages.push("{{ Translate['error_order_status_empty'] }}");#}
+            {#       }else {#}
+            {#           data['order_status_id'] = element.val();#}
+
+            {#       }#}
+
+            {#       data['order_id'] = {{ Order['order_id'] }};#}
+            {#       data['post'] = true;#}
+            {#       data['order-post'] = true;#}
+
+            {#       if(!error) {#}
+            {#           $.post(url, data, function (response) {#}
+            {#               response = JSON.parse(response);#}
+            {#               if(response.status === 1) {#}
+            {#                   for (let i = 0; i < response['messages'].length; i++) {#}
+            {#                       $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement.find('.messages'));#}
+            {#                   }#}
+            {#                   if(response['messages'].length > 0) {#}
+            {#                       successMessageBoxElement.css("display", "block");#}
+            {#                   }#}
+
+            {#                   if(response['redirect']) {#}
+            {#                       window.setTimeout(function () {#}
+            {#                           window.location.href = response['redirect'];#}
+            {#                       }, 1000)#}
+            {#                   }#}
+            {#               }else {#}
+            {#                   for (let i = 0; i < response['messages'].length; i++) {#}
+            {#                       $('<p>').text(response['messages'][i]).appendTo(errorMessageBoxElement.find('.messages'));#}
+            {#                   }#}
+            {#                   if(response['messages'].length > 0) {#}
+            {#                       errorMessageBoxElement.css("display", "block");#}
+            {#                   }#}
+            {#               }#}
+            {#           });#}
+            {#       }else {#}
+            {#           for (let i = 0; i < messages.length; i++) {#}
+            {#               $('<p>').text(messages[i]).appendTo(errorMessageBoxElement.find('.messages'));#}
+            {#           }#}
+            {#           if(messages.length > 0) {#}
+            {#               errorMessageBoxElement.css("display", "block");#}
+            {#           }#}
+            {#       }#}
+            {#       e.preventDefault();#}
+            {#   });#}
+            {#});#}
+        </script>
+    {% endautoescape %}
+{% endblock %}

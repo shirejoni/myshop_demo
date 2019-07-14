@@ -1,0 +1,23 @@
+{% for Amazing in Amazings %}
+    <tr>
+        <th scope="row"><input type="checkbox" class="select-row-checkbox"
+                               data-amazing-id="{{ Amazing['amazing_id'] }}"></th>
+        <th>{{ Amazing['amazing_id'] }}</th>
+        <td>{{ Amazing['name'] }}</td>
+        <td>{{ Amazing['date_start_formatted'] }}</td>
+        <td>{{ Amazing['date_end_formatted'] }}</td>
+        <td>
+            <a href="{{ ADMIN_URL }}amazing/edit/{{ Amazing['amazing_id'] }}?token={{ Token }}"><i
+                        class="btn btn-warning fa fa-pencil-alt"></i></a>
+            {% if Amazing['status'] == '1' %}
+                <button class="amazing-status-btn btn btn-success fa fa-toggle-on"
+                        data-amazing-id="{{ Amazing['amazing_id'] }}"
+                        data-amazing-status="{{ Amazing['status'] }}"></button>
+            {% else %}
+                <button class="amazing-status-btn btn btn-danger fa fa-toggle-off"
+                        data-amazing-id="{{ Amazing['amazing_id'] }}"
+                        data-amazing-status="{{ Amazing['status'] }}"></button>
+            {% endif %}
+        </td>
+    </tr>
+{% endfor %}

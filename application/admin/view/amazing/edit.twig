@@ -1,0 +1,285 @@
+{% extends "home/_temp/blank_dashboard_temp.twig" %}
+{% block Content %}
+    <div class="container">
+        <section class="row">
+            <div class="col-12 px-5 pt-4">
+                <div class="message-box success-box" id="success-message-box" style="display: none;">
+                    <h4>موفقیت!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="message-box error-box" id="error-message-box" style="display: none;">
+                    <h4>خطا!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="row"  style="box-shadow: 0 0 5px rgba(0,0,0,0.1)">
+                    <div class="col-12 p-2">
+
+                        <div class="form-group d-flex align-middle mt-3">
+                            <label class="col-sm-2 control-label text-center">نام تخفیف</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" value="{{ Amazing['name'] }}" id="amazing-name">
+                            </div>
+                        </div>
+                        <div class="form-group d-flex align-middle mt-3">
+                            <label class="col-sm-2 control-label text-center">نوع تخفیف:</label>
+                            <div class="col-sm-10">
+                                <select id="amazing-type" class="form-control">
+                                    {% for CouponType in CouponTypes %}
+                                        {% if Amazing['type'] == CouponType.index %}
+                                            <option value="{{ CouponType.index }}" selected>{{ Translate[CouponType.value] }}</option>
+                                        {% else %}
+                                            <option value="{{ CouponType.index }}">{{ Translate[CouponType.value] }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group d-flex align-middle mt-3">
+                            <label class="col-sm-2 control-label text-center">تخفیف</label>
+                            <div class="col-sm-10">
+                                <input type="text" value="{{ Amazing['discount'] }}" class="form-control" id="amazing-value">
+                            </div>
+                        </div>
+                        <div class="form-group d-flex align-middle mt-3">
+                            <label class="col-sm-2 control-label text-center">تاریخ شروع</label>
+                            <div class="col-sm-10">
+                                <input type="text" value="{{ Amazing['date_start'] }}" class="form-control" id="amazing-date-start">
+                            </div>
+                        </div>
+                        <div class="form-group d-flex align-middle mt-3">
+                            <label class="col-sm-2 control-label text-center">تاریخ پایان</label>
+                            <div class="col-sm-10">
+                                <input type="text" value="{{ Amazing['date_end'] }}" class="form-control" id="amazing-date-end">
+                            </div>
+                        </div>
+
+
+                        <div class="form-group d-flex align-middle mt-3">
+                            <label class="col-sm-2 control-label text-center">محصول</label>
+                            <div class="col-sm-10">
+                                <input type="text" id="amazing-product-search" class="form-control">
+                                <div class="auto-recommend-box" id="amazing-product-auto-recommend-box" style="display: none;">
+                                </div>
+                                <div class="show-connect-data" id="amazing-product-show-connect-data">
+                                    {% for Product in Amazing['products_id'] %}
+                                        <p data-product-id="{{ Product['product_id'] }}"><i class="fa fa-minus-circle"></i>{{ Product['name'] }}</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group text-right pt-3 px-3">
+                            <a href="{{ ADMIN_URL }}amazing/index?token={{ Token }}" class="fa fa-arrow-right btn btn-warning"></a>
+                            <a href="#" id="amazing-submit-btn" class="fa fa-plus btn btn-success"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+{% endblock %}
+{% block Css %}
+    <link rel="stylesheet" href="{{ URL }}assets/persian_date/persian-datepicker.min.css">
+{% endblock %}
+{% block JsBeforeMain %}
+    <script type="text/javascript" src="{{ URL }}assets/persian_date/persian-date.min.js"></script>
+    <script type="text/javascript" src="{{ URL }}assets/persian_date/persian-datepicker.min.js"></script>
+{% endblock %}
+
+{% block Js %}
+    {% autoescape %}
+        <script type="text/javascript">
+            let url = "{{ CURRENT_URL }}?token={{ Token }}";
+            let searchProductUrl = "{{ ADMIN_URL }}product/product/getproducts?token={{ Token }}";
+            let searchCategoryUrl = "{{ ADMIN_URL }}product/category/getcategories?token={{ Token }}";
+            let Languages = [
+                {% for Langauge in Languages %}
+                "{{ Langauge['language_id'] }}",
+                {% endfor %}
+            ];
+            let LanguageDefaultID = {{ LanguageDefaultID }};
+            $(document).ready(function () {
+                $("#amazing-date-start").persianDatepicker({
+                    format: 'YYYY/MM/DD HH:mm:ss',
+                    timePicker: {
+                        enabled: true,
+                    },
+                    initialValue : true,
+                    initialValueType : 'persian'
+                });
+                $("#amazing-date-end").persianDatepicker({
+                    format: 'YYYY/MM/DD HH:mm:ss',
+                    timePicker: {
+                        enabled: true,
+                    },
+                    initialValueType : 'persian',
+                    initialValue : true
+                });
+
+                let copounProductSearchInput = $("#amazing-product-search");
+                let couponProductAutoRecommend = $("#amazing-product-auto-recommend-box");
+                let couponProductShowConnectData = $("#amazing-product-show-connect-data");
+                let Products_id = [];
+                let timeOut;
+                copounProductSearchInput.on("keyup", function (e) {
+
+                    clearTimeout(timeOut);
+                    timeOut = setTimeout(function () {
+                        if(copounProductSearchInput.val().length >= 2) {
+                            let data = {};
+                            data['s'] = copounProductSearchInput.val();
+                            data['post'] = true;
+                            $.post(searchProductUrl, data, function (response) {
+                                response = JSON.parse(response);
+                                couponProductAutoRecommend.css('display', 'none');
+                                couponProductAutoRecommend.html('');
+                                if(response.status === 1) {
+                                    for(let i = 0;  i < response['products'].length; i++) {
+                                        $('<div>').attr('data-product-id', response['products'][i]['product_id']).text( response['products'][i]['name'])
+                                            .click(function (e) {
+                                                addProductTOCouponProducts(couponProductShowConnectData, $(this).text(), +$(this).attr('data-product-id'));
+                                                couponProductAutoRecommend.css('display', 'none');
+                                                couponProductAutoRecommend.html('');
+                                                copounProductSearchInput.val('');
+                                                copounProductSearchInput.focus();
+                                            }).appendTo(couponProductAutoRecommend);
+                                    }
+                                    if(response['products'].length > 0) {
+                                        couponProductAutoRecommend.css('display', 'block');
+                                    }
+                                }
+
+                            });
+                        }else {
+                            couponProductAutoRecommend.css('display', 'none');
+                            couponProductAutoRecommend.html('');
+                        }
+                    }, 800);
+                });
+                function addProductTOCouponProducts(boxElement, productName, productID) {
+                    // <p><i class="fa fa-minus-circle"></i> رم > 12GB</p>
+                    if(Products_id.indexOf(productID) < 0) {
+                        let row = $('<p>');
+                        let deleteBtn = $('<i>').addClass('fa fa-minus-circle').click(function (e) {
+                            let filter_id = +$(this).closest('p').attr('data-filter-id');
+                            let index = Products_id.indexOf(filter_id);
+                            if(index > -1) {
+                                Products_id.splice(index, 1);
+                            }
+                            $(this).closest('p').remove();
+                        });
+                        deleteBtn.appendTo(row);
+                        Products_id.push(productID);
+                        row.append(productName).attr('data-product-id', productID);
+                        row.appendTo(boxElement);
+                    }
+                }
+
+
+
+
+                /*
+                * Post Data
+                * */
+                let amazingSubmitBtn = $("#amazing-submit-btn");
+                let successMessageBoxElement = $("#success-message-box");
+                let errorMessageBoxElement = $("#error-message-box");
+                amazingSubmitBtn.click(function (e) {
+                    let data = {};
+                    let error = false;
+                    let element;
+                    let messages = [];
+
+                    successMessageBoxElement.find(".messages").html('');
+                    successMessageBoxElement.css("display", "none");
+                    errorMessageBoxElement.find(".messages").html('');
+                    errorMessageBoxElement.css("display", "none");
+
+                    element = $('#amazing-name');
+                    if(element.val() != '') {
+                        data['amazing-name'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_coupon_name_empty'] }}");
+                    }
+
+                    element = $('#amazing-type');
+                    if(element.val() != '') {
+                        data['amazing-type'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_coupon_type_empty'] }}");
+                    }
+                    element = $('#amazing-value');
+                    if(element.val() != '') {
+                        data['amazing-discount'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_coupon_value_empty'] }}");
+                    }
+
+                    element = $('#amazing-date-start');
+                    if(element.val() != '') {
+                        data['amazing-date-start'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_coupon_date_start_empty'] }}");
+                    }
+                    element = $('#amazing-date-end');
+                    if(element.val() != '') {
+                        data['amazing-date-end'] = element.val();
+                    }else {
+                        error = true;
+                        messages.push("{{ Translate['error_coupon_date_end_empty'] }}");
+                    }
+
+                    data['amazing-products'] = Products_id;
+                    data['post'] = true;
+                    data['amazing-post'] = true;
+                    if(!error) {
+                        $.post(url, data, function (response) {
+                            response = JSON.parse(response);
+                            if(response.status === 1) {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    successMessageBoxElement.css("display", "block");
+                                }
+
+                                if(response['redirect']) {
+                                    window.setTimeout(function () {
+                                        window.location.href = response['redirect'];
+                                    }, 1000)
+                                }
+                            }else {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(errorMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    errorMessageBoxElement.css("display", "block");
+                                }
+                            }
+                        });
+                    }else {
+                        for (let i = 0; i < messages.length; i++) {
+                            $('<p>').text(messages[i]).appendTo(errorMessageBoxElement.find('.messages'));
+                        }
+                        if(messages.length > 0) {
+                            errorMessageBoxElement.css("display", "block");
+                        }
+                    }
+                    e.preventDefault();
+                });
+            });
+
+        </script>
+    {% endautoescape %}
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends "user/_temp/blank_dashboard_temp.twig" %}
+
+{% block Content %}
+    <div class="container">
+        <section class="row">
+            <div class="col-12 px-5 pt-4">
+                <div class="message-box success-box" id="success-message-box" style="display: none;">
+                    <h4>موفقیت!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="message-box error-box" id="error-message-box" style="display: none;">
+                    <h4>خطا!</h4>
+                    <hr>
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <div class="row"  style="box-shadow: 0 0 5px rgba(0,0,0,0.1)">
+                    <div class="col-12 p-2">
+                        <div class="form-goup">
+                            {% if Orders %}
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">سفارش دهنده</th>
+                                        <th scope="col">قیمت</th>
+                                        <th scope="col">وضعیت سفارش</th>
+                                        <th scope="col">تاریخ بروزرسانی
+                                        <th scope="col">تاریخ ایجاد
+                                        </th>
+                                        <th scope="col">عملیات</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="table-show-data">
+                                    {% for Order in Orders %}
+                                        <tr>
+                                            <th>{{ Order['order_id'] }}</th>
+                                            <td>{{ Order['first_name'] }} {{ Order['last_name'] }}</td>
+                                            <td>{{ Order['total'] | number_format }}</td>
+                                            <td>{{ Order['name'] }}</td>
+                                            <td>{{ Order['date_updated'] }}</td>
+                                            <td>{{ Order['date_added'] }}</td>
+                                            <td>
+                                                {% if Order['order_status_id'] != 7 %}
+                                                    <a href="javascript:void(0);" onclick="cancelOrder({{ Order['order_id'] }})" class="btn btn-danger fa fa-times"></a>
+                                                {% endif %}
+                                                <a href="{{ URL }}user/order/edit/{{ Order['order_id'] }}?token={{ Token }}" ><i class="btn btn-warning fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endif %}
+                        </div>
+                        <div class="form-group text-right pt-3 px-3">
+                            <a href="{{ URL }}home/index?token={{ Token }}" class="fa fa-arrow-right btn btn-warning"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+{% endblock %}
+
+{% block Js %}
+    {% autoescape %}
+        <script type="text/javascript">
+            let url = "{{ URL }}user/order/delete/";
+            let successMessageBoxElement = $("#success-message-box");
+            let errorMessageBoxElement = $("#error-message-box");
+            function cancelOrder(order_id) {
+                successMessageBoxElement.find('.messages').html('');
+                successMessageBoxElement.find('.messages').html('');
+                successMessageBoxElement.css('display', 'none');
+                errorMessageBoxElement.css('display', 'none');
+                let data = {};
+                data['coupons_id'] = [];
+                if(confirm("{{ Translate['are_you_sure_?'] }}")) {
+
+                        data['post'] = true;
+                        $.post(url + order_id + "?token={{ Token }}", data, function (response) {
+                            response = JSON.parse(response);
+                            if(response.status === 1) {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(successMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    successMessageBoxElement.fadeIn(300).delay(2700).fadeOut(300);
+                                    setTimeout(function () {
+                                        successMessageBoxElement.find('.messages').html('');
+                                    }, 3000)
+                                }
+                                if(response['redirect']) {
+                                    window.setTimeout(function () {
+                                        window.location.href = response['redirect'];
+                                    }, 1000)
+                                }
+                            }else {
+                                for (let i = 0; i < response['messages'].length; i++) {
+                                    $('<p>').text(response['messages'][i]).appendTo(errorMessageBoxElement.find('.messages'));
+                                }
+                                if(response['messages'].length > 0) {
+                                    errorMessageBoxElement.fadeIn(300).delay(2700).fadeOut(300);
+                                    setTimeout(function () {
+                                        errorMessageBoxElement.find('.messages').html('');
+                                    }, 3000)
+                                }
+                            }
+                        });
+
+                }
+                return false;
+            }
+
+
+
+        </script>
+    {% endautoescape %}
+{% endblock %}

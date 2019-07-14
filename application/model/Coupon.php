@@ -19,8 +19,8 @@ class Coupon extends Model
     private $rows = [];
 
     public function insertCoupon($data) {
-        $this->Database->query("INSERT INTO coupon (name, code, discount, type, minimum_price, date_start, date_end, `count`, status, date_added) VALUES 
-        (:cName, :cCode, :cDiscount, :cType, :cMinimumPrice, :cDStart, :cDEnd, :cCount, :cStatus, :cDAdded)", array(
+        $this->Database->query('INSERT INTO coupon (name, code, discount, type, minimum_price, date_start, date_end, `count`, status, date_added) VALUES 
+        (:cName, :cCode, :cDiscount, :cType, :cMinimumPrice, :cDStart, :cDEnd, :cCount, :cStatus, :cDAdded)', array(
             'cName' => $data['name'],
             'cCode' => $data['code'],
             'cDiscount' => $data['discount'],

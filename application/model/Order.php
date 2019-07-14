@@ -7,6 +7,7 @@ use App\System\Model;
 
 /**
  * @property Database Database
+ * @property Language Language
  */
 class Order extends Model {
     public function insertOrder($data) {
@@ -80,7 +81,8 @@ class Order extends Model {
         return $order_id;
     }
 
-    public function editOrder($order_id, $data) {
+    public function editOrder($order_id, $data): bool
+    {
         $sql = "UPDATE `order` SET ";
         $params = [];
         $query = [];
@@ -97,6 +99,10 @@ class Order extends Model {
             $query[] = "payment_gate = :pGate ";
             $params['pGate'] = $data['payment_gate'];
         }
+        if(isset($data['transaction_code'])) {
+            $query[] = 'transaction_code = :pTransactionCode';
+            $params['pTransactionCode'] = $data['transaction_code'];
+        }
         $sql .= implode(" , ", $query);
         $sql .= " WHERE order_id = :oID ";
         $params['oID'] = $order_id;
@@ -104,11 +110,12 @@ class Order extends Model {
             $this->Database->query($sql, $params);
         }
 
-        return $this->Database->numRows() > 0 ? true : false;
+        return $this->Database->numRows() > 0;
     }
 
-    public function getOrder($order_id) {
-        $this->Database->query("SELECT * FROM `order` WHERE order_id = :oID", array(
+    public function getOrder($order_id)
+    {
+        $this->Database->query('SELECT * FROM `order` WHERE order_id = :oID', array(
             'oID'   => $order_id
         ));
         if($this->Database->hasRows()) {
@@ -117,5 +124,112 @@ class Order extends Model {
         return false;
     }
 
+    public function getOrderProducts($order_id): array
+    {
+        $this->Database->query('SELECT *, op.price as `price`, op.total as `total`, op.quantity as `quantity` FROM order_product op LEFT JOIN product p ON op.product_id = p.product_id LEFT JOIN 
+        product_language pl ON p.product_id = pl.product_id WHERE order_id = :oID AND pl.language_id = :lID', array(
+            'oID'   => $order_id,
+            'lID'   => $this->Language->getLanguageID()
+        ));
+        if($this->Database->hasRows()) {
+            $orderProducts = [];
+            foreach ($this->Database->getRows() as $row) {
+                $this->Database->query('SELECT * FROM order_option WHERE order_product_id = :oPI', array(
+                    'oPI'   => $row['order_product_id']
+                ));
+                $orderProductOptions = [];
+                if($this->Database->hasRows()) {
+                    $orderProductOptions = $this->Database->getRows();
+                }
+                $row['order_product_options'] = $orderProductOptions;
+                $orderProducts[] = $row;
+            }
+            return $orderProducts;
+        }
+        return [];
+    }
 
+    public function getOrderTotal($order_id): array
+    {
+        $this->Database->query('SELECT * FROM order_total ot WHERE ot.order_id = :oID', array(
+            'oID'   => $order_id
+        ));
+        $order_total = [];
+        foreach ($this->Database->getRows() as $row) {
+            if($row['serialized']) {
+                $row['value'] = unserialize($row['value'], [ 'allowed_classes'  => false]);
+            }
+            $order_total[$row['code']] = $row;
+        }
+        return $order_total;
+    }
+
+    public function insertOrderHistory(array $array)
+    {
+        $this->Database->query('REPLACE INTO order_history (order_id, order_status_id, date_added) VALUES 
+        (:oID, :oSID, :oDAdded)', array(
+            'oID'   => $array['order_id'],
+            'oSID'  => $array['order_status_id'],
+            'oDAdded'   => $array['date_added']
+        ));
+        return $this->Database->insertId();
+    }
+
+    public function getOrderHistories($order_id) {
+        $this->Database->query('SELECT * FROM order_history oh LEFT JOIN order_status os ON oh.order_status_id =
+        os.order_status_id WHERE oh.order_id = :oID AND language_id = :lID', array(
+            'oID'   => $order_id,
+            'lID'   => $this->Language->getLanguageID()
+        ));
+        return $this->Database->getRows();
+    }
+
+    public function getOrderStatuses() {
+        $this->Database->query("SELECT * FROM order_status WHERE language_id = :lID", array(
+            'lID'   => $this->Language->getLanguageID()
+        ));
+        return $this->Database->getRows();
+    }
+
+    public function getOrders($data = [])
+    {
+        $data['sort'] = $data['sort'] ?? '';
+        $data['order'] = isset($data['order']) ? strtoupper($data['order']) : 'ASC';
+        $data['language_id'] = $data['language_id'] ?? $this->Language->getLanguageID();
+
+        $sql = 'SELECT *, ohm.date_added as `date_updated` FROM  `order` o INNER JOIN (SELECT MAX(oh.order_status_id) as `order_status_id`, oh.order_id, oh.date_added FROM order_history oh GROUP BY oh.order_id) ohm ON ohm.order_id = o.order_id  LEFT JOIN order_status os ON ohm.order_status_id = os.order_status_id
+        WHERE 1 = 1 ';
+        $sort_data = array(
+            'name',
+            'sort_order'
+        );
+        $sql .= ' GROUP BY o.order_id';
+        if (isset($data['sort']) && in_array($data['sort'], $sort_data, false)) {
+            $sql .= ' ORDER BY ' . $data['sort'];
+        }else {
+            $data['sort'] = '';
+            $sql .= ' ORDER BY o.order_id';
+        }
+
+        if (isset($data['order']) && ($data['order'] == 'DESC')) {
+            $sql .= ' DESC';
+        } else {
+            $sql .= ' ASC';
+        }
+
+        if (isset($data['start']) || isset($data['limit'])) {
+            if ($data['start'] < 0) {
+                $data['start'] = 0;
+            }
+
+            if ($data['limit'] < 1) {
+                $data['limit'] = 20;
+            }
+
+            $sql .= ' LIMIT ' . (int)$data['start'] . ',' . (int)$data['limit'];
+        }
+        $this->Database->query($sql);
+        $rows = $this->Database->getRows();
+        return $rows;
+    }
 }

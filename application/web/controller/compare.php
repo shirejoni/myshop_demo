@@ -90,6 +90,7 @@ class ControllerCompare extends Controller {
                     $data['Products'][] = [];
                 }
             }
+
             $this->Response->setOutPut($this->render('compare/index', $data));
             return;
         }

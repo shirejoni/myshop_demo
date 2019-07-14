@@ -32,7 +32,8 @@
                 <table>
                     {% for attribute_id, Attribute in AttributeGroup['attributes'] %}
                     <tr>
-                        <td colspan="4">{{ Attribute['name'] }}</td>
+
+                        <td colspan="4">{{ Attribute }}</td>
                     </tr>
                     <tr>
                         {% for Product in Products %}
